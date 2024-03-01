@@ -4,7 +4,7 @@ export async function getData() {
   const outputSignal = [];
   const inputSignal = [];
 
-  const fftTable = fftString.split("\n").slice(1);
+  const fftTable = fftString.split("\n").slice(1, -1);
   fftTable.forEach((row) => {
     const columns = row.split(",");
     outputSignal.push({
@@ -16,7 +16,6 @@ export async function getData() {
       value: parseFloat(columns[4]),
     });
   });
-
   console.log(inputSignal, outputSignal);
 
   return { inputSignal, outputSignal };
