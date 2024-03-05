@@ -56,10 +56,10 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < total_samples; i++) {
       if (i < ceil(total_samples/2)) {
         float input = a + i*sampling_interval + ceil(total_samples/2)*sampling_interval + sampling_interval;
-          in[i][0] = amp * sin(freq_hz * 2*M_PI*input)/(freq_hz * 2*M_PI*input);
+          in[i][0] = amp * sin(freq_hz * 2*M_PI*input-phase_rad)/(freq_hz * 2*M_PI*input-phase_rad);
       } else {
         float input = a + i*sampling_interval - ceil(total_samples/2)*sampling_interval;
-          in[i][0] = amp * sin(freq_hz * 2*M_PI*input)/(freq_hz * 2*M_PI*input);
+          in[i][0] = amp * sin(freq_hz * 2*M_PI*input-phase_rad)/(freq_hz * 2*M_PI*input-phase_rad);
       }
         in[i][1] = 0;
     }
