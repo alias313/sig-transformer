@@ -1,54 +1,30 @@
-# Astro Starter Kit: Basics
+# Visualize Transforms
 
-```sh
-npm create astro@latest -- --template basics
-```
+This is a project to visualize the transforms of discrete signals and operations between two or multiple discrete signals (mainly DFT and convolution)
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## Code Improvements
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- Use structs to encapsulate parameters
+- Make global argv, argc as such:
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+    ```c
+    char **gargv;
+    int gargc;
+    ```
 
-## 🚀 Project Structure
+Snippet from [here](https://www.unix.com/programming/173428-how-access-argv-x-another-function-other-than-main.html)
 
-Inside of your Astro project, you'll see the following folders and files:
+Another way of doing a similar thing [here](https://stackoverflow.com/questions/43729256/argc-and-argv-for-functions-other-than-main)
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## IDEAS
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Allow only parametrized input (you can only input the parameters to the function that I permit, limited degrees of freedom)
+- Chain functions to simulate operations (add, subtract, multiply, divide, convolve, correlate, circular convolution???, etc.)
+- Real, Imaginary & Complex graph
+  Load your signal with a formatted text/json/whatever file
+- Add sum of cos & sin
+- Add complex exponential (cos+isin)
+- Lead to the discovery of the ft by convolution (like in Mark Newman's video)
+- Build an fft and convolution algorithm
+- Other transforms (Cosine, sine, sinc transforms...)
+- Load graphs by chunks (first 100 samples, etc.) or lazy load (load average of every 10, 5, 2 samples etc.)

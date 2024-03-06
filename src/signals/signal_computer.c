@@ -16,8 +16,17 @@
 #define phase_argpos 6
 #define interval_argpos 7
 
-int main(int argc, char *argv[]) {
-    
+int sinc_centered(fftw_complex in[], float input_array[],
+                  int total_samples, float sampling_interval,
+                  float a, float b, float amp, float freq_hz);
+
+int sinc_phase_shifted(fftw_complex in[], float input_array[],
+                       int total_samples, float sampling_interval,
+                       float a, float b, float amp, float freq_hz, float phase_rad);
+
+int main(int argc, char *argv[])
+{
+
   FILE *fptr;
 
   const float a = atof(argv[a_argpos]);
@@ -29,8 +38,8 @@ int main(int argc, char *argv[]) {
   const float interval = atof(argv[interval_argpos]);
 
   const float sampling_interval = interval;
-  const float zero_cutoff = sampling_interval/2;
-  const int total_samples = ceil((b-a)/sampling_interval)+1;
+  const float zero_cutoff = sampling_interval / 2;
+  const int total_samples = ceil((b - a) / sampling_interval) + 1;
   int rightmost_index = 0;
   printf("Total samples: %d\n", total_samples);
 
@@ -40,67 +49,101 @@ int main(int argc, char *argv[]) {
   float input_array[total_samples];
 
   /* prepare signal */
-  if (!strcmp(argv[sig_argpos], "cos")) {
-    for (i = 0; i < total_samples; i++) {
-      float input = a + i*sampling_interval;
-      in[i][0] = amp * cos(freq_hz * 2*M_PI*input + phase_rad);
+  if (!strcmp(argv[sig_argpos], "cos"))
+  {
+    for (i = 0; i < total_samples; i++)
+    {
+      float input = a + i * sampling_interval;
+      in[i][0] = amp * cos(freq_hz * 2 * M_PI * input + phase_rad);
       printf("%5.2f %+5.2f\n", input, in[i][0]);
       in[i][1] = 0;
     }
   }
-  else if (!strcmp(argv[sig_argpos], "sin")) {
-    for (i = 0; i < total_samples; i++) {
-      float input = a + i*sampling_interval;
-      in[i][0] = amp * sin(freq_hz * 2*M_PI*input+phase_rad);
+  else if (!strcmp(argv[sig_argpos], "sin"))
+  {
+    for (i = 0; i < total_samples; i++)
+    {
+      float input = a + i * sampling_interval;
+      in[i][0] = amp * sin(freq_hz * 2 * M_PI * input + phase_rad);
       in[i][1] = 0;
     }
   }
-  else if (!strcmp(argv[sig_argpos], "sinc")) {
-    // assumes a < 0 & b > 0
-    float input = 0;
-    for (i = 0; i < total_samples; i++) {
-      if (input < b && input >= 0) {
-        input = i*sampling_interval;
-        rightmost_index = i;
-      } else {
-        input = a + (i-rightmost_index-1)*sampling_interval;
-      }
-      input_array[i] = input;
+  else if (!strcmp(argv[sig_argpos], "sinc"))
+  {
+    if (phase_rad == 0)
+    {
+      rightmost_index = sinc_centered(in, input_array, total_samples, sampling_interval,
+                                      a, b, amp, freq_hz);
+    }
+    else
+    {
+      rightmost_index = sinc_phase_shifted(in, input_array, total_samples, sampling_interval,
+                                           a, b, amp, freq_hz, phase_rad);
+    }
+    // // assumes a < 0 & b > 0
+    // float input = 0;
+    // for (i = 0; i < total_samples; i++)
+    // {
+    //   if (input < b && input >= 0)
+    //   {
+    //     input = i * sampling_interval;
+    //     rightmost_index = i;
+    //   }
+    //   else
+    //   {
+    //     input = a + (i - rightmost_index - 1) * sampling_interval;
+    //   }
+    //   input_array[i] = input;
 
-      if (abs(input - phase_rad) < zero_cutoff) {
-        in[i][0] = amp;
-      } else {
-        in[i][0] = amp * sin(freq_hz * 2*M_PI*input-phase_rad)/(freq_hz * 2*M_PI*input-phase_rad);
-      }
-      printf("input: %8.5f value: %8.5f\n", input, in[i][0]);
-      in[i][1] = 0;
-    }
+    //   if (abs(input - phase_rad) < zero_cutoff)
+    //   {
+    //     in[i][0] = amp;
+    //   }
+    //   else
+    //   {
+    //     in[i][0] = amp * sin(freq_hz * 2 * M_PI * input - phase_rad) / (freq_hz * 2 * M_PI * input - phase_rad);
+    //   }
+    //   printf("input: %8.5f value: %8.5f\n", input, in[i][0]);
+    //   in[i][1] = 0;
+    // }
   }
-  else if (!strcmp(argv[sig_argpos], "square")) {
-    for (i = 0; i < total_samples; i++) {
-      if (i < ceil(total_samples/2)) {
-        float input = a+i*sampling_interval+ceil(total_samples/2)*sampling_interval + sampling_interval;
-        if (i*sampling_interval < pulse_length/2) {
+  else if (!strcmp(argv[sig_argpos], "square"))
+  {
+    for (i = 0; i < total_samples; i++)
+    {
+      if (i < ceil(total_samples / 2))
+      {
+        float input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval + sampling_interval;
+        if (i * sampling_interval < pulse_length / 2)
+        {
           in[i][0] = amp;
           in[i][1] = 0;
-        } else {
+        }
+        else
+        {
           in[i][0] = 0;
           in[i][1] = 0;
         }
-      } else {
-        int i_left_shifted = i-floor(total_samples/2);
+      }
+      else
+      {
+        int i_left_shifted = i - floor(total_samples / 2);
         printf("%d", i_left_shifted);
-        if (i_left_shifted*sampling_interval > floor(total_samples/2)*sampling_interval - pulse_length/2) {
+        if (i_left_shifted * sampling_interval > floor(total_samples / 2) * sampling_interval - pulse_length / 2)
+        {
           in[i][0] = amp;
           in[i][1] = 0;
-        } else {
+        }
+        else
+        {
           in[i][0] = 0;
           in[i][1] = 0;
         }
       }
     }
   }
-  else {
+  else
+  {
     printf("%s isn't recognized as an implemented signal to compute\n", argv[sig_argpos]);
     return 1;
   }
@@ -114,18 +157,22 @@ int main(int argc, char *argv[]) {
   // fprintf(fptr, "%d\n", total_samples);
   // fprintf(fptr, "(00000) Freq\tFast Fourier Transform\n");
   fprintf(fptr, "Freq,re(FFT),im(FFT),input,re(signal)\n");
-  for (i = 0; i < total_samples; i++) {
-    float freq = i/(total_samples*sampling_interval);
+  for (i = 0; i < total_samples; i++)
+  {
+    float freq = i / (total_samples * sampling_interval);
     // fprintf(fptr, "(%05d) %+3.2f    | %+9.5f j%+9.5f\n", i+1,freq, out[i][0], out[i][1]);
-    if (i < rightmost_index) {
-      int i_left_shifted = i+rightmost_index+1;
+    if (i < rightmost_index)
+    {
+      int i_left_shifted = i + rightmost_index + 1;
       printf("LEFT : %04d, %04d\n", i, i_left_shifted);
       fprintf(fptr, "%05.2f,%+08.5f,%+08.5f,%+08.5f,%+08.5f\n", freq, out[i_left_shifted][0], out[i_left_shifted][1], input_array[i_left_shifted], in[i_left_shifted][0]);
-    } else {
-      int i_right_shifted = i-rightmost_index;
+    }
+    else
+    {
+      int i_right_shifted = i - rightmost_index;
       printf("RIGHT: %04d, %04d\n", i, i_right_shifted);
       fprintf(fptr, "%05.2f,%+08.5f,%+08.5f,%+08.5f,%+08.5f\n", freq, out[i_right_shifted][0], out[i_right_shifted][1], input_array[i_right_shifted], in[i_right_shifted][0]);
-    }                                   
+    }
   }
 
   fclose(fptr);
@@ -134,24 +181,89 @@ int main(int argc, char *argv[]) {
 
   /* backward Fourier transform, save the result in 'in2' */
 
-/*   printf("\nInverse transform:\n");
-  q = fftw_plan_dft_1d(total_samples, out, in2, FFTW_BACKWARD, FFTW_ESTIMATE);
-  fftw_execute(q);
-  // normalize
-  for (i = 0; i < total_samples; i++) {
-    in2[i][0] *= 1./total_samples;
-    in2[i][1] *= 1./total_samples;
-  }
-  
-   printf("(00000) Freq\tInput Signal\t\t   Inverse FFT\n");
-  for (i = 0; i < total_samples; i++) {
-    float input = a+i*sampling_interval;
-    printf("(%05d) %+4.3f %+9.5f %+9.5f I vs. %+9.5f %+9.5f I  difference: %+24.22f\n",
-        i, input, in[i][0], in[i][1], in2[i][0], in2[i][1], in[i][0]-in2[i][0]);
-  }
-  fftw_destroy_plan(q); */
+  /*   printf("\nInverse transform:\n");
+    q = fftw_plan_dft_1d(total_samples, out, in2, FFTW_BACKWARD, FFTW_ESTIMATE);
+    fftw_execute(q);
+    // normalize
+    for (i = 0; i < total_samples; i++) {
+      in2[i][0] *= 1./total_samples;
+      in2[i][1] *= 1./total_samples;
+    }
+
+     printf("(00000) Freq\tInput Signal\t\t   Inverse FFT\n");
+    for (i = 0; i < total_samples; i++) {
+      float input = a+i*sampling_interval;
+      printf("(%05d) %+4.3f %+9.5f %+9.5f I vs. %+9.5f %+9.5f I  difference: %+24.22f\n",
+          i, input, in[i][0], in[i][1], in2[i][0], in2[i][1], in[i][0]-in2[i][0]);
+    }
+    fftw_destroy_plan(q); */
 
   fftw_cleanup();
 
   return 0;
+}
+
+int sinc_centered(fftw_complex in[], float input_array[],
+                  int total_samples, float sampling_interval,
+                  float a, float b, float amp, float freq_hz)
+{
+  // assumes a < 0 & b > 0
+  int i, rightmost_index;
+  float zero_cutoff = sampling_interval / 32;
+  float input = 0;
+  for (i = 0; i < total_samples; i++)
+  {
+    if (input < b && input >= 0)
+    {
+      input = i * sampling_interval;
+      rightmost_index = i;
+    }
+    else
+    {
+      input = a + (i - rightmost_index - 1) * sampling_interval;
+    }
+    input_array[i] = input;
+
+    if (abs(input) < zero_cutoff)
+    {
+      in[i][0] = amp;
+    }
+    else
+    {
+      in[i][0] = amp * sin(freq_hz * 2 * M_PI * input) / (freq_hz * 2 * M_PI * input);
+    }
+    in[i][1] = 0;
+
+    printf("%d input %8.5f\n", i, input);
+  }
+
+  return rightmost_index;
+}
+
+int sinc_phase_shifted(fftw_complex in[], float input_array[],
+                       int total_samples, float sampling_interval,
+                       float a, float b, float amp, float freq_hz, float phase_rad)
+{
+  int i, rightmost_index;
+  float input;
+  for (i = 0; i < total_samples; i++)
+  {
+    if (i < ceil(total_samples / 2) + 1)
+    {
+      input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
+
+      rightmost_index = i;
+    }
+    else
+    {
+      input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
+    }
+    input_array[i] = input;
+
+    in[i][0] = amp * sin(freq_hz * 2 * M_PI * input - phase_rad) / (freq_hz * 2 * M_PI * input - phase_rad);
+    in[i][1] = 0;
+    printf("%d input %8.5f\n", i, input);
+  }
+
+  return rightmost_index;
 }
