@@ -40,18 +40,21 @@ const optionsToApply = {
 
 const { inputSignal }= await getData()
 const inputChart = createChart(document.getElementById('container1'), chartOptions);
+
+inputChart.applyOptions(optionsToApply)
+
 const inputAreaSeries = inputChart.addAreaSeries({
 	topColor: '#d5b8f9',
 	bottomColor: 'rgba(213, 184, 249, 0.5)',
 	lineColor: '#d5b8f9',
 	lineWidth: 2,
+	priceLineVisible: false,
 });
-inputChart.applyOptions(optionsToApply)
 inputAreaSeries.setData(inputSignal);
-inputChart.timeScale().fitContent();
 
-const { outputSignal }= await getData()
+const {outputSignal} = await getData()
 const outputChart = createChart(document.getElementById('container2'), chartOptions);
+
 outputChart.applyOptions(optionsToApply);
 
 const outputAreaSeries = outputChart.addAreaSeries({
@@ -59,11 +62,13 @@ const outputAreaSeries = outputChart.addAreaSeries({
 	bottomColor: 'rgba(143, 67, 234, 0.33)',
 	lineColor: '#d5b8f9',
 	lineWidth: 2,
+	priceLineVisible: false,
 });
+
+outputAreaSeries.setData(outputSignal);
 
 console.log(inputSignal, outputSignal)
 
-outputAreaSeries.setData(outputSignal);
 
 const inputSymbolName = inputExpression
 const inputContainer = document.getElementById('container1')
@@ -124,6 +129,10 @@ const outputUpdateLegend = param => {
 inputChart.subscribeCrosshairMove(inputUpdateLegend);
 outputChart.subscribeCrosshairMove(outputUpdateLegend);
 
+inputUpdateLegend(undefined);
+outputUpdateLegend(undefined);
+
+inputChart.timeScale().fitContent();
 outputChart.timeScale().fitContent();
 </script>
 
