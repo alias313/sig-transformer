@@ -1,4 +1,4 @@
-/src/signals/fft_out.csv
+src/signals/fft_out.csv
 
 # build output
 dist/
