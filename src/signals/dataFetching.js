@@ -1,5 +1,8 @@
+import { performance } from "node:perf_hooks";
+
 export async function getData() {
-  const response = await fetch("/src/signals/fft_out.csv");
+  const startTime = performance.now();
+  const response = await fetch("http://localhost:4321/src/signals/fft_out.csv");
   const fftString = await response.text();
   const outputSignal = [];
   const inputSignal = [];
@@ -17,6 +20,10 @@ export async function getData() {
     });
   });
   console.log(inputSignal, outputSignal);
+
+  const endTime = performance.now();
+
+  console.log(`Call to getData took ${endTime - startTime} milliseconds`);
 
   return { inputSignal, outputSignal };
 }

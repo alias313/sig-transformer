@@ -80,32 +80,6 @@ int main(int argc, char *argv[])
       rightmost_index = sinc_phase_shifted(in, input_array, total_samples, sampling_interval,
                                            a, b, amp, freq_hz, phase_rad);
     }
-    // // assumes a < 0 & b > 0
-    // float input = 0;
-    // for (i = 0; i < total_samples; i++)
-    // {
-    //   if (input < b && input >= 0)
-    //   {
-    //     input = i * sampling_interval;
-    //     rightmost_index = i;
-    //   }
-    //   else
-    //   {
-    //     input = a + (i - rightmost_index - 1) * sampling_interval;
-    //   }
-    //   input_array[i] = input;
-
-    //   if (abs(input - phase_rad) < zero_cutoff)
-    //   {
-    //     in[i][0] = amp;
-    //   }
-    //   else
-    //   {
-    //     in[i][0] = amp * sin(freq_hz * 2 * M_PI * input - phase_rad) / (freq_hz * 2 * M_PI * input - phase_rad);
-    //   }
-    //   printf("input: %8.5f value: %8.5f\n", input, in[i][0]);
-    //   in[i][1] = 0;
-    // }
   }
   else if (!strcmp(argv[sig_argpos], "square"))
   {

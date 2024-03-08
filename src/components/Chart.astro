@@ -1,6 +1,19 @@
-<script>
-import { createChart } from 'lightweight-charts';
+---
 import { getData } from '../signals/dataFetching';
+
+const { inputSignal, outputSignal } = await getData();
+---
+
+<div class="signal-input">
+	<input type="text" placeholder="Asquare(t/T)"><br>
+</div>
+<div id="container1"></div>
+<div id="container2"></div>
+
+<script define:vars={{ inputSignal, outputSignal }}
+type="module"
+>
+import { createChart } from '/node_modules/lightweight-charts';
 
 const inputExpression = "f(t)=1*sinc(2π*f*t)"
 const outputExpression = "FFT(f(t))"
@@ -38,7 +51,6 @@ const optionsToApply = {
 	},
 }
 
-const { inputSignal }= await getData()
 const inputChart = createChart(document.getElementById('container1'), chartOptions);
 
 inputChart.applyOptions(optionsToApply)
@@ -52,7 +64,6 @@ const inputAreaSeries = inputChart.addAreaSeries({
 });
 inputAreaSeries.setData(inputSignal);
 
-const {outputSignal} = await getData()
 const outputChart = createChart(document.getElementById('container2'), chartOptions);
 
 outputChart.applyOptions(optionsToApply);
@@ -134,10 +145,5 @@ outputUpdateLegend(undefined);
 
 inputChart.timeScale().fitContent();
 outputChart.timeScale().fitContent();
-</script>
 
-<div class="signal-input">
-	<input type="text" placeholder="Asquare(t/T)"><br>
-</div>
-<div id="container1"></div>
-<div id="container2"></div>
+</script>
