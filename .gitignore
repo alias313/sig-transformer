@@ -1,4 +1,5 @@
 src/signals/fft_out.csv
+src/signals/signal_computer_exec
 
 # build output
 dist/
