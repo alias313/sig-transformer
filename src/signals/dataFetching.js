@@ -19,7 +19,6 @@ export async function getData() {
       value: parseFloat(columns[4]),
     });
   });
-  console.log(inputSignal, outputSignal);
 
   const endTime = performance.now();
 
