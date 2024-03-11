@@ -140,6 +140,14 @@ outputChart.subscribeCrosshairMove(outputUpdateLegend);
 inputUpdateLegend(undefined);
 outputUpdateLegend(undefined);
 
+inputChart.timeScale().applyOptions({
+	minBarSpacing: 0.1,
+})
+
+outputChart.timeScale().applyOptions({
+	minBarSpacing: 0.1,
+})
+
 inputChart.timeScale().fitContent();
 outputChart.timeScale().fitContent();
 
