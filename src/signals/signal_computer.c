@@ -16,13 +16,25 @@
 #define phase_argpos 6
 #define interval_argpos 7
 
+int cosine(fftw_complex in[], float input_array[],
+          int total_samples, float sampling_interval,
+          float a, float b, float amp, float freq_hz, float phase_rad);
+
+int sine(fftw_complex in[], float input_array[],
+          int total_samples, float sampling_interval,
+          float a, float b, float amp, float freq_hz, float phase_rad);
+
 int sinc_centered(fftw_complex in[], float input_array[],
                   int total_samples, float sampling_interval,
                   float a, float b, float amp, float freq_hz);
 
 int sinc_phase_shifted(fftw_complex in[], float input_array[],
-                       int total_samples, float sampling_interval,
-                       float a, float b, float amp, float freq_hz, float phase_rad);
+                        int total_samples, float sampling_interval,
+                        float a, float b, float amp, float freq_hz, float phase_rad);
+
+int square_centered(fftw_complex in[], float input_array[],
+                      int total_samples, float sampling_interval,
+                      float a, float b, float amp);
 
 int main(int argc, char *argv[])
 {
@@ -51,22 +63,13 @@ int main(int argc, char *argv[])
   /* prepare signal */
   if (!strcmp(argv[sig_argpos], "cos"))
   {
-    for (i = 0; i < total_samples; i++)
-    {
-      float input = a + i * sampling_interval;
-      in[i][0] = amp * cos(freq_hz * 2 * M_PI * input + phase_rad);
-      printf("%5.2f %+5.2f\n", input, in[i][0]);
-      in[i][1] = 0;
-    }
+    rightmost_index = cosine(in, input_array, total_samples, sampling_interval,
+                              a, b, amp, freq_hz, phase_rad);
   }
   else if (!strcmp(argv[sig_argpos], "sin"))
   {
-    for (i = 0; i < total_samples; i++)
-    {
-      float input = a + i * sampling_interval;
-      in[i][0] = amp * sin(freq_hz * 2 * M_PI * input + phase_rad);
-      in[i][1] = 0;
-    }
+      rightmost_index = sine(in, input_array, total_samples, sampling_interval,
+                              a, b, amp, freq_hz, phase_rad);
   }
   else if (!strcmp(argv[sig_argpos], "sinc"))
   {
@@ -177,6 +180,62 @@ int main(int argc, char *argv[])
   return 0;
 }
 
+int cosine(fftw_complex in[], float input_array[],
+          int total_samples, float sampling_interval,
+          float a, float b, float amp, float freq_hz, float phase_rad)
+{
+  int i, rightmost_index;
+  float input;
+  for (i = 0; i < total_samples; i++)
+  {
+    if (i < ceil(total_samples / 2) + 1)
+    {
+      input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
+
+      rightmost_index = i;
+    }
+    else
+    {
+      input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
+    }
+    input_array[i] = input;
+
+    in[i][0] = amp * cos(freq_hz * 2 * M_PI * input - phase_rad);
+    in[i][1] = 0;
+    printf("%d input %8.5f\n", i, input);
+  }
+
+  return rightmost_index;
+}
+
+int sine(fftw_complex in[], float input_array[],
+          int total_samples, float sampling_interval,
+          float a, float b, float amp, float freq_hz, float phase_rad)
+{
+  int i, rightmost_index;
+  float input;
+  for (i = 0; i < total_samples; i++)
+  {
+    if (i < ceil(total_samples / 2) + 1)
+    {
+      input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
+
+      rightmost_index = i;
+    }
+    else
+    {
+      input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
+    }
+    input_array[i] = input;
+
+    in[i][0] = amp * sin(freq_hz * 2 * M_PI * input - phase_rad);
+    in[i][1] = 0;
+    printf("%d input %8.5f\n", i, input);
+  }
+
+  return rightmost_index;
+}
+
 int sinc_centered(fftw_complex in[], float input_array[],
                   int total_samples, float sampling_interval,
                   float a, float b, float amp, float freq_hz)
@@ -240,4 +299,11 @@ int sinc_phase_shifted(fftw_complex in[], float input_array[],
   }
 
   return rightmost_index;
+}
+
+int square_centered(fftw_complex in[], float input_array[],
+                      int total_samples, float sampling_interval,
+                      float a, float b, float amp)
+{
+  return 0;
 }
