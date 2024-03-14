@@ -34,7 +34,7 @@ int sinc_phase_shifted(fftw_complex in[], float input_array[],
 
 int square_centered(fftw_complex in[], float input_array[],
                       int total_samples, float sampling_interval,
-                      float a, float b, float amp);
+                      float a, float b, float amp, float pulse_length);
 
 int main(int argc, char *argv[])
 {
@@ -86,38 +86,9 @@ int main(int argc, char *argv[])
   }
   else if (!strcmp(argv[sig_argpos], "square"))
   {
-    for (i = 0; i < total_samples; i++)
-    {
-      if (i < ceil(total_samples / 2))
-      {
-        float input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval + sampling_interval;
-        if (i * sampling_interval < pulse_length / 2)
-        {
-          in[i][0] = amp;
-          in[i][1] = 0;
-        }
-        else
-        {
-          in[i][0] = 0;
-          in[i][1] = 0;
-        }
-      }
-      else
-      {
-        int i_left_shifted = i - floor(total_samples / 2);
-        printf("%d", i_left_shifted);
-        if (i_left_shifted * sampling_interval > floor(total_samples / 2) * sampling_interval - pulse_length / 2)
-        {
-          in[i][0] = amp;
-          in[i][1] = 0;
-        }
-        else
-        {
-          in[i][0] = 0;
-          in[i][1] = 0;
-        }
-      }
-    }
+    rightmost_index = square_centered(in, input_array, total_samples, sampling_interval,
+                                      a, b, amp, pulse_length);
+
   }
   else
   {
@@ -303,7 +274,46 @@ int sinc_phase_shifted(fftw_complex in[], float input_array[],
 
 int square_centered(fftw_complex in[], float input_array[],
                       int total_samples, float sampling_interval,
-                      float a, float b, float amp)
+                      float a, float b, float amp, float pulse_length)
 {
-  return 0;
+  int i, rightmost_index;
+  float input;
+  for (i = 0; i < total_samples; i++)
+    {
+      if (i < ceil(total_samples / 2) + 1)
+      {
+        input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
+
+        if (i * sampling_interval < pulse_length/2 + sampling_interval)
+        {
+          in[i][0] = amp;
+          in[i][1] = 0;
+        }
+        else
+        {
+          in[i][0] = 0;
+          in[i][1] = 0;
+        }
+        rightmost_index = i;
+      }
+      else
+      {
+        input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
+
+        int i_left_shifted = i - rightmost_index;
+        if (i_left_shifted * sampling_interval > floor(total_samples / 2) * sampling_interval - pulse_length / 2 + sampling_interval / 2)
+        {
+          in[i][0] = amp;
+          in[i][1] = 0;
+        }
+        else
+        {
+          in[i][0] = 0;
+          in[i][1] = 0;
+        }
+      }
+      input_array[i] = input;
+    }
+
+  return rightmost_index;
 }
