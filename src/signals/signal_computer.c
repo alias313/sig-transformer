@@ -36,6 +36,10 @@ int square_centered(fftw_complex in[], float input_array[],
                       int total_samples, float sampling_interval,
                       float a, float b, float amp, float pulse_length);
 
+int exponential(fftw_complex in[], float input_array[],
+                      int total_samples, float sampling_interval,
+                      float a, float b, float amp);
+
 int main(int argc, char *argv[])
 {
 
@@ -89,6 +93,11 @@ int main(int argc, char *argv[])
     rightmost_index = square_centered(in, input_array, total_samples, sampling_interval,
                                       a, b, amp, pulse_length);
 
+  }
+  else if (!strcmp(argv[sig_argpos], "exp"))
+  {
+    rightmost_index = exponential(in, input_array, total_samples, sampling_interval,
+                                      a, b, amp);
   }
   else
   {
@@ -314,6 +323,34 @@ int square_centered(fftw_complex in[], float input_array[],
       }
       input_array[i] = input;
     }
+
+  return rightmost_index;
+}
+
+int exponential(fftw_complex in[], float input_array[],
+                      int total_samples, float sampling_interval,
+                      float a, float b, float amp) 
+{
+  int i, rightmost_index;
+  float input;
+  for (i = 0; i < total_samples; i++)
+  {
+    if (i < ceil(total_samples / 2) + 1)
+    {
+      input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
+
+      rightmost_index = i;
+    }
+    else
+    {
+      input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
+    }
+    input_array[i] = input;
+
+    in[i][0] = amp * exp(input);
+    in[i][1] = 0;
+    printf("%d input %8.5f\n", i, input);
+  }
 
   return rightmost_index;
 }
