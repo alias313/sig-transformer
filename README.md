@@ -7,10 +7,10 @@ This is a project to visualize the transforms of discrete signals and operations
 - Use structs to encapsulate parameters
 - Make global argv, argc as such:
 
-    ```c
-    char **gargv;
-    int gargc;
-    ```
+  ```c
+  char **gargv;
+  int gargc;
+  ```
 
 Snippet from [here](https://www.unix.com/programming/173428-how-access-argv-x-another-function-other-than-main.html)
 
@@ -18,6 +18,7 @@ Another way of doing a similar thing [here](https://stackoverflow.com/questions/
 
 ## IDEAS
 
+- Add debug mode (with #ifndef)
 - Allow only parametrized input (you can only input the parameters to the function that I permit, limited degrees of freedom)
 - Chain functions to simulate operations (add, subtract, multiply, divide, convolve, correlate, circular convolution???, etc.)
 - Real, Imaginary & Complex graph
