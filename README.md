@@ -18,12 +18,13 @@ Another way of doing a similar thing [here](https://stackoverflow.com/questions/
 
 ## IDEAS
 
-- Fix rounding errors (both for input & freq)
+- Fix rounding errors (for freq)
+  - Show only a narrow window of frequencies (different for cos, sin, exp, etc.)
 - Add debug mode (with #ifndef)
-- Allow only parametrized input (you can only input the parameters to the function that I permit, limited degrees of freedom)
+- Allow only parametrized input (you can only input the parameters to the function that I permit, with limited degrees of freedom)
 - Chain functions to simulate operations (add, subtract, multiply, divide, convolve, correlate, circular convolution???, etc.)
 - Real, Imaginary & Complex graph
-  Load your signal with a formatted text/json/whatever file
+  Load your signal with a formatted text/JSON/whatever file
 - Add sum of cos & sin
 - Add complex exponential (cos+isin)
 - Lead to the discovery of the ft by convolution (like in Mark Newman's video)
