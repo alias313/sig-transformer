@@ -18,6 +18,7 @@ Another way of doing a similar thing [here](https://stackoverflow.com/questions/
 
 ## IDEAS
 
+- Fix rounding errors (both for input & freq)
 - Add debug mode (with #ifndef)
 - Allow only parametrized input (you can only input the parameters to the function that I permit, limited degrees of freedom)
 - Chain functions to simulate operations (add, subtract, multiply, divide, convolve, correlate, circular convolution???, etc.)
