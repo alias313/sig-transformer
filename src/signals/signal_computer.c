@@ -116,8 +116,7 @@ int main(int argc, char *argv[])
   fprintf(fptr, "Freq,re(FFT),im(FFT),input,re(signal)\n");
   for (i = 0; i < total_samples; i++)
   {
-    double freq = i / (total_samples * sampling_interval) - ceil(rightmost_index / (total_samples * sampling_interval));
-    //printf("(%05d) %+3.2f    | %5d j%+9.5f\n", i+1,freq, rightmost_index, out[i][1]);
+    double freq = (i-rightmost_index) / (total_samples * sampling_interval);
     if (i < rightmost_index)
     {
       int i_left_shifted = i + rightmost_index + 1;
