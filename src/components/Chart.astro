@@ -1,7 +1,7 @@
 ---
 import { getData } from '../signals/dataFetching';
 
-const { inputSignal, outputSignal } = await getData();
+const { inputSignal, outputSignalSliced } = await getData();
 ---
 
 <div class="signal-input">
@@ -10,10 +10,10 @@ const { inputSignal, outputSignal } = await getData();
 <div id="container1"></div>
 <div id="container2"></div>
 
-<script type="module" define:vars={{ inputSignal, outputSignal }}>
+<script type="module" define:vars={{ inputSignal, outputSignalSliced }}>
 import { createChart } from '/node_modules/lightweight-charts';
 
-console.log(inputSignal)
+console.log(outputSignalSliced)
 
 const inputExpression = "f(t)=1*sinc(2π*f*t)"
 const outputExpression = "FFT(f(t))"
@@ -76,7 +76,7 @@ const outputAreaSeries = outputChart.addAreaSeries({
 	priceLineVisible: false,
 });
 
-outputAreaSeries.setData(outputSignal);
+outputAreaSeries.setData(outputSignalSliced);
 
 const inputSymbolName = inputExpression
 const inputContainer = document.getElementById('container1')

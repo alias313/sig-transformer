@@ -22,7 +22,12 @@ export async function getData() {
 
   const endTime = performance.now();
 
+  const outputSignalSliced = outputSignal.slice(
+    outputSignal.length / 4,
+    outputSignal.length - outputSignal.length / 4
+  );
+
   console.log(`Call to getData took ${endTime - startTime} milliseconds`);
 
-  return { inputSignal, outputSignal };
+  return { inputSignal, outputSignal, outputSignalSliced };
 }
