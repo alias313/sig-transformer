@@ -32,3 +32,4 @@ Another way of doing a similar thing [here](https://stackoverflow.com/questions/
 - [ ] Build an FFT and convolution algorithm
 - [ ] Other transforms (Cosine, sine, sinc transforms...)
 - [ ] Load graphs by chunks (first 100 samples, etc.) or lazy load (load average of every 10, 5, 2 samples etc.)
+- [ ] Try using another plotting library (canvas, [function plot](https://mauriciopoppe.github.io/function-plot/), etc.)
