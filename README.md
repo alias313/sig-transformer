@@ -17,7 +17,7 @@ Snippet from [here](https://www.unix.com/programming/173428-how-access-argv-x-an
 Another way of doing a similar thing [here](https://stackoverflow.com/questions/43729256/argc-and-argv-for-functions-other-than-main)
 
 ## IDEAS
-
+- [ ] Use IPC message passing or memory sharing instead of using node to invoke execution
 - [ ] Add auto set button
 - [ ] Fix rounding errors (for freq)
 - [x] Show only a narrow window of frequencies (different for cos, sin, exp, etc.)
