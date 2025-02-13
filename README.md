@@ -2,6 +2,13 @@
 
 This is a project to visualize the transforms of discrete signals and operations between two or multiple discrete signals (mainly DFT and convolution)
 
+## Installation
+
+1. Install fftw3 in /usr/include
+2. Activate a nodejs environment
+3. Run `pnpm install`
+4. Run `pnpm run dev`
+
 ## Code Improvements
 
 - Use structs to encapsulate parameters
