@@ -5,6 +5,7 @@ This is a project to visualize the transforms of discrete signals and operations
 ## Installation
 
 1. Install fftw3 in /usr/include
+2. Inside /src/signals/ folder run `gcc signal_computer.c -lm -lfftw3 -o signal_computer_exec`
 2. Activate a nodejs environment
 3. Run `pnpm install`
 4. Run `pnpm run dev`
