@@ -25,6 +25,7 @@ Snippet from [here](https://www.unix.com/programming/173428-how-access-argv-x-an
 Another way of doing a similar thing [here](https://stackoverflow.com/questions/43729256/argc-and-argv-for-functions-other-than-main)
 
 ## IDEAS
+- [ ] IndexedDB for function domain instead of csv?
 - [ ] Let the user adjust the necessary parameters and you can save those function parameters and combine them (sum, product, convolution) with other saved functions
     - Input is done with buttons:
         - A signal button, you can choose between the square, triangle, sine, etc. icons
