@@ -2,10 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import Chart from '../components/Chart.astro';
+//import Chart from '../components/Chart.jsx';
+//import Chart from '../components/Chart-test.jsx';
+import TestComponent from '../components/TestComponent.jsx';
 ---
 
 <Layout title="SigTransformer">
-	<main>
+	<main class="flex flex-col items-center justify-center">
 		<h1>Signal <span class="text-gradient">Transformer</span></h1>
 		<p class="instructions">
 			Generate your signal and observe its <code>DFT</code> (Discrete Fourier Transform)<br />
@@ -23,7 +26,55 @@ import Chart from '../components/Chart.astro';
 				body="This video visually explain the algorithm that is used to transform the input signals."
 			/>
 		</ul>
+
+    <div class="flex flex-col items-center justify-center">
+      <div class="mb-4">
+        <label for="a" class="mr-2 text-gray-700">Start:</label>
+        <input type="number" id="a" name="a" value="-10" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+
+      <div class="mb-4">
+        <label for="b" class="mr-2 text-gray-700">End:</label>
+        <input type="number" id="b" name="b" value="10" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+
+      <div class="mb-4">
+        <label for="signalType" class="mr-2 text-gray-700">Signal Type:</label>
+        <select id="signalType" name="signalType" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <option value="square">Square</option>
+          <option value="sine">Sine</option>
+          <option value="triangle">Triangle</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="amplitude" class="mr-2 text-gray-700">Amplitude:</label>
+        <input type="number" id="amplitude" name="amplitude" value="1" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+
+      <div class="mb-4">
+        <label for="frequency" class="mr-2 text-gray-700">Frequency:</label>
+        <input type="number" id="frequency" name="frequency" value="1" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+
+      <div class="mb-4">
+        <label for="phase" class="mr-2 text-gray-700">Phase:</label>
+        <input type="number" id="phase" name="phase" value="0" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+
+      <div class="mb-4">
+        <label for="interval" class="mr-2 text-gray-700">Interval:</label>
+        <input type="number" id="interval" name="interval" value="0.01" step="0.01" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+
+      <button id="generateButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Generate Signal
+      </button>
+    </div>
+	<TestComponent />
+	<div class="w-full flex justify-center items-end">
 		<Chart />
+	</div>
 	</main>
 </Layout>
 

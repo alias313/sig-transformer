@@ -81,8 +81,7 @@ outputAreaSeries.setData(outputSignalSliced);
 const inputSymbolName = inputExpression
 const inputContainer = document.getElementById('container1')
 const inputLegend = document.createElement('div')
-inputLegend.style = `position: absolute; left: 250px; top: 600px; z-index: 1; font-size: 14px; font-family: sans-serif; line-height: 18px; font-weight: 300;`;
-inputLegend.style.color = 'white';
+inputLegend.className = "absolute left-1/2 -translate-x-1/2 top-0 z-10 text-sm font-sans leading-5 font-light text-white";
 inputContainer.appendChild(inputLegend);
 
 const getLastBar = series => {
@@ -112,8 +111,7 @@ const inputUpdateLegend = param => {
 const outputSymbolName = outputExpression
 const outputContainer = document.getElementById('container2')
 const outputLegend = document.createElement('div')
-outputLegend.style = `position: absolute; left: 250px; top: 900px; z-index: 1; font-size: 14px; font-family: sans-serif; line-height: 18px; font-weight: 300;`;
-outputLegend.style.color = 'white';
+outputLegend.className = "absolute left-1/2 -translate-x-1/2 top-0 z-10 text-sm font-sans leading-5 font-light text-white";
 outputContainer.appendChild(outputLegend);
 
 const outputSetTooltipHtml = (name, time, value) => {
