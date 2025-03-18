@@ -7,11 +7,11 @@ const { inputSignal, outputSignalSliced } = await getData();
 <div class="signal-input">
 	<input type="text" placeholder="Asquare(t/T)"><br>
 </div>
-<div id="container1" class="chart-container relative">
-	<div id="inputLegend" class="chart-legend absolute left-1/2 transform -translate-x-1/2 -top-2 z-10 text-center text-sm font-sans font-light text-white"></div>
+<div id="container1" class="relative">
+	<div id="inputLegend" class="absolute left-1/2 transform -translate-x-1/2 -top-8 z-10 text-center text-sm font-sans font-light text-white"></div>
 </div>
-<div id="container2" class="chart-container relative">
-	<div id="outputLegend" class="chat-legend absolute left-1/2 transform -translate-x-1/2 -top-2 z-10 text-center text-sm font-sans font-light text-white"></div>
+<div id="container2" class="relative">
+	<div id="outputLegend" class="absolute left-1/2 transform -translate-x-1/2 -top-8 z-10 text-center text-sm font-sans font-light text-white"></div>
 </div>
 
 <script type="module" define:vars={{ inputSignal, outputSignalSliced }}>
