@@ -2,6 +2,7 @@
 .vscode
 
 # C executable & generated csv file
+src/signals/fft_out.json
 src/signals/fft_out.csv
 src/signals/signal_computer_exec
 
