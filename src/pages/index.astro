@@ -75,6 +75,10 @@ import TestComponent from '../components/TestComponent.jsx';
 	<div class="w-full flex justify-center items-end">
 		<Chart />
 	</div>
+    <script type="module">
+		import { loadJSONToIndexedDB } from './src/signals/load-fft-data.js';
+		loadJSONToIndexedDB();
+	</script>
 	</main>
 </Layout>
 

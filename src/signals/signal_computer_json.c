@@ -118,12 +118,12 @@ int main(int argc, char *argv[])
     if (i < rightmost_index)
     {
       int i_left_shifted = i + rightmost_index + 1;
-      fprintf(fptr, "{\"Freq\": %05.2f, \"re(FFT)\": %+08.5f, \"im(FFT)\": %+08.5f, \"input\": %+08.5f, \"re(signal)\": %+08.5f}%s\n", freq, out[i_left_shifted][0], out[i_left_shifted][1], input_array[i_left_shifted], in[i_left_shifted][0], (i == total_samples - 1) ? "" : ",");
+      fprintf(fptr, "{\"Freq\": %.2f, \"re(FFT)\": %.5f, \"im(FFT)\": %.5f, \"input\": %.5f, \"re(signal)\": %.5f}%s\n", freq, out[i_left_shifted][0], out[i_left_shifted][1], input_array[i_left_shifted], in[i_left_shifted][0], (i == total_samples - 1) ? "" : ",");
     }
     else
     {
       int i_right_shifted = i - rightmost_index;
-      fprintf(fptr, "{\"Freq\": %05.2f, \"re(FFT)\": %+08.5f, \"im(FFT)\": %+08.5f, \"input\": %+08.5f, \"re(signal)\": %+08.5f}%s\n", freq, out[i_right_shifted][0], out[i_right_shifted][1], input_array[i_right_shifted], in[i_right_shifted][0], (i == total_samples - 1) ? "" : ",");
+      fprintf(fptr, "{\"Freq\": %.2f, \"re(FFT)\": %.5f, \"im(FFT)\": %.5f, \"input\": %.5f, \"re(signal)\": %.5f}%s\n", freq, out[i_right_shifted][0], out[i_right_shifted][1], input_array[i_right_shifted], in[i_right_shifted][0], (i == total_samples - 1) ? "" : ",");
     }
   }
   fprintf(fptr, "]\n");
