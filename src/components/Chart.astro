@@ -7,8 +7,12 @@ const { inputSignal, outputSignalSliced } = await getData();
 <div class="signal-input">
 	<input type="text" placeholder="Asquare(t/T)"><br>
 </div>
-<div id="container1"></div>
-<div id="container2"></div>
+<div id="container1" class="chart-container relative">
+	<div id="inputLegend" class="chart-legend absolute left-1/2 transform -translate-x-1/2 -top-2 z-10 text-center text-sm font-sans font-light text-white"></div>
+</div>
+<div id="container2" class="chart-container relative">
+	<div id="outputLegend" class="chat-legend absolute left-1/2 transform -translate-x-1/2 -top-2 z-10 text-center text-sm font-sans font-light text-white"></div>
+</div>
 
 <script type="module" define:vars={{ inputSignal, outputSignalSliced }}>
 import { createChart } from '/node_modules/lightweight-charts';
@@ -79,10 +83,7 @@ const outputAreaSeries = outputChart.addAreaSeries({
 outputAreaSeries.setData(outputSignalSliced);
 
 const inputSymbolName = inputExpression
-const inputContainer = document.getElementById('container1')
-const inputLegend = document.createElement('div')
-inputLegend.className = "absolute left-1/2 -translate-x-1/2 top-0 z-10 text-sm font-sans leading-5 font-light text-white";
-inputContainer.appendChild(inputLegend);
+const inputLegend = document.getElementById('inputLegend')
 
 const getLastBar = series => {
 	const lastIndex = series.dataByIndex(Infinity, -1);
@@ -91,7 +92,11 @@ const getLastBar = series => {
 const formatPrice = price => (Math.round(price * 100) / 100).toFixed(2);
 
 const inputSetTooltipHtml = (name, time, value) => {
-	inputLegend.innerHTML = `<div style="font-size: 24px; margin: 4px 0px;">${name}</div><div style="font-size: 22px; margin: 4px 0px;">${value}</div><div>${time}</div>`;
+	inputLegend.innerHTML = `
+		<div class="text-lg my-0">${name}</div>
+    	<div class="text-base my-0">${value}</div>
+    	<div class="text-sm my-0">${time}</div>
+	`;
 };
 
 const inputUpdateLegend = param => {
@@ -109,13 +114,14 @@ const inputUpdateLegend = param => {
 
 
 const outputSymbolName = outputExpression
-const outputContainer = document.getElementById('container2')
-const outputLegend = document.createElement('div')
-outputLegend.className = "absolute left-1/2 -translate-x-1/2 top-0 z-10 text-sm font-sans leading-5 font-light text-white";
-outputContainer.appendChild(outputLegend);
+const outputLegend = document.getElementById('outputLegend')
 
 const outputSetTooltipHtml = (name, time, value) => {
-	outputLegend.innerHTML = `<div style="font-size: 24px; margin: 4px 0px;">${name}</div><div style="font-size: 22px; margin: 4px 0px;">${value}</div><div>${time}</div>`;
+	outputLegend.innerHTML = `
+		<div class="text-lg my-0">${name}</div>
+    	<div class="text-base my-0">${value}</div>
+    	<div class="text-sm my-0">${time}</div>
+	`;
 };
 
 const outputUpdateLegend = param => {
