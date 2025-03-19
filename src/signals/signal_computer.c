@@ -24,11 +24,7 @@ int sine(fftw_complex in[], double input_array[],
           int total_samples, double sampling_interval,
           double a, double b, double amp, double freq_hz, double phase_rad);
 
-int sinc_centered(fftw_complex in[], double input_array[],
-                  int total_samples, double sampling_interval,
-                  double a, double b, double amp, double freq_hz);
-
-int sinc_phase_shifted(fftw_complex in[], double input_array[],
+int sinc(fftw_complex in[], double input_array[],
                         int total_samples, double sampling_interval,
                         double a, double b, double amp, double freq_hz, double phase_rad);
 
@@ -77,16 +73,8 @@ int main(int argc, char *argv[])
   }
   else if (!strcmp(argv[sig_argpos], "sinc"))
   {
-    if (phase_rad == 0)
-    {
-      rightmost_index = sinc_centered(in, input_array, total_samples, sampling_interval,
-                                      a, b, amp, freq_hz);
-    }
-    else
-    {
-      rightmost_index = sinc_phase_shifted(in, input_array, total_samples, sampling_interval,
+      rightmost_index = sinc(in, input_array, total_samples, sampling_interval,
                                            a, b, amp, freq_hz, phase_rad);
-    }
   }
   else if (!strcmp(argv[sig_argpos], "square"))
   {
@@ -109,27 +97,24 @@ int main(int argc, char *argv[])
   p = fftw_plan_dft_1d(total_samples, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
   fftw_execute(p);
 
-  fptr = fopen("fft_out.csv", "w");
+  fptr = fopen("fft_out.json", "w");
 
-  // fprintf(fptr, "%d\n", total_samples);
-  // fprintf(fptr, "(00000) Freq\tFast Fourier Transform\n");
-  fprintf(fptr, "Freq,re(FFT),im(FFT),input,re(signal)\n");
+  fprintf(fptr, "[\n");
   for (i = 0; i < total_samples; i++)
   {
     double freq = (i-rightmost_index) / (total_samples * sampling_interval);
     if (i < rightmost_index)
     {
       int i_left_shifted = i + rightmost_index + 1;
-      //printf("LEFT : %04d, %04d\n", i, i_left_shifted);
-      fprintf(fptr, "%05.2f,%+08.5f,%+08.5f,%+08.5f,%+08.5f\n", freq, out[i_left_shifted][0], out[i_left_shifted][1], input_array[i_left_shifted], in[i_left_shifted][0]);
+      fprintf(fptr, "{\"Freq\": %.2f, \"re(FFT)\": %.5f, \"im(FFT)\": %.5f, \"input\": %.5f, \"re(signal)\": %.5f}%s\n", freq, out[i_left_shifted][0], out[i_left_shifted][1], input_array[i_left_shifted], in[i_left_shifted][0], (i == total_samples - 1) ? "" : ",");
     }
     else
     {
       int i_right_shifted = i - rightmost_index;
-      //printf("RIGHT: %04d, %04d\n", i, i_right_shifted);
-      fprintf(fptr, "%05.2f,%+08.5f,%+08.5f,%+08.5f,%+08.5f\n", freq, out[i_right_shifted][0], out[i_right_shifted][1], input_array[i_right_shifted], in[i_right_shifted][0]);
+      fprintf(fptr, "{\"Freq\": %.2f, \"re(FFT)\": %.5f, \"im(FFT)\": %.5f, \"input\": %.5f, \"re(signal)\": %.5f}%s\n", freq, out[i_right_shifted][0], out[i_right_shifted][1], input_array[i_right_shifted], in[i_right_shifted][0], (i == total_samples - 1) ? "" : ",");
     }
   }
+  fprintf(fptr, "]\n");
 
   fclose(fptr);
 
@@ -215,44 +200,7 @@ int sine(fftw_complex in[], double input_array[],
   return rightmost_index;
 }
 
-int sinc_centered(fftw_complex in[], double input_array[],
-                  int total_samples, double sampling_interval,
-                  double a, double b, double amp, double freq_hz)
-{
-  // assumes a < 0 & b > 0
-  int i, rightmost_index;
-  double zero_cutoff = sampling_interval / 32;
-  double input = 0;
-  for (i = 0; i < total_samples; i++)
-  {
-    if (input < b && input >= 0)
-    {
-      input = i * sampling_interval;
-      rightmost_index = i;
-    }
-    else
-    {
-      input = a + (i - rightmost_index - 1) * sampling_interval;
-    }
-    input_array[i] = input;
-
-    if (abs(input) < zero_cutoff)
-    {
-      in[i][0] = amp;
-    }
-    else
-    {
-      in[i][0] = amp * sin(freq_hz * 2 * M_PI * input) / (freq_hz * 2 * M_PI * input);
-    }
-    in[i][1] = 0;
-
-    // printf("%d input %8.5f\n", i, input);
-  }
-
-  return rightmost_index;
-}
-
-int sinc_phase_shifted(fftw_complex in[], double input_array[],
+int sinc(fftw_complex in[], double input_array[],
                        int total_samples, double sampling_interval,
                        double a, double b, double amp, double freq_hz, double phase_rad)
 {
@@ -272,7 +220,14 @@ int sinc_phase_shifted(fftw_complex in[], double input_array[],
     }
     input_array[i] = input;
 
-    in[i][0] = amp * sin(freq_hz * 2 * M_PI * input - phase_rad) / (freq_hz * 2 * M_PI * input - phase_rad);
+    if (input != 0)
+      in[i][0] = amp * sin(freq_hz * 2 * M_PI * input - phase_rad) / (freq_hz * 2 * M_PI * input - phase_rad);
+    else {
+      if (phase_rad == 0)
+        in[i][0] = amp;
+      else
+        in[i][0] = amp * sin(freq_hz * 2 * M_PI * input - phase_rad) / (freq_hz * 2 * M_PI * input - phase_rad);
+    }
     in[i][1] = 0;
     // printf("%d input %8.5f\n", i, input);
   }

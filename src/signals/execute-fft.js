@@ -26,7 +26,7 @@ if (
 }
 
 const child = execFile(
-  "./signal_computer_exec_json",
+  "./signal_computer_exec",
   [
     process.argv[a_argpos],
     process.argv[b_argpos],
