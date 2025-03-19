@@ -27,57 +27,95 @@ import TestComponent from '../components/TestComponent.jsx';
 			/>
 		</ul>
 
-    <div class="flex flex-col items-center justify-center">
-      <div class="mb-4">
-        <label for="a" class="mr-2 text-gray-700">Start:</label>
-        <input type="number" id="a" name="a" value="-10" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-
-      <div class="mb-4">
-        <label for="b" class="mr-2 text-gray-700">End:</label>
-        <input type="number" id="b" name="b" value="10" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-
-      <div class="mb-4">
-        <label for="signalType" class="mr-2 text-gray-700">Signal Type:</label>
-        <select id="signalType" name="signalType" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-          <option value="square">Square</option>
-          <option value="sine">Sine</option>
-          <option value="triangle">Triangle</option>
-        </select>
-      </div>
-
-      <div class="mb-4">
-        <label for="amplitude" class="mr-2 text-gray-700">Amplitude:</label>
-        <input type="number" id="amplitude" name="amplitude" value="1" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-
-      <div class="mb-4">
-        <label for="frequency" class="mr-2 text-gray-700">Frequency:</label>
-        <input type="number" id="frequency" name="frequency" value="1" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-
-      <div class="mb-4">
-        <label for="phase" class="mr-2 text-gray-700">Phase:</label>
-        <input type="number" id="phase" name="phase" value="0" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-
-      <div class="mb-4">
-        <label for="interval" class="mr-2 text-gray-700">Interval:</label>
-        <input type="number" id="interval" name="interval" value="0.01" step="0.01" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-      </div>
-
-      <button id="generateButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-        Generate Signal
-      </button>
-    </div>
-	<TestComponent />
+		<div class="flex flex-col items-center justify-center">
+			<form id="signalForm">
+			  <div class="mb-4">
+				<label for="a" class="mr-2 text-gray-700">Start:</label>
+				<input type="number" id="a" name="a" value="-10" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+			  </div>
+	  
+			  <div class="mb-4">
+				<label for="b" class="mr-2 text-gray-700">End:</label>
+				<input type="number" id="b" name="b" value="10" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+			  </div>
+	  
+			  <div class="mb-4">
+				<label for="signalShape" class="mr-2 text-gray-700">Signal Type:</label>
+				<select id="signalShape" name="signalShape" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+				  <option value="square">Square</option>
+				  <option value="sin">Sine</option>
+				  <option value="cos">Cosine</option>
+				  <option value="sinc">Sinc</option>
+				  <option value="exp">Exponential</option>
+				  <option value="triangle">Triangle</option>
+				</select>
+			  </div>
+	  
+			  <div class="mb-4">
+				<label for="amplitude" class="mr-2 text-gray-700">Amplitude:</label>
+				<input type="number" id="amplitude" name="amplitude" value="1" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+			  </div>
+	  
+			  <div class="mb-4">
+				<label for="frequency" class="mr-2 text-gray-700">Frequency:</label>
+				<input type="number" id="frequency" name="frequency" value="1" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+			  </div>
+	  
+			  <div class="mb-4">
+				<label for="phase" class="mr-2 text-gray-700">Phase:</label>
+				<input type="number" id="phase" name="phase" value="0" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+			  </div>
+	  
+			  <div class="mb-4">
+				<label for="interval" class="mr-2 text-gray-700">Interval:</label>
+				<input type="number" id="interval" name="interval" value="0.01" step="0.01" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+			  </div>
+	  
+			  <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+				Generate Signal
+			  </button>
+			</form>
+		  </div>
+		  <TestComponent />
 	<div class="w-full flex justify-center items-end">
 		<Chart />
 	</div>
     <script type="module">
 		import { loadJSONToIndexedDB } from './src/signals/load-fft-data.js';
 		loadJSONToIndexedDB();
+		const signalForm = document.getElementById('signalForm');
+
+		signalForm.addEventListener('submit', async (event) => {
+		event.preventDefault(); // Prevent the default form submission (and redirect)
+
+		// Collect form data to a plain object
+		const formData = new FormData(signalForm);
+		const data = Object.fromEntries(formData.entries());
+
+		try {
+			const response = await fetch('http://localhost:3000/execute-fft', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(data)
+			});
+			
+			if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+			
+			// This is where you read the JSON response returned by the server.
+			const fftData = await response.json();
+			console.log("Received FFT JSON:", fftData);
+			
+			// Now update your charts with the new data.
+			// For example, if you have a function to update charts, call it with fftData.
+			// updateCharts(fftData);
+			
+		} catch (error) {
+			console.error('Error executing FFT:', error);
+			alert('Error executing FFT');
+		}
+		});
 	</script>
 	</main>
 </Layout>
