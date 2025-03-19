@@ -1,9 +1,8 @@
 import db from './db.js';
 
-async function loadJSONToIndexedDB() {
+async function loadJSONToIndexedDB(jsonData) {
   try {
-    const response = await fetch('./src/signals/fft_out.json');
-    const data = await response.json();
+    const data = jsonData;
     console.log('Data loaded from JSON file into IndexedDB:');
     console.log(data);
     // Clear existing data

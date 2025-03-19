@@ -1,9 +1,3 @@
----
-import { getData } from '../signals/dataFetching';
-
-const { inputSignal, outputSignalSliced } = await getData();
----
-
 <div class="signal-input">
 	<input type="text" placeholder="Asquare(t/T)"><br>
 </div>
@@ -14,8 +8,41 @@ const { inputSignal, outputSignalSliced } = await getData();
 	<div id="outputLegend" class="absolute left-1/2 transform -translate-x-1/2 -top-8 z-10 text-center text-sm font-sans font-light text-white"></div>
 </div>
 
-<script type="module" define:vars={{ inputSignal, outputSignalSliced }}>
+<script type="module">
 import { createChart } from '/node_modules/lightweight-charts';
+import db from '/src/signals/db.js';
+
+async function getDataFromIndexedDB() {
+	const inputSignal = [];
+	const outputSignal = [];
+
+	const data = await db.signals.toArray();
+	data.forEach((row) => {
+		outputSignal.push({
+			time: parseFloat(row.Freq),
+			value: parseFloat(row["re(FFT)"]),
+		});
+		inputSignal.push({
+			time: parseFloat(row.input),
+			value: parseFloat(row["re(signal)"]),
+		});
+	});
+
+	const outputSignalSliced = outputSignal.slice(
+		outputSignal.length / 4,
+		outputSignal.length - outputSignal.length / 4
+  	);
+
+  	return {
+        inputSignal,
+        outputSignal,
+		outputSignalSliced
+	};
+}
+
+const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB();
+console.log("inputSignal", inputSignal);
+console.log("outputSignalSliced", outputSignalSliced);
 
 const inputExpression = "f(t)=1*sinc(2π*f*t)"
 const outputExpression = "FFT(f(t))"
@@ -142,6 +169,19 @@ outputChart.subscribeCrosshairMove(outputUpdateLegend);
 
 inputUpdateLegend(undefined);
 outputUpdateLegend(undefined);
+
+async function updateChartData() {
+	console.log("Updating chart data");
+    const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB();
+	inputAreaSeries.setData(inputSignal);
+    outputAreaSeries.setData(outputSignalSliced);
+    inputUpdateLegend(undefined);
+    outputUpdateLegend(undefined);
+}
+
+// Expose the updateChartData function to the window
+window.updateChartData = updateChartData;
+
 
 inputChart.timeScale().applyOptions({
 	minBarSpacing: 0.1,
