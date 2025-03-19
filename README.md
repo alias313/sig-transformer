@@ -46,3 +46,7 @@ Another way of doing a similar thing [here](https://stackoverflow.com/questions/
 - [ ] Other transforms (Cosine, sine, sinc transforms...)
 - [ ] Load graphs by chunks (first 100 samples, etc.) or lazy load (load average of every 10, 5, 2 samples etc.)
 - [ ] Try using another plotting library (canvas, [function plot](https://mauriciopoppe.github.io/function-plot/), etc.)
+
+In accordance with the licence of the charts library lightweight-charts read this notice:
+TradingView Lightweight Charts™
+Copyright (с) 2025 TradingView, Inc. https://www.tradingview.com/
