@@ -18,7 +18,6 @@ async function loadJSONToIndexedDB() {
     // Add new data
     await db.signals.bulkAdd(data);
 
-    console.log('Data loaded into IndexedDB successfully');
   } catch (error) {
     console.error('Error loading data into IndexedDB:', error);
   }
