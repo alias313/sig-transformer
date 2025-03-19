@@ -2,21 +2,20 @@ import { performance } from "node:perf_hooks";
 
 export async function getData() {
   const startTime = performance.now();
-  const response = await fetch("http://localhost:4321/src/signals/fft_out.csv");
-  const fftString = await response.text();
+  const response = await fetch("http://localhost:4321/src/signals/fft_out.json");
+  const fftData = await response.json();
+
   const outputSignal = [];
   const inputSignal = [];
 
-  const fftTable = fftString.split("\n").slice(1, -1);
-  fftTable.forEach((row) => {
-    const columns = row.split(",");
+  fftData.forEach((row) => {
     outputSignal.push({
-      time: parseFloat(columns[0]),
-      value: parseFloat(columns[1]),
+      time: parseFloat(row["Freq"]),
+      value: parseFloat(row["re(FFT)"]),
     });
     inputSignal.push({
-      time: parseFloat(columns[3]),
-      value: parseFloat(columns[4]),
+      time: parseFloat(row["input"]),
+      value: parseFloat(row["re(signal)"]),
     });
   });
 

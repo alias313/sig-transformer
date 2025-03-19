@@ -17,8 +17,6 @@ const { inputSignal, outputSignalSliced } = await getData();
 <script type="module" define:vars={{ inputSignal, outputSignalSliced }}>
 import { createChart } from '/node_modules/lightweight-charts';
 
-console.log(outputSignalSliced)
-
 const inputExpression = "f(t)=1*sinc(2π*f*t)"
 const outputExpression = "FFT(f(t))"
 
