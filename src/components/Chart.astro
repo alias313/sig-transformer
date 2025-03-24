@@ -200,6 +200,7 @@ inputChart.timeScale().applyOptions({
 	fixLeftEdge: true,
 	fixRightEdge: true,
 	timeVisible: true,
+	tickMarkFormatter: time => time.toString(), // simply convert time to string
 })
 
 outputChart.timeScale().applyOptions({
@@ -207,6 +208,7 @@ outputChart.timeScale().applyOptions({
 	fixLeftEdge: true,
 	fixRightEdge: true,
 	timeVisible: true,
+	tickMarkFormatter: time => time.toString(), // simply convert time to string
 })
 
 inputChart.timeScale().fitContent();
