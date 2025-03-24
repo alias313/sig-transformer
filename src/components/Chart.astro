@@ -52,6 +52,9 @@ const chartOptions = {
 		background: { color: '#13151a' },
 		attributionLogo: false,
 	},
+	localization: {
+    timeFormatter: time => time.toString(), // use numeric formatting
+  },
 };
 const optionsToApply = {
 	rightPriceScale: {
