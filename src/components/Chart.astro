@@ -41,8 +41,8 @@ const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB();
 console.log("inputSignal", inputSignal);
 console.log("outputSignalSliced", outputSignalSliced);
 
-const inputExpression = "f(t)=1*sinc(2π*f*t)"
-const outputExpression = "FFT(f(t))"
+const inputExpression = "f(t)"
+const outputExpression = "re(FFT(f(t)))"
 
 const chartOptions = {
   width: 800,
@@ -105,7 +105,7 @@ const outputAreaSeries = outputChart.addAreaSeries({
 
 outputAreaSeries.setData(outputSignalSliced);
 
-const inputSymbolName = inputExpression
+let inputSymbolName = inputExpression
 const inputLegend = document.getElementById('inputLegend')
 
 const getLastBar = series => {
@@ -136,7 +136,7 @@ const inputUpdateLegend = param => {
 };
 
 
-const outputSymbolName = outputExpression
+let outputSymbolName = outputExpression
 const outputLegend = document.getElementById('outputLegend')
 
 const outputSetTooltipHtml = (name, time, value) => {
@@ -167,7 +167,22 @@ outputChart.subscribeCrosshairMove(outputUpdateLegend);
 inputUpdateLegend(undefined);
 outputUpdateLegend(undefined);
 
-async function updateChartData() {
+async function updateChartData(signalName = {}) {
+	const { a, b, signalShape, amplitude, frequency, phase, interval } = signalName;
+	
+	const formatters = {
+		square: ({ amplitude, frequency }) =>
+			`f(t) = ${amplitude}⋅⎍((1/${frequency})⋅t)`,
+		exp: ({ amplitude }) =>
+			`f(t) = ${amplitude}⋅exp(t)`
+	};
+
+	// Use the formatter if available; otherwise fallback to the default formatter.
+	inputSymbolName = formatters[signalShape]
+		? formatters[signalShape]({ amplitude, frequency })
+		: `f(t) = ${amplitude}⋅${signalShape}(2π⋅${frequency}⋅t + ${phase})`;
+
+	outputSymbolName = `re(FFT(f(t)))`;
 	console.log("Updating chart data");
     const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB();
 	inputAreaSeries.setData(inputSignal);
