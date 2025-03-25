@@ -2,6 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import Chart from '../components/Chart.astro';
+
+const maxFreq = 25;
 ---
 
 <Layout title="SigTransformer">
@@ -59,7 +61,7 @@ import Chart from '../components/Chart.astro';
 						<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label for="frequency" class="block text-sm font-medium text-white mb-1">Frequency:</label>
-							<input type="number" id="frequency" name="frequency" value="1" step="0.1"
+							<input type="number" id="frequency" name="frequency" value="1" step="0.1" min="0"
 							class="w-full bg-dark border border-gray-800 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-700">
 						</div>
 						<div>
@@ -73,12 +75,12 @@ import Chart from '../components/Chart.astro';
 						<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label for="interval" class="block text-sm font-medium text-white mb-1">Interval:</label>
-							<input type="number" id="interval" name="interval" value="0.01" step="0.01" 
+							<input type="number" id="interval" name="interval" value="0.01" step="0.01" min="0.01" max="0.1"
 							class="w-full bg-dark border border-gray-800 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-700">
 						</div>
 						<div>
 							<label for="freqrange" class="block text-sm font-medium text-white mb-1">Freq. range of fft:</label>
-							<input type="number" id="freqrange" name="freqrange" value="25" step="0.1" 
+							<input type="number" id="freqrange" name="freqrange" value="25" step="0.05" min="0.05" max={maxFreq}
 							class="w-full bg-dark border border-gray-800 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-700">
 						</div>
 						</div>
@@ -117,6 +119,38 @@ import Chart from '../components/Chart.astro';
 
 		<script type="module">
 			import { loadJSONToIndexedDB } from './src/signals/load-fft-data.js';
+			
+			// Get the input elements
+			const intervalInput = document.getElementById('interval');
+			const freqRangeInput = document.getElementById('freqrange');
+
+			function updateDynamicMax() {
+			// Get the current interval value (as a number)
+			const currentInterval = parseFloat(intervalInput.value);
+			// Assume you calculate total_samples from other inputs, for example:
+			const a = parseFloat(document.getElementById('a').value);
+			const b = parseFloat(document.getElementById('b').value);
+			const total_samples = Math.ceil((b - a) / currentInterval);
+			
+			// Calculate your dynamic max (use your formula here)
+			const dynamicMax = Math.floor(10*(total_samples - Math.round(total_samples/2))/(total_samples * currentInterval)) / 10;
+			
+			console.log("Dynamic Max:", dynamicMax);
+			
+			// Update the max attribute and current value if needed
+			freqRangeInput.setAttribute('max', dynamicMax);
+			if (parseFloat(freqRangeInput.value) > dynamicMax) {
+				freqRangeInput.value = dynamicMax;
+			}
+			}
+
+			// Attach an event listener to update when the interval value changes
+			intervalInput.addEventListener('input', updateDynamicMax);
+
+			// Optionally, you might also want to update when the a or b inputs change
+			document.getElementById('a').addEventListener('input', updateDynamicMax);
+			document.getElementById('b').addEventListener('input', updateDynamicMax);
+
 
 			const signalForm = document.getElementById('signalForm');
 
