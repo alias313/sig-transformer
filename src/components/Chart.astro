@@ -7,7 +7,7 @@
 
 <script type="module">
 import { createChart } from '/node_modules/lightweight-charts';
-import db from '/src/signals/db.js';
+import db from '/src/api/db.js';
 
 async function getDataFromIndexedDB(frequencyLimit = 25) {
 	const inputSignal = [];
@@ -177,6 +177,8 @@ async function updateChartData(signalName = {}) {
 	const formatters = {
 		square: ({ amplitude, frequency }) =>
 			`f(t) = ${amplitude}⋅⎍((1/${frequency})⋅t)`,
+		triangle: ({ amplitude, frequency }) =>
+			`f(t) = ${amplitude}⋅△((1/${frequency})⋅t)`,
 		exp: ({ amplitude }) =>
 			`f(t) = ${amplitude}⋅exp(t)`
 	};

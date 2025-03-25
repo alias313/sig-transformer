@@ -36,6 +36,11 @@ int exponential(fftw_complex in[], double input_array[],
                       int total_samples, double sampling_interval,
                       double a, double b, double amp);
 
+int triangle_centered(fftw_complex in[], double input_array[],
+  int total_samples, double sampling_interval,
+  double a, double b, double amp, double pulse_length);
+  
+
 int main(int argc, char *argv[])
 {
 
@@ -86,6 +91,12 @@ int main(int argc, char *argv[])
   {
     rightmost_index = exponential(in, input_array, total_samples, sampling_interval,
                                       a, b, amp);
+  }
+  else if (!strcmp(argv[sig_argpos], "triangle"))
+  {
+    rightmost_index = triangle_centered(in, input_array, total_samples, sampling_interval,
+                                      a, b, amp, pulse_length);
+
   }
   else
   {
@@ -307,4 +318,51 @@ int exponential(fftw_complex in[], double input_array[],
   }
 
   return rightmost_index;
+}
+
+int triangle_centered(fftw_complex in[], double input_array[],
+  int total_samples, double sampling_interval,
+  double a, double b, double amp, double pulse_length)
+{
+  int i, rightmost_index;
+  double input;
+  for (i = 0; i < total_samples; i++)
+    {
+      if (i < ceil(total_samples / 2) + 1)
+      {
+        input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
+
+        if (i * sampling_interval < pulse_length + sampling_interval)
+        {
+          in[i][0] = amp*(pulse_length-input)/(pulse_length);
+          in[i][1] = 0;
+        }
+        else
+        {
+          in[i][0] = 0;
+          in[i][1] = 0;
+        }
+        rightmost_index = i;
+      }
+      else
+      {
+        input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
+
+        int i_left_shifted = i - rightmost_index;
+        if (i_left_shifted * sampling_interval > floor(total_samples / 2) * sampling_interval - pulse_length + sampling_interval / 2)
+        {
+          in[i][0] = amp*(input+pulse_length)/(pulse_length);
+          in[i][1] = 0;
+        }
+        else
+        {
+          in[i][0] = 0;
+          in[i][1] = 0;
+        }
+      }
+      input_array[i] = input;
+    }
+
+  return rightmost_index;
+
 }

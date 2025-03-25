@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import Chart from '../components/Chart.astro';
 
-const maxFreq = 25;
+const maxFreq = 50;
 ---
 
 <Layout title="SigTransformer">
@@ -118,7 +118,7 @@ const maxFreq = 25;
 			</ul>
 
 		<script type="module">
-			import { loadJSONToIndexedDB } from './src/signals/load-fft-data.js';
+			import { loadJSONToIndexedDB } from './src/api/load-fft-data.js';
 			
 			// Get the input elements
 			const intervalInput = document.getElementById('interval');
