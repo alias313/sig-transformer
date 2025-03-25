@@ -176,20 +176,24 @@ async function updateChartData(signalName = {}) {
 	
 	const inputFormatters = {
 		square: ({ amplitude, frequency }) =>
-			`f(t) = ${amplitude} ⋅ Π(t / ${frequency})`,
+			`f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
 		triangle: ({ amplitude, frequency }) =>
-			`f(t) = ${amplitude} ⋅ Λ(t / ${frequency})`,
+			`f(t) = A ⋅ Λ(t / 2T) = ${amplitude} ⋅ Λ(t / ${frequency})`,
+		sinc: ({ amplitude, frequency }) =>
+			`f(t) = A ⋅ f₀ ⋅ sinc(f₀ ⋅ t) = ${amplitude} ⋅ sinc(t / ${frequency})`,
 		exp: ({ amplitude }) =>
 			`f(t) = ${amplitude}⋅exp(t)`
 	};
 
 	const outputFormatters = {
 		square: ({ amplitude, frequency }) =>
-			`re(FFT(f(t))) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ t)`,
+			`re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
 		triangle: ({ amplitude, frequency }) =>
-			`re(FFT(f(t))) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ t)`,
+			`re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
+		sinc: ({ amplitude, frequency }) =>
+			`re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
 		cos: ({ amplitude, frequency }) =>
-			`re(FFT(f(t))) = ${amplitude} ⋅ ½(𝛿(f - ${frequency}) + 𝛿(f + ${frequency}))`,
+			`re(FFT(f(t))) = A ⋅ ½(𝛿(f - f₀) + 𝛿(f + f₀)) = ${amplitude} ⋅ ½(𝛿(f - ${frequency}) + 𝛿(f + ${frequency}))`,
 		exp: ({ amplitude }) =>
 			`re(FFT(f(t)))`
 	};
