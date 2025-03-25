@@ -60,7 +60,7 @@ const maxFreq = 50;
 						<!-- Row 3: Frequency and Phase -->
 						<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label for="frequency" class="block text-sm font-medium text-white mb-1">Frequency:</label>
+							<label for="frequency" id="freqLabel" class="block text-sm font-medium text-white mb-1">Frequency:</label>
 							<input type="number" id="frequency" name="frequency" value="1" step="0.1" min="0"
 							class="w-full bg-dark border border-gray-800 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-700">
 						</div>
@@ -121,9 +121,22 @@ const maxFreq = 50;
 			import { loadJSONToIndexedDB } from './src/api/load-fft-data.js';
 			
 			// Get the input elements
+			const shapeInput = document.getElementById('signalShape');
+			const freqLabelInput = document.getElementById('freqLabel');
+
 			const intervalInput = document.getElementById('interval');
 			const freqRangeInput = document.getElementById('freqrange');
 
+			function updateFreqLabel() {
+				if (shapeInput.value === "square") {
+					freqLabelInput.textContent = "Duration T:";
+				} else if (shapeInput.value === "triangle") {
+					freqLabelInput.textContent = "Duration 2T:";
+				} else {
+					freqLabelInput.textContent = "Frequency:";
+				}
+			}
+			
 			function updateDynamicMax() {
 			// Get the current interval value (as a number)
 			const currentInterval = parseFloat(intervalInput.value);
@@ -146,6 +159,9 @@ const maxFreq = 50;
 
 			// Attach an event listener to update when the interval value changes
 			intervalInput.addEventListener('input', updateDynamicMax);
+			updateDynamicMax(); // call on load
+			shapeInput.addEventListener('input', updateFreqLabel);
+			updateFreqLabel(); // call on load
 
 			// Optionally, you might also want to update when the a or b inputs change
 			document.getElementById('a').addEventListener('input', updateDynamicMax);
