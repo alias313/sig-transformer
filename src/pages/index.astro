@@ -134,7 +134,7 @@ const maxFreq = 50;
 			</ul>
 
 		<script type="module">
-			import { loadJSONToIndexedDB } from './src/utils/load-fft-data.js';
+			import { loadJSONToIndexedDB } from './src/utils/db.js';
 			
 			// Get the input elements
 			const shapeInput = document.getElementById('signalShape');
@@ -218,11 +218,11 @@ const maxFreq = 50;
 
 			const signalForm = document.getElementById('signalForm');
 
-			window.addEventListener('DOMContentLoaded', () => {
+			window.addEventListener('DOMContentLoaded', async () => {
 				updateDynamicMax();
 				updateFreqLabel();
 
-				transformSignal();
+				await transformSignal();
 			});
 
 			signalForm.addEventListener('submit', async (event) => {

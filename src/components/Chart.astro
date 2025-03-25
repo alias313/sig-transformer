@@ -1,13 +1,18 @@
-<div id="container1" class="my-10 flex mx-auto w-[800px] h-[300px] justify-center relative">
-	<div id="inputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
-</div>
-<div id="container2" class="flex mx-auto w-[800px] h-[300px] justify-center relative">
-	<div id="outputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
+<div id="chart-root">
+	<div id="container1" class="my-10 flex mx-auto w-[800px] h-[300px] justify-center relative">
+		<div id="inputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
+	</div>
+	<div id="container2" class="flex mx-auto w-[800px] h-[300px] justify-center relative">
+		<div id="outputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
+	</div>
 </div>
 
 <script type="module">
 import { createChart } from '/node_modules/lightweight-charts';
-import db from '/src/utils/db.js';
+import { createDB } from '/src/utils/db.js';
+
+// Create a new database
+const db = await createDB();
 
 async function getDataFromIndexedDB(frequencyLimit = 25) {
 	const inputSignal = [];
@@ -37,7 +42,13 @@ async function getDataFromIndexedDB(frequencyLimit = 25) {
 	};
 }
 
-const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB();
+// Poll until data is available:
+let { inputSignal, outputSignalSliced } = await getDataFromIndexedDB();
+while (!inputSignal.length && !outputSignalSliced.length) {
+  console.log("No data available yet, waiting 200ms...");
+  await new Promise(resolve => setTimeout(resolve, 200));
+  ({ inputSignal, outputSignalSliced } = await getDataFromIndexedDB());
+}
 console.log("inputSignal", inputSignal);
 console.log("outputSignalSliced", outputSignalSliced);
 
