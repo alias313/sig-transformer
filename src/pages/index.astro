@@ -42,12 +42,12 @@ const maxFreq = 50;
 						<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label for="a" class="block text-sm font-medium text-white mb-1">Start:</label>
-							<input type="number" id="a" name="a" value="-10" step="0.1" min="-50" max="-1"
+							<input type="number" id="a" name="a" value="-30" step="0.1" min="-50" max="-1"
 							class="w-full bg-dark border border-gray-800 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-700">
 						</div>
 						<div>
 							<label for="b" class="block text-sm font-medium text-white mb-1">End:</label>
-							<input type="number" id="b" name="b" value="10" step="0.1" min="1" max="50"
+							<input type="number" id="b" name="b" value="30" step="0.1" min="1" max="50"
 							class="w-full bg-dark border border-gray-800 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-700">
 						</div>
 						</div>
@@ -58,7 +58,7 @@ const maxFreq = 50;
 							<label for="signalShape" class="block text-sm font-medium text-white mb-1">Signal Type:</label>
 							<select id="signalShape" name="signalShape" 
 							class="w-full bg-dark border border-gray-800 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-700">
-							<option value="square">Square</option>
+							<option value="square" selected>Square</option>
 							<option value="triangle">Triangle</option>
 							<option value="sinc">Sinc</option>
 							<option value="sin">Sine</option>
@@ -76,8 +76,8 @@ const maxFreq = 50;
 						<!-- Row 3: Frequency and Phase -->
 						<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label for="frequency" id="freqLabel" class="block text-sm font-medium text-white mb-1">Frequency (f₀):</label>
-							<input type="number" id="frequency" name="frequency" value="1" step="0.1" min="0" max="50"
+							<label for="frequency" id="freqLabel" class="block text-sm font-medium text-white mb-1">Duration (T):</label>
+							<input type="number" id="frequency" name="frequency" value="10" step="0.1" min="0" max="50"
 							class="w-full bg-dark border border-gray-800 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-700">
 						</div>
 						<div>
@@ -96,7 +96,7 @@ const maxFreq = 50;
 						</div>
 						<div>
 							<label for="freqrange" class="block text-sm font-medium text-white mb-1">Freq. range of fft:</label>
-							<input type="number" id="freqrange" name="freqrange" value="25" step="0.05" min="0.05" max={maxFreq}
+							<input type="number" id="freqrange" name="freqrange" value="5" step="0.05" min="0.05" max={maxFreq}
 							class="w-full bg-dark border border-gray-800 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-700">
 						</div>
 						</div>
@@ -144,10 +144,15 @@ const maxFreq = 50;
 			const freqRangeInput = document.getElementById('freqrange');
 
 			function updateFreqLabel() {
-				if (shapeInput.value === "square") {
-					freqLabelInput.textContent = "Duration (T):";
-				} else if (shapeInput.value === "triangle") {
-					freqLabelInput.textContent = "Duration (2T):";
+				switch (true) {
+					case shapeInput.value === "square":
+						freqLabelInput.textContent = "Duration (T):";
+						break;
+					case shapeInput.value === "triangle":
+						freqLabelInput.textContent = "Duration (2T):";
+						break;
+					default:
+						freqLabelInput.textContent = "Frequency (f₀):";
 				}
 			}
 			
@@ -173,49 +178,56 @@ const maxFreq = 50;
 
 			// Attach an event listener to update when the interval value changes
 			intervalInput.addEventListener('input', updateDynamicMax);
-			updateDynamicMax(); // call on load
 			shapeInput.addEventListener('input', updateFreqLabel);
-			updateFreqLabel(); // call on load
 
 			// Optionally, you might also want to update when the a or b inputs change
 			document.getElementById('a').addEventListener('input', updateDynamicMax);
 			document.getElementById('b').addEventListener('input', updateDynamicMax);
 
+			async function transformSignal() {
+				// Collect form data to a plain object
+				const formData = new FormData(signalForm);
+				const data = Object.fromEntries(formData.entries());
+
+				try {
+					const response = await fetch('http://localhost:3000/execute-fft', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data)
+					});
+					
+					if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+					}
+					
+					// This is where you read the JSON response returned by the server.
+					const fftData = await response.json();
+					console.log("Received FFT JSON:", fftData);
+					await loadJSONToIndexedDB(fftData);
+					window.updateChartData?.(data);
+
+					// Now update your charts with the new data.
+					// For example, if you have a function to update charts, call it with fftData.
+					// updateCharts(fftData);
+					
+				} catch (error) {
+					console.error('Error executing FFT:', error);
+					alert('Error executing FFT');
+				}
+			}
 
 			const signalForm = document.getElementById('signalForm');
 
+			window.addEventListener('DOMContentLoaded', () => {
+				updateDynamicMax();
+				updateFreqLabel();
+
+				transformSignal();
+			});
+
 			signalForm.addEventListener('submit', async (event) => {
-			event.preventDefault(); // Prevent the default form submission (and redirect)
-
-			// Collect form data to a plain object
-			const formData = new FormData(signalForm);
-			const data = Object.fromEntries(formData.entries());
-
-			try {
-				const response = await fetch('http://localhost:3000/execute-fft', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data)
-				});
-				
-				if (!response.ok) {
-				throw new Error(`HTTP error! Status: ${response.status}`);
-				}
-				
-				// This is where you read the JSON response returned by the server.
-				const fftData = await response.json();
-				console.log("Received FFT JSON:", fftData);
-				await loadJSONToIndexedDB(fftData);
-				window.updateChartData?.(data);
-
-				// Now update your charts with the new data.
-				// For example, if you have a function to update charts, call it with fftData.
-				// updateCharts(fftData);
-				
-			} catch (error) {
-				console.error('Error executing FFT:', error);
-				alert('Error executing FFT');
-			}
+				event.preventDefault(); // Prevent the default form submission (and redirect)
+				transformSignal();
 			});
 		</script>
 	</main>
