@@ -2,10 +2,9 @@
 .vscode
 
 # C executable & generated csv file
-src/signals/fft_out.json
-src/signals/fft_out.csv
-src/signals/signal_computer_exec
-src/signals/signal_computer_exec_json
+fft_out.json
+fft_out.csv
+signal_computer_exec
 
 # build output
 dist/
