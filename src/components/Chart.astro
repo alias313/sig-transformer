@@ -174,21 +174,35 @@ outputUpdateLegend(undefined);
 async function updateChartData(signalName = {}) {
 	const { a, b, signalShape, amplitude, frequency, phase, interval, freqrange } = signalName;
 	
-	const formatters = {
+	const inputFormatters = {
 		square: ({ amplitude, frequency }) =>
-			`f(t) = ${amplitude}⋅⎍((1/${frequency})⋅t)`,
+			`f(t) = ${amplitude} ⋅ Π(t / ${frequency})`,
 		triangle: ({ amplitude, frequency }) =>
-			`f(t) = ${amplitude}⋅△((1/${frequency})⋅t)`,
+			`f(t) = ${amplitude} ⋅ Λ(t / ${frequency})`,
 		exp: ({ amplitude }) =>
 			`f(t) = ${amplitude}⋅exp(t)`
 	};
 
-	// Use the formatter if available; otherwise fallback to the default formatter.
-	inputSymbolName = formatters[signalShape]
-		? formatters[signalShape]({ amplitude, frequency })
-		: `f(t) = ${amplitude}⋅${signalShape}(2π⋅${frequency}⋅t + ${phase})`;
+	const outputFormatters = {
+		square: ({ amplitude, frequency }) =>
+			`re(FFT(f(t))) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ t)`,
+		triangle: ({ amplitude, frequency }) =>
+			`re(FFT(f(t))) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ t)`,
+		cos: ({ amplitude, frequency }) =>
+			`re(FFT(f(t))) = ${amplitude} ⋅ ½(𝛿(f - ${frequency}) + 𝛿(f + ${frequency}))`,
+		exp: ({ amplitude }) =>
+			`re(FFT(f(t)))`
+	};
 
-	outputSymbolName = `re(FFT(f(t)))`;
+
+	// Use the formatter if available; otherwise fallback to the default formatter.
+	inputSymbolName = inputFormatters[signalShape]
+		? inputFormatters[signalShape]({ amplitude, frequency })
+		: `f(t) = ${amplitude} ⋅ ${signalShape}(2π ⋅ ${frequency} ⋅ t + ${phase})`;
+
+	outputSymbolName = outputFormatters[signalShape]
+		? outputFormatters[signalShape]({ amplitude, frequency })
+		: `re(FFT(f(t)))`;
 	console.log("Updating chart data");
     const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(freqrange);
 	inputAreaSeries.setData(inputSignal);
