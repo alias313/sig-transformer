@@ -9,7 +9,7 @@
 import { createChart } from '/node_modules/lightweight-charts';
 import db from '/src/signals/db.js';
 
-async function getDataFromIndexedDB() {
+async function getDataFromIndexedDB(frequencyLimit = 25) {
 	const inputSignal = [];
 	const outputSignal = [];
 
@@ -25,10 +25,10 @@ async function getDataFromIndexedDB() {
 		});
 	});
 
-	const outputSignalSliced = outputSignal.slice(
-		outputSignal.length / 4,
-		outputSignal.length - outputSignal.length / 4
-  	);
+    const outputSignalSliced = outputSignal.filter(point =>
+        point.time >= -frequencyLimit && point.time <= frequencyLimit
+    );
+	console.log("outputSignalSliced", outputSignalSliced);
 
   	return {
         inputSignal,
@@ -57,6 +57,7 @@ const chartOptions = {
   },
 };
 const optionsToApply = {
+	autoScale : true,
 	rightPriceScale: {
 		scaleMargins: {
 			top: 0.4, // leave some space for the legend
@@ -171,7 +172,7 @@ inputUpdateLegend(undefined);
 outputUpdateLegend(undefined);
 
 async function updateChartData(signalName = {}) {
-	const { a, b, signalShape, amplitude, frequency, phase, interval } = signalName;
+	const { a, b, signalShape, amplitude, frequency, phase, interval, freqrange } = signalName;
 	
 	const formatters = {
 		square: ({ amplitude, frequency }) =>
@@ -187,11 +188,14 @@ async function updateChartData(signalName = {}) {
 
 	outputSymbolName = `re(FFT(f(t)))`;
 	console.log("Updating chart data");
-    const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB();
+    const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(freqrange);
 	inputAreaSeries.setData(inputSignal);
     outputAreaSeries.setData(outputSignalSliced);
     inputUpdateLegend(undefined);
     outputUpdateLegend(undefined);
+
+	inputChart.timeScale().fitContent();
+	outputChart.timeScale().fitContent();
 }
 
 // Expose the updateChartData function to the window
@@ -203,7 +207,7 @@ inputChart.timeScale().applyOptions({
 	fixLeftEdge: true,
 	fixRightEdge: true,
 	timeVisible: true,
-	tickMarkFormatter: time => time.toString(), // simply convert time to string
+	tickMarkFormatter: time => time.toString(),
 })
 
 outputChart.timeScale().applyOptions({
@@ -211,7 +215,7 @@ outputChart.timeScale().applyOptions({
 	fixLeftEdge: true,
 	fixRightEdge: true,
 	timeVisible: true,
-	tickMarkFormatter: time => time.toString(), // simply convert time to string
+	tickMarkFormatter: time => time.toString(),
 })
 
 inputChart.timeScale().fitContent();

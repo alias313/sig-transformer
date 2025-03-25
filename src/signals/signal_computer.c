@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
   fprintf(fptr, "[\n");
   for (i = 0; i < total_samples; i++)
   {
-    double freq = (i-rightmost_index) / (total_samples * sampling_interval);
+    double freq = (i-rightmost_index) / ((total_samples-1) * sampling_interval);
     if (i < rightmost_index)
     {
       int i_left_shifted = i + rightmost_index + 1;
