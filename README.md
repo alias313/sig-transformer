@@ -25,22 +25,24 @@ Snippet from [here](https://www.unix.com/programming/173428-how-access-argv-x-an
 Another way of doing a similar thing [here](https://stackoverflow.com/questions/43729256/argc-and-argv-for-functions-other-than-main)
 
 ## IDEAS
-- [ ] IndexedDB for function domain instead of csv?
+- [x] IndexedDB for function domain instead of csv?
 - [ ] Let the user adjust the necessary parameters and you can save those function parameters and combine them (sum, product, convolution) with other saved functions
     - Input is done with buttons:
         - A signal button, you can choose between the square, triangle, sine, etc. icons
         - Amplitude, frequency, range wheels
+    - Chain functions to simulate operations (add, subtract, multiply, divide, convolve, correlate, circular convolution???, etc.)
+    - Discrete sums and products (look for periodization in IPAV)
+    - Also delta of kronecker
+- [ ] Real, Imaginary & Complex graph
+- [ ] Add the sum of cos & sin
+- [ ] Add complex exponential (cos+isin)
+- [ ] Load your signal with a formatted text/JSON/whatever file
 - [ ] Use IPC message passing or memory sharing instead of using node to invoke execution
 - [ ] Add auto set button
 - [ ] Fix rounding errors (for freq)
 - [x] Show only a narrow window of frequencies (different for cos, sin, exp, etc.)
 - [ ] Add debug mode (with #ifndef)
 - [ ] Allow only parametrized input (you can only input the parameters to the function that I permit, with limited degrees of freedom)
-- [ ] Chain functions to simulate operations (add, subtract, multiply, divide, convolve, correlate, circular convolution???, etc.)
-- [ ] Real, Imaginary & Complex graph
-- [ ] Load your signal with a formatted text/JSON/whatever file
-- [ ] Add the sum of cos & sin
-- [ ] Add complex exponential (cos+isin)
 - [ ] Lead to the discovery of the ft by convolution (like in Mark Newman's video)
 - [ ] Build an FFT and convolution algorithm
 - [ ] Other transforms (Cosine, sine, sinc transforms...)
