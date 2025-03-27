@@ -1,3 +1,7 @@
+---
+const { signalParamsProp } = Astro.props;
+---
+
 <div id="chart-root">
 	<div id="container1" class="my-10 flex mx-auto w-[800px] h-[300px] justify-center relative">
 		<div id="inputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
@@ -7,14 +11,16 @@
 	</div>
 </div>
 
-<script type="module">
+<script type="module" define:vars={{ signalParamsProp }}>
 import { createChart } from '/node_modules/lightweight-charts';
 import { createDB } from '/src/utils/db.js';
 
 // Create a new database
 const db = await createDB();
 
-async function getDataFromIndexedDB(frequencyLimit = 25) {
+const signalParams = signalParamsProp;
+
+async function getDataFromIndexedDB(frequencyLimit) {
 	const inputSignal = [];
 	const outputSignal = [];
 
@@ -33,7 +39,6 @@ async function getDataFromIndexedDB(frequencyLimit = 25) {
     const outputSignalSliced = outputSignal.filter(point =>
         point.time >= -frequencyLimit && point.time <= frequencyLimit
     );
-	console.log("outputSignalSliced", outputSignalSliced);
 
   	return {
         inputSignal,
@@ -43,17 +48,56 @@ async function getDataFromIndexedDB(frequencyLimit = 25) {
 }
 
 // Poll until data is available:
-let { inputSignal, outputSignalSliced } = await getDataFromIndexedDB();
+const frequencyLimit = parseInt(signalParams["freqrange"]);
+let { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit);
 while (!inputSignal.length && !outputSignalSliced.length) {
   console.log("No data available yet, waiting 200ms...");
   await new Promise(resolve => setTimeout(resolve, 200));
-  ({ inputSignal, outputSignalSliced } = await getDataFromIndexedDB());
+  ({ inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit));
 }
 console.log("inputSignal", inputSignal);
 console.log("outputSignalSliced", outputSignalSliced);
 
-const inputExpression = "f(t)"
-const outputExpression = "re(FFT(f(t)))"
+function formatLegend(signalParams = {}) {
+	const { a, b, signalShape, amplitude, frequency, phase, interval, freqrange } = signalParams;
+	
+	const inputFormatters = {
+		square: `f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
+		triangle: `f(t) = A ⋅ Λ(t / 2T) = ${amplitude} ⋅ Λ(t / ${frequency})`,
+		sinc: `f(t) = A ⋅ f₀ ⋅ sinc(f₀ ⋅ t) = ${amplitude} ⋅ sinc(t / ${frequency})`,
+		sin: `f(t) = A ⋅ sin(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ sin(2π ⋅ ${frequency} ⋅ t + ${phase})`,
+		cos: `f(t) = A ⋅ cos(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ cos(2π ⋅ ${frequency} ⋅ t + ${phase})`,
+		exp: `f(t) = ${amplitude}⋅exp(t)`
+	};
+
+	const outputFormatters = {
+		square: `re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
+		triangle: `re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
+		sinc: `re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
+		cos: `re(FFT(f(t))) = A ⋅ ½(𝛿(f - f₀) + 𝛿(f + f₀)) = ${amplitude} ⋅ ½(𝛿(f - ${frequency}) + 𝛿(f + ${frequency}))`,
+	};
+
+	const inputLegendSymbol = inputFormatters[signalShape]
+	? inputFormatters[signalShape]
+	: `f(t)`;
+
+	const outputLegendSymbol = outputFormatters[signalShape]
+	? outputFormatters[signalShape]
+	: `re(FFT(f(t)))`;
+
+
+	return {
+		inputLegendSymbol,
+		outputLegendSymbol,
+	};
+}
+
+const { inputLegendSymbol, outputLegendSymbol } = formatLegend(signalParams);
+
+// Use the formatter if available; otherwise fallback to the default formatter.
+let inputSymbolName = inputLegendSymbol;
+
+let outputSymbolName = outputLegendSymbol;
 
 const chartOptions = {
   width: 800,
@@ -120,7 +164,6 @@ const outputAreaSeries = outputChart.addAreaSeries({
 
 outputAreaSeries.setData(outputSignalSliced);
 
-let inputSymbolName = inputExpression
 const inputLegend = document.getElementById('inputLegend')
 
 const getLastBar = series => {
@@ -151,7 +194,6 @@ const inputUpdateLegend = param => {
 };
 
 
-let outputSymbolName = outputExpression
 const outputLegend = document.getElementById('outputLegend')
 
 const outputSetTooltipHtml = (name, time, value) => {
@@ -182,44 +224,16 @@ outputChart.subscribeCrosshairMove(outputUpdateLegend);
 inputUpdateLegend(undefined);
 outputUpdateLegend(undefined);
 
-async function updateChartData(signalName = {}) {
-	const { a, b, signalShape, amplitude, frequency, phase, interval, freqrange } = signalName;
-	
-	const inputFormatters = {
-		square: ({ amplitude, frequency }) =>
-			`f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
-		triangle: ({ amplitude, frequency }) =>
-			`f(t) = A ⋅ Λ(t / 2T) = ${amplitude} ⋅ Λ(t / ${frequency})`,
-		sinc: ({ amplitude, frequency }) =>
-			`f(t) = A ⋅ f₀ ⋅ sinc(f₀ ⋅ t) = ${amplitude} ⋅ sinc(t / ${frequency})`,
-		exp: ({ amplitude }) =>
-			`f(t) = ${amplitude}⋅exp(t)`
-	};
-
-	const outputFormatters = {
-		square: ({ amplitude, frequency }) =>
-			`re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
-		triangle: ({ amplitude, frequency }) =>
-			`re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
-		sinc: ({ amplitude, frequency }) =>
-			`re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
-		cos: ({ amplitude, frequency }) =>
-			`re(FFT(f(t))) = A ⋅ ½(𝛿(f - f₀) + 𝛿(f + f₀)) = ${amplitude} ⋅ ½(𝛿(f - ${frequency}) + 𝛿(f + ${frequency}))`,
-		exp: ({ amplitude }) =>
-			`re(FFT(f(t)))`
-	};
-
+async function updateChartData(signalParams = {}) {
+	const { inputLegendSymbol, outputLegendSymbol } = formatLegend(signalParams);
 
 	// Use the formatter if available; otherwise fallback to the default formatter.
-	inputSymbolName = inputFormatters[signalShape]
-		? inputFormatters[signalShape]({ amplitude, frequency })
-		: `f(t) = ${amplitude} ⋅ ${signalShape}(2π ⋅ ${frequency} ⋅ t + ${phase})`;
+	inputSymbolName = inputLegendSymbol;
 
-	outputSymbolName = outputFormatters[signalShape]
-		? outputFormatters[signalShape]({ amplitude, frequency })
-		: `re(FFT(f(t)))`;
+	outputSymbolName = outputLegendSymbol;
 	console.log("Updating chart data");
-    const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(freqrange);
+	const frequencyLimit = parseInt(signalParams["freqrange"]);
+    const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit);
 	inputAreaSeries.setData(inputSignal);
     outputAreaSeries.setData(outputSignalSliced);
     inputUpdateLegend(undefined);
