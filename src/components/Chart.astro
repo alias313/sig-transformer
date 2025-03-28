@@ -11,9 +11,10 @@ const { signalParamsProp } = Astro.props;
 	</div>
 </div>
 
+// @ts-ignore
 <script type="module" define:vars={{ signalParamsProp }}>
 import { createChart } from '/node_modules/lightweight-charts';
-import { createDB } from '/src/utils/db.js';
+import { createDB } from '/src/scripts/db.js';
 
 // Create a new database
 const db = await createDB();

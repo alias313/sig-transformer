@@ -7,5 +7,16 @@ export default defineConfig({
   integrations: [
     tailwind(),
     react()
-  ]
+  ],
+  vite: {
+    resolve: {
+      alias: {
+        '~/': '/src/'
+      }
+    },
+    optimizeDeps: {
+      include: ['lightweight-charts']
+    }
+  }
+
 });
