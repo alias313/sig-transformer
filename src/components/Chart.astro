@@ -62,42 +62,38 @@ function formatLegend(signalParams = {}) {
 	const { a, b, signalShape, amplitude, frequency, phase, interval, freqrange } = signalParams;
 	
 	const inputFormatters = {
-		square: `f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
-		triangle: `f(t) = A ⋅ Λ(t / 2T) = ${amplitude} ⋅ Λ(t / ${frequency})`,
-		sinc: `f(t) = A ⋅ f₀ ⋅ sinc(f₀ ⋅ t) = ${amplitude} ⋅ sinc(t / ${frequency})`,
-		sin: `f(t) = A ⋅ sin(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ sin(2π ⋅ ${frequency} ⋅ t + ${phase})`,
-		cos: `f(t) = A ⋅ cos(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ cos(2π ⋅ ${frequency} ⋅ t + ${phase})`,
-		exp: `f(t) = ${amplitude}⋅exp(t)`
+		square: 	`f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
+		triangle: 	`f(t) = A ⋅ Λ(t / 2T) = ${amplitude} ⋅ Λ(t / ${frequency})`,
+		sinc: 		`f(t) = A ⋅ f₀ ⋅ sinc(f₀ ⋅ t) = ${amplitude} ⋅ sinc(t / ${frequency})`,
+		sin: 		`f(t) = A ⋅ sin(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ sin(2π ⋅ ${frequency} ⋅ t + ${phase})`,
+		cos: 		`f(t) = A ⋅ cos(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ cos(2π ⋅ ${frequency} ⋅ t + ${phase})`,
+		exp: 		`f(t) = ${amplitude}⋅exp(t)`
 	};
 
 	const outputFormatters = {
-		square: `re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
-		triangle: `re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
-		sinc: `re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
-		cos: `re(FFT(f(t))) = A ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${amplitude} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
+		square: 	`re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
+		triangle: 	`re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
+		sinc: 		`re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
+		cos: 		`re(FFT(f(t))) = A ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${amplitude} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
+		sin:		`re(FFT(f(t))) = 0`,
 	};
 
-	const inputLegendSymbol = inputFormatters[signalShape]
+	const inputSymbolName = inputFormatters[signalShape]
 	? inputFormatters[signalShape]
 	: `f(t)`;
 
-	const outputLegendSymbol = outputFormatters[signalShape]
+	const outputSymbolName = outputFormatters[signalShape]
 	? outputFormatters[signalShape]
 	: `re(FFT(f(t)))`;
 
 
 	return {
-		inputLegendSymbol,
-		outputLegendSymbol,
+		inputSymbolName,
+		outputSymbolName,
 	};
 }
 
-const { inputLegendSymbol, outputLegendSymbol } = formatLegend(signalParams);
-
-// Use the formatter if available; otherwise fallback to the default formatter.
-let inputSymbolName = inputLegendSymbol;
-
-let outputSymbolName = outputLegendSymbol;
+let { inputSymbolName, outputSymbolName } = formatLegend(signalParams);
 
 const chartOptions = {
   width: 800,
@@ -138,9 +134,7 @@ const optionsToApply = {
 }
 
 const inputChart = createChart(document.getElementById('container1'), chartOptions);
-
 inputChart.applyOptions(optionsToApply)
-
 const inputAreaSeries = inputChart.addAreaSeries({
 	topColor: '#d5b8f9',
 	bottomColor: 'rgba(213, 184, 249, 0.5)',
@@ -151,9 +145,7 @@ const inputAreaSeries = inputChart.addAreaSeries({
 inputAreaSeries.setData(inputSignal);
 
 const outputChart = createChart(document.getElementById('container2'), chartOptions);
-
 outputChart.applyOptions(optionsToApply);
-
 const outputAreaSeries = outputChart.addAreaSeries({
 	topColor: '#d5b8f9',
 	bottomColor: 'rgba(143, 67, 234, 0.33)',
@@ -161,19 +153,18 @@ const outputAreaSeries = outputChart.addAreaSeries({
 	lineWidth: 2,
 	priceLineVisible: false,
 });
-
 outputAreaSeries.setData(outputSignalSliced);
 
 const inputLegend = document.getElementById('inputLegend')
+const outputLegend = document.getElementById('outputLegend')
 
 const getLastBar = series => {
 	const lastIndex = series.dataByIndex(Infinity, -1);
 	return series.dataByIndex(lastIndex);
 };
 const formatPrice = price => (Math.round(price * 100) / 100).toFixed(2);
-
-const inputSetTooltipHtml = (name, time, value) => {
-	inputLegend.innerHTML = `
+const setTooltipHtml = (legend, name, time, value) => {
+	legend.innerHTML = `
 		<div class="text-lg my-0">${name}</div>
     	<div class="text-base my-0">${value}</div>
     	<div class="text-sm my-0">${time}</div>
@@ -190,19 +181,9 @@ const inputUpdateLegend = param => {
 	const time = bar.time;
 	const price = bar.value !== undefined ? bar.value : bar.close;
 	const formattedPrice = formatPrice(price);
-	inputSetTooltipHtml(inputSymbolName, time, formattedPrice);
+	setTooltipHtml(inputLegend, inputSymbolName, time, formattedPrice);
 };
 
-
-const outputLegend = document.getElementById('outputLegend')
-
-const outputSetTooltipHtml = (name, time, value) => {
-	outputLegend.innerHTML = `
-		<div class="text-lg my-0">${name}</div>
-    	<div class="text-base my-0">${value}</div>
-    	<div class="text-sm my-0">${time}</div>
-	`;
-};
 
 const outputUpdateLegend = param => {
 	const validCrosshairPoint = !(
@@ -214,7 +195,7 @@ const outputUpdateLegend = param => {
 	const time = bar.time;
 	const price = bar.value !== undefined ? bar.value : bar.close;
 	const formattedPrice = formatPrice(price);
-	outputSetTooltipHtml(outputSymbolName, time, formattedPrice);
+	setTooltipHtml(outputLegend, outputSymbolName, time, formattedPrice);
 };
 
 
@@ -225,12 +206,8 @@ inputUpdateLegend(undefined);
 outputUpdateLegend(undefined);
 
 async function updateChartData(signalParams = {}) {
-	const { inputLegendSymbol, outputLegendSymbol } = formatLegend(signalParams);
+	({ inputSymbolName, outputSymbolName } = formatLegend(signalParams));
 
-	// Use the formatter if available; otherwise fallback to the default formatter.
-	inputSymbolName = inputLegendSymbol;
-
-	outputSymbolName = outputLegendSymbol;
 	console.log("Updating chart data");
 	const frequencyLimit = parseInt(signalParams["freqrange"]);
     const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit);
