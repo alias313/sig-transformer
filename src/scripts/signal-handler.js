@@ -102,19 +102,19 @@ async function transformSignal(signalParams) {
     }
 }
 
+const dbName = 'SignalDB';
+const isExisting = (await window.indexedDB.databases()).map(db => db.name).includes(dbName);
+console.log("DB exists:", isExisting);
+// Doesn't cover the case when DB exists but there is no table/data
+if (!isExisting){
+    console.log("Creating new database");
+    transformSignal(signalParamsOnReload);
+}
+
+
 window.addEventListener('DOMContentLoaded', async (event) => {
     updateDynamicMax(); // on load
     updateFreqLabel(); // on load
-
-    const dbName = 'SignalDB';
-    const isExisting = (await window.indexedDB.databases()).map(db => db.name).includes(dbName);
-
-    // Doesn't cover the case when DB exists but there is no table/data
-    if (!isExisting){
-        console.log("Creating new database");
-        transformSignal(signalParamsOnReload);
-    }
-
 });
 
 signalForm.addEventListener('submit', async (event) => {
