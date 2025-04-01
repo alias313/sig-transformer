@@ -5,6 +5,7 @@
 fft_out.json
 fft_out.csv
 signal_computer_exec
+last_params.json
 
 # build output
 dist/
