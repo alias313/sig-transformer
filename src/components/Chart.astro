@@ -51,8 +51,8 @@ async function getDataFromIndexedDB(frequencyLimit) {
 const frequencyLimit = parseInt(signalParams["freqrange"]);
 let { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit);
 while (!inputSignal.length && !outputSignalSliced.length) {
-  console.log("No data available yet, waiting 200ms...");
-  await new Promise(resolve => setTimeout(resolve, 200));
+  console.log("No data available yet, waiting 1000ms...");
+  await new Promise(resolve => setTimeout(resolve, 1000));
   ({ inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit));
 }
 console.log("inputSignal", inputSignal);

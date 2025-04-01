@@ -1,6 +1,19 @@
 import { loadJSONToIndexedDB } from './db.js';
 
-const signalParamsDefault = {
+// Fetch last used signal parameters from the server
+let signalParamsOnReload;
+try {
+  const response = await fetch('http://localhost:3000/signal-params');
+  if (response.ok) {
+    signalParamsOnReload = await response.json();
+    console.log("Loaded parameters from server:", signalParamsOnReload);
+  } else {
+    throw new Error(`Failed to fetch params: ${response.status}`);
+  }
+} catch (error) {
+  console.error("Error fetching signal parameters:", error);
+  // Fallback to default parameters if API call fails
+  signalParamsOnReload = {
     a: -30,
     b: 30,
     signalShape: 'sinc',
@@ -9,7 +22,8 @@ const signalParamsDefault = {
     phase: 0,
     interval: 0.01,
     freqrange: 5
-};
+  };
+}
 
 // Get the input elements
 const shapeInput = document.getElementById('signalShape');
@@ -98,7 +112,7 @@ window.addEventListener('DOMContentLoaded', async (event) => {
     // Doesn't cover the case when DB exists but there is no table/data
     if (!isExisting){
         console.log("Creating new database");
-        transformSignal(signalParamsDefault);
+        transformSignal(signalParamsOnReload);
     }
 
 });
