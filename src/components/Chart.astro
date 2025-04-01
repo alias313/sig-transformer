@@ -1,6 +1,3 @@
----
-const { signalParamsProp } = Astro.props;
----
 
 <div id="chart-root">
 	<div id="container1" class="my-10 flex mx-auto w-[800px] h-[300px] justify-center relative">
@@ -11,14 +8,14 @@ const { signalParamsProp } = Astro.props;
 	</div>
 </div>
 
-<script type="module" define:vars={{ signalParamsProp }}>
+<script type="module">
 import { createChart } from '/node_modules/lightweight-charts';
 import { createDB } from '/src/scripts/db.js';
-
+import loadSignalParamsFromLocalStorage from '/src/scripts/signal-handler.js';
 // Create a new database
 const db = await createDB();
 
-const signalParams = signalParamsProp;
+const signalParams = loadSignalParamsFromLocalStorage();
 
 async function getDataFromIndexedDB(frequencyLimit) {
 	const inputSignal = [];

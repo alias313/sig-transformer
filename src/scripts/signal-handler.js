@@ -1,19 +1,7 @@
 import { loadJSONToIndexedDB } from './db.js';
 
-// Fetch last used signal parameters from the server
-let signalParamsOnReload;
-try {
-  const response = await fetch('http://localhost:3000/signal-params');
-  if (response.ok) {
-    signalParamsOnReload = await response.json();
-    console.log("Loaded parameters from server:", signalParamsOnReload);
-  } else {
-    throw new Error(`Failed to fetch params: ${response.status}`);
-  }
-} catch (error) {
-  console.error("Error fetching signal parameters:", error);
-  // Fallback to default parameters if API call fails
-  signalParamsOnReload = {
+// Default parameters to use if nothing is found in LocalStorage
+const defaultParams = {
     a: -30,
     b: 30,
     signalShape: 'sinc',
@@ -22,8 +10,40 @@ try {
     phase: 0,
     interval: 0.01,
     freqrange: 5
-  };
+};
+
+// Function to save signal parameters to LocalStorage
+function saveSignalParamsToLocalStorage(params) {
+    try {
+        // Convert the params object to a JSON string
+        localStorage.setItem('signalParams', JSON.stringify(params));
+        return true;
+    } catch (error) {
+        console.error('Error saving to LocalStorage:', error);
+        return false;
+    }
 }
+    
+  
+// Function to load signal parameters from LocalStorage
+export default function loadSignalParamsFromLocalStorage() {
+    try {
+      const storedParams = localStorage.getItem('signalParams');
+      if (storedParams) {
+        // Parse the stored JSON string back into an object
+        return JSON.parse(storedParams);
+      }
+      saveSignalParamsToLocalStorage(defaultParams);
+      return defaultParams;
+    } catch (error) {
+      console.error('Error reading from LocalStorage:', error);
+      return defaultParams;
+    }
+}
+    
+// Load signal parameters from LocalStorage or use defaults
+let signalParamsOnReload = loadSignalParamsFromLocalStorage();
+console.log("Loaded parameters from LocalStorage:", signalParamsOnReload);
 
 // Get the input elements
 const shapeInput = document.getElementById('signalShape');
@@ -124,6 +144,7 @@ signalForm.addEventListener('submit', async (event) => {
     const formParams = new FormData(signalForm);
     const signalParams = Object.fromEntries(formParams.entries());
 
+    saveSignalParamsToLocalStorage(signalParams);
 
     console.log("Form submitted:", signalParams);
     transformSignal(signalParams);
