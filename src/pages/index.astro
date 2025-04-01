@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import Chart from '../components/Chart.astro';
+import SignalHandler from '../scripts/SignalHandler.astro';
 
 const maxFreq = 50;
 
@@ -144,7 +145,7 @@ const signalParamsDefault = {
 					body="This video visually explain the algorithm that is used to transform the input signals."
 				/>
 			</ul>
-		<script src="../scripts/signal-handler.js">
+		<SignalHandler />
 		</script>
 	</main>
 </Layout>

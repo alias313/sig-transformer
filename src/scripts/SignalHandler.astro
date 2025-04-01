@@ -1,0 +1,128 @@
+---
+const signalParamsDefault = {
+    a: -30,
+    b: 30,
+    signalShape: 'sinc',
+    amplitude: 1,
+    frequency: 1,
+    phase: 0,
+    interval: 0.01,
+    freqrange: 5
+};
+
+// Export these defaults so they can be used by other modules
+export { signalParamsDefault };
+
+// This function should be moved to a separate .js file if you want to import it elsewhere
+export async function fetchSignal(signalParams) {
+    try {
+        const response = await fetch('http://localhost:3000/execute-fft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(signalParams)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const fftData = await response.json();
+        console.log("Received FFT JSON:", fftData);
+        return fftData;
+    } catch (error) {
+        console.error('Error executing FFT:', error);
+        alert('Error executing FFT');
+        return null;
+    }
+}
+---
+
+<!-- No HTML content needed if this is just a script file -->
+
+<script>
+// Client-side code goes here
+document.addEventListener('DOMContentLoaded', () => {
+    // Type assertions to fix the TypeScript errors
+    const shapeInput = document.getElementById('signalShape') as HTMLSelectElement;
+    const freqLabelInput = document.getElementById('freqLabel') as HTMLLabelElement;
+    const intervalInput = document.getElementById('interval') as HTMLInputElement;
+    const freqRangeInput = document.getElementById('freqrange') as HTMLInputElement;
+    const freqRangeLabelInput = document.getElementById('freqRangeLabel') as HTMLLabelElement;
+    const signalForm = document.getElementById('signalForm') as HTMLFormElement;
+    
+    function updateFreqLabel() {
+        switch (true) {
+            case shapeInput.value === "square":
+                freqLabelInput.textContent = "Duration (T):";
+                break;
+            case shapeInput.value === "triangle":
+                freqLabelInput.textContent = "Duration (2T):";
+                break;
+            default:
+                freqLabelInput.textContent = "Frequency (f₀):";
+        }
+    }
+    
+    function updateDynamicMax() {
+        // Get the current interval value (as a number)
+        const currentInterval = parseFloat(intervalInput.value);
+        // Get a and b inputs
+        const a = parseFloat((document.getElementById('a') as HTMLInputElement).value);
+        const b = parseFloat((document.getElementById('b') as HTMLInputElement).value);
+        const total_samples = Math.ceil((b - a) / currentInterval);
+        
+        // Calculate your dynamic max
+        const dynamicMax = Math.floor(10*(total_samples - Math.round(total_samples/2))/(total_samples * currentInterval)) / 10;
+                        
+        // Update the max attribute and current value if needed
+        freqRangeInput.setAttribute('max', dynamicMax.toString());
+        freqRangeLabelInput.textContent = `Hz range <= ${dynamicMax}:`;
+        if (parseFloat(freqRangeInput.value) > dynamicMax) {
+            freqRangeInput.value = dynamicMax.toString();
+        }
+    }
+    
+    // Attach event listeners
+    intervalInput?.addEventListener('input', updateDynamicMax);
+    shapeInput?.addEventListener('input', updateFreqLabel);
+    
+    // Update on a/b changes
+    (document.getElementById('a') as HTMLInputElement)?.addEventListener('input', updateDynamicMax);
+    (document.getElementById('b') as HTMLInputElement)?.addEventListener('input', updateDynamicMax);
+    
+    // Submit handler
+    signalForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        const formParams = new FormData(signalForm);
+        const signalParams = Object.fromEntries(formParams.entries());
+        
+        console.log("Form submitted:", signalParams);
+        
+        try {
+            const response = await fetch('http://localhost:3000/execute-fft', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(signalParams)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            const fftData = await response.json();
+            console.log("Received FFT JSON:", fftData);
+            
+            window.updateChartData(signalParams);
+
+        } catch (error) {
+            console.error('Error executing FFT:', error);
+            alert('Error executing FFT');
+        }
+    });
+    
+    // Initialize on load
+    updateDynamicMax();
+    updateFreqLabel();
+});
+</script>

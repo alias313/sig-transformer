@@ -1,64 +1,26 @@
 ---
 const { signalParamsProp } = Astro.props;
----
 
-<div id="chart-root">
-	<div id="container1" class="my-10 flex mx-auto w-[800px] h-[300px] justify-center relative">
-		<div id="inputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
-	</div>
-	<div id="container2" class="flex mx-auto w-[800px] h-[300px] justify-center relative">
-		<div id="outputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
-	</div>
-</div>
+type SignalParams = {
+  a: number;
+  b: number;
+  signalShape: string;
+  amplitude: number;
+  frequency: number;
+  phase: number;
+  interval: number;
+  freqrange: number;
+};
 
-<script type="module" define:vars={{ signalParamsProp }}>
-import { createChart } from '/node_modules/lightweight-charts';
-import { createDB } from '/src/scripts/db.js';
+// turns all string values to numbers
+const signalParams = Object.keys(signalParamsProp).reduce((newObj, key) => {
+    const parsedValue = parseInt(signalParamsProp[key], 10); // Radix specified!
+    newObj[key] = isNaN(parsedValue) ? signalParamsProp[key] : parsedValue;
+    return newObj;
+}, {}) as SignalParams;
 
-// Create a new database
-const db = await createDB();
 
-const signalParams = signalParamsProp;
-
-async function getDataFromIndexedDB(frequencyLimit) {
-	const inputSignal = [];
-	const outputSignal = [];
-
-	const data = await db.signals.toArray();
-	data.forEach((row) => {
-		outputSignal.push({
-			time: parseFloat(row.Freq),
-			value: parseFloat(row["re(FFT)"]),
-		});
-		inputSignal.push({
-			time: parseFloat(row.input),
-			value: parseFloat(row["re(signal)"]),
-		});
-	});
-
-    const outputSignalSliced = outputSignal.filter(point =>
-        point.time >= -frequencyLimit && point.time <= frequencyLimit
-    );
-
-  	return {
-        inputSignal,
-        outputSignal,
-		outputSignalSliced
-	};
-}
-
-// Poll until data is available:
-const frequencyLimit = parseInt(signalParams["freqrange"]);
-let { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit);
-while (!inputSignal.length && !outputSignalSliced.length) {
-  console.log("No data available yet, waiting 200ms...");
-  await new Promise(resolve => setTimeout(resolve, 200));
-  ({ inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit));
-}
-console.log("inputSignal", inputSignal);
-console.log("outputSignalSliced", outputSignalSliced);
-
-function formatLegend(signalParams = {}) {
+function formatLegend(signalParams: SignalParams) {
 	const { a, b, signalShape, amplitude, frequency, phase, interval, freqrange } = signalParams;
 	
 	const inputFormatters = {
@@ -77,27 +39,77 @@ function formatLegend(signalParams = {}) {
 		cos: `re(FFT(f(t))) = A ⋅ ½(𝛿(f - f₀) + 𝛿(f + f₀)) = ${amplitude} ⋅ ½(𝛿(f - ${frequency}) + 𝛿(f + ${frequency}))`,
 	};
 
-	const inputLegendSymbol = inputFormatters[signalShape]
+	const inputSymbolName = inputFormatters[signalShape]
 	? inputFormatters[signalShape]
 	: `f(t)`;
 
-	const outputLegendSymbol = outputFormatters[signalShape]
+	const outputSymbolName = outputFormatters[signalShape]
 	? outputFormatters[signalShape]
 	: `re(FFT(f(t)))`;
 
 
 	return {
-		inputLegendSymbol,
-		outputLegendSymbol,
+		inputSymbolName,
+		outputSymbolName,
 	};
 }
 
-const { inputLegendSymbol, outputLegendSymbol } = formatLegend(signalParams);
+const { inputSymbolName, outputSymbolName } = formatLegend(signalParams);
+---
 
-// Use the formatter if available; otherwise fallback to the default formatter.
-let inputSymbolName = inputLegendSymbol;
+<div id="chart-root">
+	<div id="container1" class="my-10 flex mx-auto w-[800px] h-[300px] justify-center relative">
+		<div id="inputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
+	</div>
+	<div id="container2" class="flex mx-auto w-[800px] h-[300px] justify-center relative">
+		<div id="outputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
+	</div>
+</div>
 
-let outputSymbolName = outputLegendSymbol;
+
+<script define:vars={{ signalParamsProp }}>
+import { createChart } from 'lightweight-charts';
+import { fetchSignal } from '../scripts/SignalHandler.astro'
+
+const chartRoot = document.getElementById('chart-root');
+const signalParams = JSON.parse(chartRoot.dataset.params);
+const loadingEl = document.getElementById('loading');
+
+function formatLegend(signalParams) {
+	const { a, b, signalShape, amplitude, frequency, phase, interval, freqrange } = signalParams;
+	
+	const inputFormatters = {
+		square: `f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
+		triangle: `f(t) = A ⋅ Λ(t / 2T) = ${amplitude} ⋅ Λ(t / ${frequency})`,
+		sinc: `f(t) = A ⋅ f₀ ⋅ sinc(f₀ ⋅ t) = ${amplitude} ⋅ sinc(t / ${frequency})`,
+		sin: `f(t) = A ⋅ sin(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ sin(2π ⋅ ${frequency} ⋅ t + ${phase})`,
+		cos: `f(t) = A ⋅ cos(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ cos(2π ⋅ ${frequency} ⋅ t + ${phase})`,
+		exp: `f(t) = ${amplitude}⋅exp(t)`
+	};
+
+	const outputFormatters = {
+		square: `re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
+		triangle: `re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
+		sinc: `re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
+		cos: `re(FFT(f(t))) = A ⋅ ½(𝛿(f - f₀) + 𝛿(f + f₀)) = ${amplitude} ⋅ ½(𝛿(f - ${frequency}) + 𝛿(f + ${frequency}))`,
+	};
+
+	const inputSymbolName = inputFormatters[signalShape]
+	? inputFormatters[signalShape]
+	: `f(t)`;
+
+	const outputSymbolName = outputFormatters[signalShape]
+	? outputFormatters[signalShape]
+	: `re(FFT(f(t)))`;
+
+
+	return {
+		inputSymbolName,
+		outputSymbolName,
+	};
+}
+
+let { inputSymbolName, outputSymbolName } = formatLegend(signalParams);
 
 const chartOptions = {
   width: 800,
@@ -138,7 +150,6 @@ const optionsToApply = {
 }
 
 const inputChart = createChart(document.getElementById('container1'), chartOptions);
-
 inputChart.applyOptions(optionsToApply)
 
 const inputAreaSeries = inputChart.addAreaSeries({
@@ -148,10 +159,8 @@ const inputAreaSeries = inputChart.addAreaSeries({
 	lineWidth: 2,
 	priceLineVisible: false,
 });
-inputAreaSeries.setData(inputSignal);
 
 const outputChart = createChart(document.getElementById('container2'), chartOptions);
-
 outputChart.applyOptions(optionsToApply);
 
 const outputAreaSeries = outputChart.addAreaSeries({
@@ -162,9 +171,9 @@ const outputAreaSeries = outputChart.addAreaSeries({
 	priceLineVisible: false,
 });
 
-outputAreaSeries.setData(outputSignalSliced);
-
 const inputLegend = document.getElementById('inputLegend')
+const outputLegend = document.getElementById('outputLegend')
+
 
 const getLastBar = series => {
 	const lastIndex = series.dataByIndex(Infinity, -1);
@@ -172,8 +181,8 @@ const getLastBar = series => {
 };
 const formatPrice = price => (Math.round(price * 100) / 100).toFixed(2);
 
-const inputSetTooltipHtml = (name, time, value) => {
-	inputLegend.innerHTML = `
+const setTooltipHtml = (legend, name, time, value) => {
+	legend.innerHTML = `
 		<div class="text-lg my-0">${name}</div>
     	<div class="text-base my-0">${value}</div>
     	<div class="text-sm my-0">${time}</div>
@@ -190,18 +199,7 @@ const inputUpdateLegend = param => {
 	const time = bar.time;
 	const price = bar.value !== undefined ? bar.value : bar.close;
 	const formattedPrice = formatPrice(price);
-	inputSetTooltipHtml(inputSymbolName, time, formattedPrice);
-};
-
-
-const outputLegend = document.getElementById('outputLegend')
-
-const outputSetTooltipHtml = (name, time, value) => {
-	outputLegend.innerHTML = `
-		<div class="text-lg my-0">${name}</div>
-    	<div class="text-base my-0">${value}</div>
-    	<div class="text-sm my-0">${time}</div>
-	`;
+	setTooltipHtml(inputLegend, inputSymbolName, time, formattedPrice);
 };
 
 const outputUpdateLegend = param => {
@@ -214,7 +212,7 @@ const outputUpdateLegend = param => {
 	const time = bar.time;
 	const price = bar.value !== undefined ? bar.value : bar.close;
 	const formattedPrice = formatPrice(price);
-	outputSetTooltipHtml(outputSymbolName, time, formattedPrice);
+	setTooltipHtml(outputLegend, outputSymbolName, time, formattedPrice);
 };
 
 
@@ -224,28 +222,76 @@ outputChart.subscribeCrosshairMove(outputUpdateLegend);
 inputUpdateLegend(undefined);
 outputUpdateLegend(undefined);
 
-async function updateChartData(signalParams = {}) {
-	const { inputLegendSymbol, outputLegendSymbol } = formatLegend(signalParams);
+async function getDataFromServer(signalParams) {
+	const inputSignal = [];
+	const outputSignal = [];
 
-	// Use the formatter if available; otherwise fallback to the default formatter.
-	inputSymbolName = inputLegendSymbol;
+	const data = await fetchSignal(signalParams);
+	data.forEach((row) => {
+		outputSignal.push({
+			time: parseFloat(row.Freq),
+			value: parseFloat(row["re(FFT)"]),
+		});
+		inputSignal.push({
+			time: parseFloat(row.input),
+			value: parseFloat(row["re(signal)"]),
+		});
+	});
 
-	outputSymbolName = outputLegendSymbol;
+    const outputSignalSliced = outputSignal.filter(point =>
+        point.time >= -signalParams.freqrange
+					&& point.time <= signalParams.freqrange
+    );
+
+  	return {
+        inputSignal,
+        outputSignal,
+		outputSignalSliced
+	};
+}
+
+try {
+	const { inputSignal, outputSignalSliced } = await getDataFromServer(signalParams);
+	
+	inputAreaSeries.setData(inputSignal);
+	outputAreaSeries.setData(outputSignalSliced);
+	
+	inputUpdateLegend(undefined);
+	outputUpdateLegend(undefined);
+	
+	inputChart.timeScale().fitContent();
+	outputChart.timeScale().fitContent();
+	
+	// Hide loading after data is loaded
+	loadingEl.style.display = 'none';
+} catch (error) {
+	console.error("Error loading initial chart data:", error);
+	loadingEl.textContent = "Error loading data. Please try again.";
+}
+
+
+async function updateChartData(signalParams) {
+	// Show loading
+	loadingEl.style.display = 'block';
+
+	// Update legend symbols based on new parameters
+	const { inputSymbolName, outputSymbolName } = formatLegend(signalParams);
+
 	console.log("Updating chart data");
-	const frequencyLimit = parseInt(signalParams["freqrange"]);
-    const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit);
+    const { inputSignal, outputSignalSliced } = await getDataFromServer(signalParams);
+
 	inputAreaSeries.setData(inputSignal);
     outputAreaSeries.setData(outputSignalSliced);
-    inputUpdateLegend(undefined);
+    
+	inputUpdateLegend(undefined);
     outputUpdateLegend(undefined);
 
 	inputChart.timeScale().fitContent();
 	outputChart.timeScale().fitContent();
 }
 
-// Expose the updateChartData function to the window
+// Expose updateChartData to global scope
 window.updateChartData = updateChartData;
-
 
 inputChart.timeScale().applyOptions({
 	minBarSpacing: 0.1,
@@ -265,5 +311,4 @@ outputChart.timeScale().applyOptions({
 
 inputChart.timeScale().fitContent();
 outputChart.timeScale().fitContent();
-
 </script>
