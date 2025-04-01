@@ -74,7 +74,7 @@ function formatLegend(signalParams = {}) {
 		square: `re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
 		triangle: `re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
 		sinc: `re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
-		cos: `re(FFT(f(t))) = A ⋅ ½(𝛿(f - f₀) + 𝛿(f + f₀)) = ${amplitude} ⋅ ½(𝛿(f - ${frequency}) + 𝛿(f + ${frequency}))`,
+		cos: `re(FFT(f(t))) = A ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${amplitude} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
 	};
 
 	const inputLegendSymbol = inputFormatters[signalShape]
