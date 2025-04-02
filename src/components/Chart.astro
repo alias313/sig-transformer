@@ -61,7 +61,7 @@ function formatLegend(signalParams = {}) {
 	const inputFormatters = {
 		square: 	`f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
 		triangle: 	`f(t) = A ⋅ Λ(t / 2T) = ${amplitude} ⋅ Λ(t / ${frequency})`,
-		sinc: 		`f(t) = A ⋅ f₀ ⋅ sinc(f₀ ⋅ t) = ${amplitude} ⋅ sinc(t / ${frequency})`,
+		sinc: 		`f(t) = A ⋅ sinc(f₀ ⋅ t - ϕ) = A ⋅ sin(f₀ ⋅ πt - ϕ) / (f₀ ⋅ πt - ϕ) = ${amplitude} ⋅ sinc(${frequency} ⋅ t - ${phase})`,
 		sin: 		`f(t) = A ⋅ sin(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ sin(2π ⋅ ${frequency} ⋅ t + ${phase})`,
 		cos: 		`f(t) = A ⋅ cos(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ cos(2π ⋅ ${frequency} ⋅ t + ${phase})`,
 		exp: 		`f(t) = ${amplitude}⋅exp(t)`
