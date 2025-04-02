@@ -25,7 +25,7 @@ async function getDataFromIndexedDB(frequencyLimit) {
 	data.forEach((row) => {
 		outputSignal.push({
 			time: parseFloat(row.Freq),
-			value: parseFloat(row["re(FFT)"]),
+			value: parseFloat(row["abs(FFT)"]),
 		});
 		inputSignal.push({
 			time: parseFloat(row.input),
@@ -68,11 +68,11 @@ function formatLegend(signalParams = {}) {
 	};
 
 	const outputFormatters = {
-		square: 	`re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
-		triangle: 	`re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
-		sinc: 		`re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
-		cos: 		`re(FFT(f(t))) = A ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${amplitude} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
-		sin:		`re(FFT(f(t))) = 0`,
+		square: 	`abs(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
+		triangle: 	`abs(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
+		sinc: 		`abs(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
+		cos: 		`abs(FFT(f(t))) = A ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${amplitude} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
+		sin:		`abs(FFT(f(t))) = 0`,
 	};
 
 	const inputSymbolName = inputFormatters[signalShape]
