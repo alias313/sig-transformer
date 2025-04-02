@@ -232,12 +232,12 @@ int sinc(fftw_complex in[], double input_array[],
     input_array[i] = input;
 
     if (input != 0)
-      in[i][0] = amp * freq_hz * sin(freq_hz * M_PI * input - phase_rad) / (freq_hz * M_PI * input - phase_rad);
+      in[i][0] = amp * sin(freq_hz * M_PI * input - phase_rad) / (freq_hz * M_PI * input - phase_rad);
     else {
       if (phase_rad == 0)
-        in[i][0] = amp * freq_hz;
+        in[i][0] = amp;
       else
-        in[i][0] = amp * freq_hz * sin(freq_hz * M_PI * input - phase_rad) / (freq_hz * M_PI * input - phase_rad);
+        in[i][0] = amp * sin(freq_hz * M_PI * input - phase_rad) / (freq_hz * M_PI * input - phase_rad);
     }
     in[i][1] = 0;
     // printf("%d input %8.5f\n", i, input);
