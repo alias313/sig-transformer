@@ -4,31 +4,6 @@ import Card from '../components/Card.astro';
 import Chart from '../components/Chart.astro';
 
 const maxFreq = 50;
-
-// Fetch last used signal parameters from the server
-let signalParamsOnReload;
-try {
-  const response = await fetch('http://localhost:3000/signal-params');
-  if (response.ok) {
-    signalParamsOnReload = await response.json();
-    console.log("Loaded parameters from server:", signalParamsOnReload);
-  } else {
-    throw new Error(`Failed to fetch params: ${response.status}`);
-  }
-} catch (error) {
-  console.error("Error fetching signal parameters:", error);
-  // Fallback to default parameters if API call fails
-  signalParamsOnReload = {
-    a: -30,
-    b: 30,
-    signalShape: 'sinc',
-    amplitude: 1,
-    frequency: 1,
-    phase: 0,
-    interval: 0.01,
-    freqrange: 5
-  };
-}
 ---
 
 <Layout title="SigTransformer">
@@ -141,7 +116,7 @@ try {
 				
 				<!-- Right column - Chart and Cards -->
 				<div class="md:w-3/5">
-					<Chart signalParamsProp={signalParamsOnReload}/>
+					<Chart />
 				</div>
 			</div>
 
