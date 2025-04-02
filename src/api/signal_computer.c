@@ -235,7 +235,7 @@ int sinc(fftw_complex in[], double input_array[],
       in[i][0] = amp * freq_hz * sin(freq_hz * M_PI * input - phase_rad) / (freq_hz * M_PI * input - phase_rad);
     else {
       if (phase_rad == 0)
-        in[i][0] = amp;
+        in[i][0] = amp * freq_hz;
       else
         in[i][0] = amp * freq_hz * sin(freq_hz * M_PI * input - phase_rad) / (freq_hz * M_PI * input - phase_rad);
     }
