@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
+import InfoCard from '../components/InfoCard.astro';
+import Form from '../components/Form.astro';
 import Chart from '../components/Chart.astro';
 
 const maxFreq = 50;
@@ -8,7 +9,7 @@ const maxFreq = 50;
 
 <Layout title="SigTransformer">
     <header class="flex flex-col items-center justify-center">
-		<h1 class="mt-5 text-white">Signal <span class="text-gradient">Transformer</span></h1>
+		<h1 class="mt-5 text-white text-6xl font-bold leading-none text-center mb-16">Signal <span class="bg-gradient-to-r from-purple-400 to-purple-900 bg-clip-text text-transparent bg-[size:400%] bg-[position:0%]">Transformer</span></h1>
         <a href="https://www.github.com/alias313/sig-transformer" target="_blank" rel="noopener noreferrer" class="absolute top-0 right-0 m-4 w-20">
 			<svg viewBox="-25.6 -25.6 307.20 307.20" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" fill="#000000">
 				<g id="SVGRepo_bgCarrier" stroke-width="0" transform="translate(23.040000000000006,23.040000000000006), scale(0.82)">
@@ -24,16 +25,16 @@ const maxFreq = 50;
 			  </svg>
 		</a>
     </header>
-	<main class="flex flex-col items-center justify-center">
-		<p class="instructions">
-			Generate your signal and observe its <code>DFT</code> (Discrete Fourier Transform)<br />
-			<strong>Challenge:</strong> Guess the shape of the transform beforehand.
+	<main class="flex flex-col w-auto items-center justify-center mx-auto p-4 max-w-[calc(100%-2rem)] text-xl leading-[1.6]">
+		<p class="mb-8 border border-opacity-25 border-purple-500 bg-gradient-to-b from-purple-900/70 to-purple-900/30 p-6 rounded-lg text-white w-full max-w-3xl">
+			Generate your signal and observe its <code class="text-sm font-bold bg-purple-300/10 text-purple-300 rounded px-1.5 py-1">DFT</code> (Discrete Fourier Transform)<br />
+			<strong class="text-purple-300">Challenge:</strong> Guess the shape of the transform beforehand.
 		</p>
 
 			<!-- New flex container for side-by-side layout -->
-			<div class="mx-auto w-5/5 w-full flex flex-col md:flex-row gap-12 justify-center pr-20 ml-[-15%]">
+			<div class="mx-auto w-5/5 w-auto flex flex-col md:flex-row gap-12 justify-center">
 				<!-- Left column - Form -->
-				<div class="md:w-3/5">
+				<div class="md:w-2/5">
 					<h1 class="text-2xl font-bold text-center mb-6 text-purple-400">Signal Generator</h1>
 					
 					<div class="bg-darker border border-gray-800 rounded-lg shadow-lg p-6">
@@ -120,79 +121,19 @@ const maxFreq = 50;
 				</div>
 			</div>
 
-			<ul role="list" class="link-card-grid my-10">
-				<Card
+			<ul role="list" class="grid grid-cols-[repeat(auto-fit,minmax(24ch,1fr))] gap-x-8 gap-y-4 p-0 my-10">
+				<InfoCard
 					href="https://en.wikipedia.org/wiki/Discrete_Fourier_transform"
 					title="DFT"
 					body="Learn more about the DFT and its properties."
 				/>
-				<Card
+				<InfoCard
 					href="https://www.youtube.com/watch?v=h7apO7q16V0"
 					title="FFT Algorithm"
 					body="This video visually explain the algorithm that is used to transform the input signals."
 				/>
 			</ul>
-		<script src="../scripts/signal-handler.js">
-		</script>
+			<Form />
+		<script src="../scripts/signal-handler.js"></script>
 	</main>
 </Layout>
-
-<style>
-	main {
-		margin: auto;
-		padding: 1rem;
-		width: 800px;
-		max-width: calc(100% - 2rem);
-		color: white;
-		font-size: 20px;
-		line-height: 1.6;
-	}
-	.astro-a {
-		position: absolute;
-		top: -32px;
-		left: 50%;
-		transform: translatex(-50%);
-		width: 220px;
-		height: auto;
-		z-index: -1;
-	}
-	h1 {
-		font-size: 4rem;
-		font-weight: 700;
-		line-height: 1;
-		text-align: center;
-		margin-bottom: 1em;
-	}
-	.text-gradient {
-		background-image: var(--accent-gradient);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-size: 400%;
-		background-position: 0%;
-	}
-	.instructions {
-		margin-bottom: 2rem;
-		border: 1px solid rgba(var(--accent-light), 25%);
-		background: linear-gradient(rgba(var(--accent-dark), 66%), rgba(var(--accent-dark), 33%));
-		padding: 1.5rem;
-		border-radius: 8px;
-	}
-	.instructions code {
-		font-size: 0.8em;
-		font-weight: bold;
-		background: rgba(var(--accent-light), 12%);
-		color: rgb(var(--accent-light));
-		border-radius: 4px;
-		padding: 0.3em 0.4em;
-	}
-	.instructions strong {
-		color: rgb(var(--accent-light));
-	}
-	.link-card-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
-		column-gap: 2rem; /* horizontal space */
-		row-gap: 1rem;    /* vertical space */
-		padding: 0;
-	}
-</style>
