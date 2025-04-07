@@ -21,22 +21,46 @@ import { createChart } from '/node_modules/lightweight-charts';
 import { createDB } from '/src/scripts/db.js';
 import loadSignalParamsFromLocalStorage from '/src/scripts/signal-handler.js';
 
-// Get loading element
-const loadingElement = document.getElementById('chart-loading');
-
 // Show loading indicator
 const showLoading = () => {
-    if (loadingElement) {
-        loadingElement.classList.remove('opacity-0');
-        loadingElement.classList.remove('pointer-events-none');
+	console.log("Loading chart data...");
+    // Check if the loading element exists in the DOM
+    let loadingEl = document.getElementById('chart-loading');
+    
+    if (!loadingEl) {
+        // If it doesn't exist, recreate it
+        loadingEl = document.createElement('div');
+        loadingEl.id = 'chart-loading';
+        loadingEl.className = 'absolute inset-0 flex items-center justify-center bg-black/80 z-20 transition-opacity duration-300';
+        
+        // Create inner content
+        loadingEl.innerHTML = `
+            <div class="flex flex-col items-center gap-3">
+                <div class="w-10 h-10 border-4 border-t-purple-500 border-purple-200/30 rounded-full animate-spin"></div>
+                <p class="text-white font-medium">Loading chart data...</p>
+            </div>
+        `;
+        
+        // Add it back to the chart root
+        document.getElementById('chart-root').appendChild(loadingEl);
     }
+    
+    // Show the loading element
+    loadingEl.classList.remove('opacity-0');
+    loadingEl.classList.remove('pointer-events-none');
+
 };
+
+window.showChartLoading = showLoading;
 
 // Hide loading indicator
 const hideLoading = () => {
-    if (loadingElement) {
-        loadingElement.classList.add('opacity-0');
-        loadingElement.classList.add('pointer-events-none');
+	console.log("Hiding loading indicator...");
+    const loadingEl = document.getElementById('chart-loading');
+
+    if (loadingEl) {
+        loadingEl.classList.add('opacity-0');
+        loadingEl.classList.add('pointer-events-none');
     }
 };
 
@@ -235,11 +259,8 @@ inputUpdateLegend(undefined);
 outputUpdateLegend(undefined);
 
 async function updateChartData(signalParams = {}) {
-	showLoading();
-
 	({ inputSymbolName, outputSymbolName } = formatLegend(signalParams));
 
-	console.log("Updating chart data");
 	const frequencyLimit = parseInt(signalParams["freqrange"]);
     const { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit);
 	inputAreaSeries.setData(inputSignal);

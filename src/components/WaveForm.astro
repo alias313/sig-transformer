@@ -124,6 +124,9 @@ document.querySelector('.starwind-select')?.addEventListener('starwind-select:ch
 });
 
 async function fetchSignal(signalParams) {
+  if (typeof window.showChartLoading === 'function') {
+        window.showChartLoading();
+    }
     // Collect form data to a plain object
     try {
         const response = await fetch('http://localhost:3000/execute-fft', {
@@ -164,7 +167,6 @@ const setupForm = () => {
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    
     // Get the select value from the custom event
     const selectElement = document.querySelector('.starwind-select');
     const selectValue = selectElement?.getAttribute('data-value') || 'sinc';
