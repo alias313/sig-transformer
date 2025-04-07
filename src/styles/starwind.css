@@ -93,7 +93,7 @@
 	}
 
 	.dark {
-		--background: var(--color-neutral-950);
+		--background: var(--color-neutral-900);
 		--foreground: var(--color-neutral-50);
 		--card: var(--color-neutral-950);
 		--card-foreground: var(--color-neutral-50);
@@ -117,7 +117,7 @@
 		--error-foreground: var(--color-neutral-50);
 		--border: var(--color-neutral-800);
 		--input: var(--color-neutral-800);
-		--outline: var(--color-blue-600);
+		--outline: var(--color-purple-600);
 		--radius: 0.5rem;
 	}
 

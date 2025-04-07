@@ -4,62 +4,162 @@ import { Button } from "@/components/starwind/button";
 import { Input } from "@/components/starwind/input";
 import { Label } from "@/components/starwind/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup, SelectLabel, SelectSeparator, } from "@/components/starwind/select";
+
+const maxFreq = 50;
 ---
 
 <Card class="w-[400px] text-white">
   <CardHeader>
-    <CardTitle>Create project</CardTitle>
-    <CardDescription>Deploy your new project in one-click.</CardDescription>
+    <CardTitle>Function Generator</CardTitle>
+    <CardDescription>Parametrized functions</CardDescription>
   </CardHeader>
-  <form id="create-project-form">
-    <CardContent class="flex flex-col gap-4">
+  <form id="wave-form">
+    <CardContent class="flex flex-col grid grid-cols-2 gap-4">
+      <!-- Row 1: Start and End -->
       <div class="flex w-full flex-col gap-2">
-        <Label for="name">Name</Label>
-        <Input type="text" id="name" placeholder="Name of your project" />
-        <!-- <InputFeedback>This is a required field</InputFeedback> -->
+        <Label for="a">Start:</Label>
+        <Input type="number" id="a" placeholder="-30" step="0.1" min="-50" max="-1" />
       </div>
       <div class="flex w-full flex-col gap-2">
-        <Label for="framework">Framework</Label>
-        <Select id="framework">
+        <Label for="b">End:</Label>
+        <Input type="number" id="b" placeholder="30" step="0.1" min="1" max="50" />
+      </div>
+      <!-- Row 2: Waveform and Amplitude -->
+      <div class="flex w-full flex-col gap-2">
+        <Label for="waveform">Waveform:</Label>
+        <Select id="waveform">
           <SelectTrigger class="w-full" required>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder="Sinc" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Frameworks</SelectLabel>
-              <SelectItem value="astro">Astro</SelectItem>
-              <SelectItem value="next">Next.js</SelectItem>
-              <SelectItem value="svelte">SvelteKit</SelectItem>
-              <SelectItem value="solid">SolidStart</SelectItem>
+              <SelectItem value="square">Square</SelectItem>
+              <SelectItem value="triangle">Triangle</SelectItem>
+              <SelectItem value="sinc">Sinc</SelectItem>
+              <SelectItem value="cos">Cosine</SelectItem>
+              <SelectItem value="sin">Sine</SelectItem>
+              <SelectItem value="exp">Exponential</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
+      <div class="flex w-full flex-col gap-2">
+        <Label for="amplitude">Amplitude (A):</Label>
+        <Input type="number" id="amplitude" placeholder="1" step="0.1" min="-100" max="100" />
+      </div>
+      <!-- Row 3: Frequency and Phase -->
+      <div class="flex w-full flex-col gap-2">
+        <Label for="frequency" id="frequencyLabel">Frequency (f₀):</Label>
+        <Input type="number" id="frequency" placeholder="1" step="0.1" min="0" max="50" />
+      </div>
+      <div class="flex w-full flex-col gap-2">
+        <Label for="phase">Phase (ϕ):</Label>
+        <Input type="number" id="phase" placeholder="0" step="0.01" min="-100" max="100" />
+      </div>
+      <!-- Row 4: Interval and Frequency Range -->
+      <div class="flex w-full flex-col gap-2">
+        <Label for="interval">Interval:</Label>
+        <Input type="number" id="interval" placeholder="0.01" step="0.01" min="0.01" max="0.1" />
+      </div>
+      <div class="flex w-full flex-col gap-2">
+        <Label for="bandwidth" id="bandwidthLabel">Bandwidth &lt;= {maxFreq}:</Label>
+        <Input type="number" id="bandwidth" placeholder="5" step="0.1" min="0.1" max={maxFreq} />
+      </div>
     </CardContent>
-    <CardFooter class="flex justify-between">
-      <Button type="button" variant="outline">Cancel</Button>
-      <Button type="submit">Deploy</Button>
+    <CardFooter class="flex justify-center">
+      <Button type="submit">Generate function</Button>
     </CardFooter>
   </form>
 </Card>
 
 <script>
-  const setupForm = () => {
-    const form = document.getElementById("create-project-form") as HTMLFormElement;
-    if (!form) return;
+  // Get the input elements
+const startInput = document.getElementById('a') as HTMLInputElement;
+const endInput = document.getElementById('b') as HTMLInputElement;
+const frequencyLabelElement = document.getElementById('frequencyLabel') as HTMLLabelElement;
+const intervalInput = document.getElementById('interval') as HTMLInputElement;
+const bandwidthInput = document.getElementById('bandwidth') as HTMLInputElement;
+const bandwidthLabelElement = document.getElementById('bandwidthLabel') as HTMLLabelElement;
 
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
+function updateDynamicMax() {
+    // Get the current interval value (as a number)
+    const currentInterval = parseFloat(intervalInput.value);
+    // Assume you calculate total_samples from other inputs, for example:
+    const a = parseFloat(startInput.value);
+    const b = parseFloat(endInput.value);
+    const total_samples = Math.ceil((b - a) / currentInterval);
+    
+    // Calculate your dynamic max (use your formula here)
+    const dynamicMax = Math.floor(10*(total_samples - Math.round(total_samples/2))/(total_samples * currentInterval)) / 10;
 
-      // Log all form inputs
-      console.log("Form submission data:", {
-        name: (form.querySelector("#name") as HTMLInputElement)?.value,
-        framework: (form.querySelector("#framework select") as HTMLSelectElement)?.value,
-      });
-    });
-  };
+    // Update the max attribute and current value if needed
+    bandwidthInput.setAttribute('max', dynamicMax.toString());
+    bandwidthLabelElement.innerHTML = `Bandwidth <= ${dynamicMax}:`;
+    if (parseFloat(bandwidthInput.value) > dynamicMax) {
+        bandwidthInput.value = dynamicMax.toString();
+    }
+}
 
-  setupForm();
+document.querySelector('.starwind-select')?.addEventListener('starwind-select:change', (event) => {
+  const waveformInput = (event as CustomEvent).detail.value;
 
-  document.addEventListener("astro:after-swap", setupForm);
+  let newLabel = "Frequency (f₀):";
+    switch (waveformInput) {
+      case "square":
+        newLabel = "Duration (T):";
+        break;
+      case "triangle":
+        newLabel = "Duration (2T):";
+        break;
+    }
+    
+    // Update the Label component's content
+    if (frequencyLabelElement) {
+      frequencyLabelElement.innerHTML = newLabel;
+    }
+
+});
+
+
+// Attach an event listener to update when the interval value changes
+intervalInput.addEventListener('input', updateDynamicMax);
+startInput.addEventListener('input', updateDynamicMax);
+endInput.addEventListener('input', updateDynamicMax);
+
+const setupForm = () => {
+  const form = document.getElementById("wave-form") as HTMLFormElement;
+  if (!form) return;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    
+    // Get the select value from the custom event
+    const selectElement = document.querySelector('.starwind-select');
+    const selectValue = selectElement?.getAttribute('data-value') || 'sinc';
+
+    // Collect all form data
+    const formData = {
+      a: startInput.value,
+      b: endInput.value,
+      signalShape: selectValue,
+      amplitude: (document.getElementById('amplitude') as HTMLInputElement)?.value,
+      frequency: (document.getElementById('frequency') as HTMLInputElement)?.value,
+      phase: (document.getElementById('phase') as HTMLInputElement)?.value,
+      interval: intervalInput.value,
+      freqrange: bandwidthInput.value
+    };
+    
+    console.log("Form submission data:", formData);
+    /*
+    // Call updateChartData if available
+    if (typeof window.updateChartData === 'function') {
+      window.updateChartData(formData);
+    }
+    */
+  });
+};
+updateDynamicMax();
+
+setupForm();
+document.addEventListener("astro:after-swap", setupForm);
 </script>
