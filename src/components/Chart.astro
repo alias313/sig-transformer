@@ -1,7 +1,7 @@
 
 <div id="chart-root" class="relative">
 	<!-- Loading overlay - starts visible and will be hidden when charts are ready -->
-	<div id="chart-loading" class="absolute inset-0 flex items-center justify-center bg-black/80 z-20 transition-opacity duration-300">
+	<div id="chart-loading" class="absolute inset-0 flex items-center justify-center bg-neutral-900 z-20 transition-opacity duration-300">
 		<div class="flex flex-col items-center gap-3">
 			<div class="w-10 h-10 border-4 border-t-purple-500 border-purple-200/30 rounded-full animate-spin"></div>
 			<p class="text-white font-medium">Loading chart data...</p>
@@ -9,10 +9,10 @@
 	</div>
 	
 	<div id="container1" class="my-10 flex mx-auto w-[800px] h-[300px] justify-center relative">
-		<div id="inputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
+		<div id="inputLegend" class="absolute left-0 transform z-10 text-sm font-sans font-light text-white"></div>
 	</div>
 	<div id="container2" class="flex mx-auto w-[800px] h-[300px] justify-center relative">
-		<div id="outputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
+		<div id="outputLegend" class="absolute left-0 transform z-10 text-sm font-sans font-light text-white"></div>
 	</div>
 </div>
 
@@ -26,25 +26,7 @@ const showLoading = () => {
 	console.log("Loading chart data...");
     // Check if the loading element exists in the DOM
     let loadingEl = document.getElementById('chart-loading');
-    
-    if (!loadingEl) {
-        // If it doesn't exist, recreate it
-        loadingEl = document.createElement('div');
-        loadingEl.id = 'chart-loading';
-        loadingEl.className = 'absolute inset-0 flex items-center justify-center bg-black/80 z-20 transition-opacity duration-300';
-        
-        // Create inner content
-        loadingEl.innerHTML = `
-            <div class="flex flex-col items-center gap-3">
-                <div class="w-10 h-10 border-4 border-t-purple-500 border-purple-200/30 rounded-full animate-spin"></div>
-                <p class="text-white font-medium">Loading chart data...</p>
-            </div>
-        `;
-        
-        // Add it back to the chart root
-        document.getElementById('chart-root').appendChild(loadingEl);
-    }
-    
+	
     // Show the loading element
     loadingEl.classList.remove('opacity-0');
     loadingEl.classList.remove('pointer-events-none');
