@@ -173,7 +173,7 @@ const setupForm = () => {
     const formData = {
       a: startInput.value,
       b: endInput.value,
-      signalShape: waveformInput,
+      signalShape: waveformInput || "sinc",
       amplitude: (document.getElementById('amplitude') as HTMLInputElement)?.value,
       frequency: (document.getElementById('frequency') as HTMLInputElement)?.value,
       phase: (document.getElementById('phase') as HTMLInputElement)?.value,

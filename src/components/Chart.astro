@@ -37,10 +37,6 @@ const hideLoading = () => {
     if (loadingElement) {
         loadingElement.classList.add('opacity-0');
         loadingElement.classList.add('pointer-events-none');
-        // Optional: remove from DOM after animation completes
-        setTimeout(() => {
-            loadingElement.remove();
-        }, 300);
     }
 };
 
@@ -239,6 +235,8 @@ inputUpdateLegend(undefined);
 outputUpdateLegend(undefined);
 
 async function updateChartData(signalParams = {}) {
+	showLoading();
+
 	({ inputSymbolName, outputSymbolName } = formatLegend(signalParams));
 
 	console.log("Updating chart data");
@@ -251,6 +249,8 @@ async function updateChartData(signalParams = {}) {
 
 	inputChart.timeScale().fitContent();
 	outputChart.timeScale().fitContent();
+
+	hideLoading();
 }
 
 // Expose the updateChartData function to the window
