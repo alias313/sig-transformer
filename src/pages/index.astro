@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import InfoCard from '../components/InfoCard.astro';
 import WaveForm from '../components/WaveForm.astro';
-import Chart from '../components/Chart.astro';
+import Chart from '../components/Chart.jsx';
 
 const maxFreq = 50;
 ---
@@ -32,15 +32,15 @@ const maxFreq = 50;
 		</p>
 
 			<!-- New flex container for side-by-side layout -->
-			<div class="mx-auto w-5/5 w-auto flex flex-col md:flex-row gap-12 justify-center">
+			<div class="mx-auto w-auto flex flex-col md:flex-row gap-12 justify-center">
 				<!-- Left column - Form -->
-				<div class="md:w-2/5">
+				<div class="md:w-2/5 flex-shrink-0">
 					<WaveForm />
 				</div>
 				
 				<!-- Right column - Chart and Cards -->
-				<div class="md:w-3/5">
-					<Chart />
+				<div class="md:w-3/5 min-w-[800px] min-h-[680px] flex-shrink-0">
+					<Chart client:only="react"/>
 				</div>
 			</div>
 
