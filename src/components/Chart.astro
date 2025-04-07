@@ -1,5 +1,13 @@
 
-<div id="chart-root">
+<div id="chart-root" class="relative">
+	<!-- Loading overlay - starts visible and will be hidden when charts are ready -->
+	<div id="chart-loading" class="absolute inset-0 flex items-center justify-center bg-black/80 z-20 transition-opacity duration-300">
+		<div class="flex flex-col items-center gap-3">
+			<div class="w-10 h-10 border-4 border-t-purple-500 border-purple-200/30 rounded-full animate-spin"></div>
+			<p class="text-white font-medium">Loading chart data...</p>
+		</div>
+	</div>
+	
 	<div id="container1" class="my-10 flex mx-auto w-[800px] h-[300px] justify-center relative">
 		<div id="inputLegend" class="absolute left-0 transform -top-2 z-10 text-sm font-sans font-light text-white"></div>
 	</div>
@@ -12,6 +20,34 @@
 import { createChart } from '/node_modules/lightweight-charts';
 import { createDB } from '/src/scripts/db.js';
 import loadSignalParamsFromLocalStorage from '/src/scripts/signal-handler.js';
+
+// Get loading element
+const loadingElement = document.getElementById('chart-loading');
+
+// Show loading indicator
+const showLoading = () => {
+    if (loadingElement) {
+        loadingElement.classList.remove('opacity-0');
+        loadingElement.classList.remove('pointer-events-none');
+    }
+};
+
+// Hide loading indicator
+const hideLoading = () => {
+    if (loadingElement) {
+        loadingElement.classList.add('opacity-0');
+        loadingElement.classList.add('pointer-events-none');
+        // Optional: remove from DOM after animation completes
+        setTimeout(() => {
+            loadingElement.remove();
+        }, 300);
+    }
+};
+
+// Show loading at the start
+showLoading();
+
+
 // Create a new database
 const db = await createDB();
 
@@ -239,5 +275,8 @@ outputChart.timeScale().applyOptions({
 
 inputChart.timeScale().fitContent();
 outputChart.timeScale().fitContent();
+
+// Hide the loading indicator once everything is ready
+hideLoading();
 
 </script>
