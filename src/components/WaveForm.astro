@@ -18,11 +18,11 @@ const maxFreq = 50;
       <!-- Row 1: Start and End -->
       <div class="flex w-full flex-col gap-2">
         <Label for="a">Start:</Label>
-        <Input type="number" id="a" placeholder="-30" step="0.1" min="-50" max="-1" />
+        <Input type="number" id="a" value="-30" step="0.1" min="-50" max="-1" />
       </div>
       <div class="flex w-full flex-col gap-2">
         <Label for="b">End:</Label>
-        <Input type="number" id="b" placeholder="30" step="0.1" min="1" max="50" />
+        <Input type="number" id="b" value="30" step="0.1" min="1" max="50" />
       </div>
       <!-- Row 2: Waveform and Amplitude -->
       <div class="flex w-full flex-col gap-2">
@@ -45,25 +45,25 @@ const maxFreq = 50;
       </div>
       <div class="flex w-full flex-col gap-2">
         <Label for="amplitude">Amplitude (A):</Label>
-        <Input type="number" id="amplitude" placeholder="1" step="0.1" min="-100" max="100" />
+        <Input type="number" id="amplitude" value="1" step="0.1" min="-100" max="100" />
       </div>
       <!-- Row 3: Frequency and Phase -->
       <div class="flex w-full flex-col gap-2">
         <Label for="frequency" id="frequencyLabel">Frequency (f₀):</Label>
-        <Input type="number" id="frequency" placeholder="1" step="0.1" min="0" max="50" />
+        <Input type="number" id="frequency" value="1" step="0.1" min="0" max="50" />
       </div>
       <div class="flex w-full flex-col gap-2">
         <Label for="phase">Phase (ϕ):</Label>
-        <Input type="number" id="phase" placeholder="0" step="0.01" min="-100" max="100" />
+        <Input type="number" id="phase" value="0" step="0.01" min="-100" max="100" />
       </div>
       <!-- Row 4: Interval and Frequency Range -->
       <div class="flex w-full flex-col gap-2">
         <Label for="interval">Interval:</Label>
-        <Input type="number" id="interval" placeholder="0.01" step="0.01" min="0.01" max="0.1" />
+        <Input type="number" id="interval" value="0.01" step="0.01" min="0.01" max="0.1" />
       </div>
       <div class="flex w-full flex-col gap-2">
         <Label for="bandwidth" id="bandwidthLabel">Bandwidth &lt;= {maxFreq}:</Label>
-        <Input type="number" id="bandwidth" placeholder="5" step="0.1" min="0.1" max={maxFreq} />
+        <Input type="number" id="bandwidth" value="5" step="0.1" min="0.1" max={maxFreq} />
       </div>
     </CardContent>
     <CardFooter class="flex justify-center">
@@ -73,13 +73,16 @@ const maxFreq = 50;
 </Card>
 
 <script>
-  // Get the input elements
+import { loadJSONToIndexedDB } from "@/scripts/db";
+
+// Get the input elements
 const startInput = document.getElementById('a') as HTMLInputElement;
 const endInput = document.getElementById('b') as HTMLInputElement;
 const frequencyLabelElement = document.getElementById('frequencyLabel') as HTMLLabelElement;
 const intervalInput = document.getElementById('interval') as HTMLInputElement;
 const bandwidthInput = document.getElementById('bandwidth') as HTMLInputElement;
 const bandwidthLabelElement = document.getElementById('bandwidthLabel') as HTMLLabelElement;
+let waveformInput;
 
 function updateDynamicMax() {
     // Get the current interval value (as a number)
@@ -101,7 +104,7 @@ function updateDynamicMax() {
 }
 
 document.querySelector('.starwind-select')?.addEventListener('starwind-select:change', (event) => {
-  const waveformInput = (event as CustomEvent).detail.value;
+  waveformInput = (event as CustomEvent).detail.value;
 
   let newLabel = "Frequency (f₀):";
     switch (waveformInput) {
@@ -119,6 +122,35 @@ document.querySelector('.starwind-select')?.addEventListener('starwind-select:ch
     }
 
 });
+
+async function fetchSignal(signalParams) {
+    // Collect form data to a plain object
+    try {
+        const response = await fetch('http://localhost:3000/execute-fft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(signalParams)
+        });
+        
+        if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        // This is where you read the JSON response returned by the server.
+        const fftData = await response.json();
+        console.log("Received FFT JSON:", fftData);
+        await loadJSONToIndexedDB(fftData);
+        window.updateChartData?.(signalParams);
+
+        // Now update your charts with the new data.
+        // For example, if you have a function to update charts, call it with fftData.
+        // updateCharts(fftData);
+        
+    } catch (error) {
+        console.error('Error executing FFT:', error);
+        alert('Error executing FFT');
+    }
+}
 
 
 // Attach an event listener to update when the interval value changes
@@ -141,7 +173,7 @@ const setupForm = () => {
     const formData = {
       a: startInput.value,
       b: endInput.value,
-      signalShape: selectValue,
+      signalShape: waveformInput,
       amplitude: (document.getElementById('amplitude') as HTMLInputElement)?.value,
       frequency: (document.getElementById('frequency') as HTMLInputElement)?.value,
       phase: (document.getElementById('phase') as HTMLInputElement)?.value,
@@ -150,6 +182,7 @@ const setupForm = () => {
     };
     
     console.log("Form submission data:", formData);
+    fetchSignal(formData);
     /*
     // Call updateChartData if available
     if (typeof window.updateChartData === 'function') {

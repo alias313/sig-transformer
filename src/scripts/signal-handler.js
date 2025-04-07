@@ -45,54 +45,6 @@ export default function loadSignalParamsFromLocalStorage() {
 let signalParamsOnReload = loadSignalParamsFromLocalStorage();
 console.log("Loaded parameters from LocalStorage:", signalParamsOnReload);
 
-// Get the input elements
-const shapeInput = document.getElementById('signalShape');
-const freqLabelInput = document.getElementById('freqLabel');
-
-const intervalInput = document.getElementById('interval');
-const freqRangeInput = document.getElementById('freqrange');
-const freqRangeLabelInput = document.getElementById('freqRangeLabel');
-
-function updateFreqLabel() {
-    switch (true) {
-        case shapeInput.value === "square":
-            freqLabelInput.textContent = "Duration (T):";
-            break;
-        case shapeInput.value === "triangle":
-            freqLabelInput.textContent = "Duration (2T):";
-            break;
-        default:
-            freqLabelInput.textContent = "Frequency (f₀):";
-    }
-}
-
-function updateDynamicMax() {
-    // Get the current interval value (as a number)
-    const currentInterval = parseFloat(intervalInput.value);
-    // Assume you calculate total_samples from other inputs, for example:
-    const a = parseFloat(document.getElementById('a').value);
-    const b = parseFloat(document.getElementById('b').value);
-    const total_samples = Math.ceil((b - a) / currentInterval);
-    
-    // Calculate your dynamic max (use your formula here)
-    const dynamicMax = Math.floor(10*(total_samples - Math.round(total_samples/2))/(total_samples * currentInterval)) / 10;
-                    
-    // Update the max attribute and current value if needed
-    freqRangeInput.setAttribute('max', dynamicMax);
-    freqRangeLabelInput.textContent = `Hz range <= ${dynamicMax}:`;
-    if (parseFloat(freqRangeInput.value) > dynamicMax) {
-        freqRangeInput.value = dynamicMax;
-    }
-}
-
-// Attach an event listener to update when the interval value changes
-intervalInput.addEventListener('input', updateDynamicMax);
-shapeInput.addEventListener('input', updateFreqLabel);
-
-// Optionally, you might also want to update when the a or b inputs change
-document.getElementById('a').addEventListener('input', updateDynamicMax);
-document.getElementById('b').addEventListener('input', updateDynamicMax);
-
 async function transformSignal(signalParams) {
     // Collect form data to a plain object
     try {
@@ -131,21 +83,4 @@ if (!isExisting){
     transformSignal(signalParamsOnReload);
 }
 
-
-window.addEventListener('DOMContentLoaded', async (event) => {
-    updateDynamicMax(); // on load
-    updateFreqLabel(); // on load
-});
-
-signalForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Prevent the default form submission (and redirect)
-    
-    const signalForm = document.getElementById('signalForm');
-    const formParams = new FormData(signalForm);
-    const signalParams = Object.fromEntries(formParams.entries());
-
-    saveSignalParamsToLocalStorage(signalParams);
-
-    console.log("Form submitted:", signalParams);
-    transformSignal(signalParams);
-});
+export { transformSignal };
