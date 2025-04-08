@@ -48,7 +48,7 @@ console.log("Loaded parameters from LocalStorage:", signalParamsOnReload);
 async function transformSignal(signalParams) {
     // Collect form data to a plain object
     try {
-        const response = await fetch('http://srv785333.hstgr.cloud:3000/execute-fft', {
+        const response = await fetch('https://srv785333.hstgr.cloud/execute-fft', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(signalParams)
