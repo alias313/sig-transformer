@@ -73,7 +73,7 @@ const maxFreq = 50;
 </Card>
 
 <script>
-import { loadJSONToIndexedDB } from "@/scripts/db";
+import { fetchSignal } from "@/scripts/signal-handler.js";
 
 // Get the input elements
 const startInput = document.getElementById('a') as HTMLInputElement;
@@ -123,39 +123,6 @@ document.querySelector('.starwind-select')?.addEventListener('starwind-select:ch
 
 });
 
-async function fetchSignal(signalParams) {
-  if (typeof window.showChartLoading === 'function') {
-        window.showChartLoading();
-    }
-    // Collect form data to a plain object
-    try {
-        const response = await fetch('https://srv785333.hstgr.cloud/execute-fft', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(signalParams)
-        });
-        
-        if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        
-        // This is where you read the JSON response returned by the server.
-        const fftData = await response.json();
-        console.log("Received FFT JSON:", fftData);
-        await loadJSONToIndexedDB(fftData);
-        window.updateChartData?.(signalParams);
-
-        // Now update your charts with the new data.
-        // For example, if you have a function to update charts, call it with fftData.
-        // updateCharts(fftData);
-        
-    } catch (error) {
-        console.error('Error executing FFT:', error);
-        alert('Error executing FFT');
-    }
-}
-
-
 // Attach an event listener to update when the interval value changes
 intervalInput.addEventListener('input', updateDynamicMax);
 startInput.addEventListener('input', updateDynamicMax);
@@ -165,7 +132,7 @@ const setupForm = () => {
   const form = document.getElementById("wave-form") as HTMLFormElement;
   if (!form) return;
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     // Get the select value from the custom event
     const selectElement = document.querySelector('.starwind-select');
@@ -184,13 +151,10 @@ const setupForm = () => {
     };
     
     console.log("Form submission data:", formData);
-    fetchSignal(formData);
-    /*
+    window.showChartLoading();
+    await fetchSignal(formData);
     // Call updateChartData if available
-    if (typeof window.updateChartData === 'function') {
-      window.updateChartData(formData);
-    }
-    */
+    window.updateChartData(formData);
   });
 };
 updateDynamicMax();
