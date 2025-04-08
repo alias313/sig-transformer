@@ -152,9 +152,7 @@ const setupForm = () => {
     
     console.log("Form submission data:", formData);
     window.showChartLoading();
-    await fetchSignal(formData);
-    // Call updateChartData if available
-    window.updateChartData(formData);
+    await fetchSignal(formData, true);
   });
 };
 updateDynamicMax();

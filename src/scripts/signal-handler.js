@@ -45,7 +45,7 @@ export default function loadSignalParamsFromLocalStorage() {
 let signalParamsOnReload = loadSignalParamsFromLocalStorage();
 console.log("Loaded parameters from LocalStorage:", signalParamsOnReload);
 
-async function fetchSignal(signalParams) {
+async function fetchSignal(signalParams, update=false) {
     try {
         const response = await fetch('https://srv785333.hstgr.cloud/execute-fft', {
         method: 'POST',
@@ -60,7 +60,9 @@ async function fetchSignal(signalParams) {
         // This is where you read the JSON response returned by the server.
         const fftData = await response.json();
         console.log("Received FFT JSON:", fftData);
-        await loadJSONToIndexedDB(fftData);        
+        await loadJSONToIndexedDB(fftData);      
+        if (update) window.updateChartData?.(signalParams);
+  
     } catch (error) {
         console.error('Error executing FFT:', error);
         alert('Error executing FFT');
@@ -73,9 +75,10 @@ console.log("DB exists:", isExisting);
 // Doesn't cover the case when DB exists but there is no table/data
 if (!isExisting){
     console.log("Creating new database");
-    window.showChartLoading();
-    await fetchSignal(signalParamsOnReload);
-    window.updateChartData(formData);
+    if (typeof window.showChartLoading === 'function') {
+        window.showChartLoading();
+    }
+    await fetchSignal(signalParamsOnReload, true);
 }
 
 export { loadSignalParamsFromLocalStorage, fetchSignal };
