@@ -1,8 +1,9 @@
 // Chart.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart } from 'lightweight-charts';
-import { createDB } from '../scripts/db.js';
+import { createDB, loadJSONToIndexedDB } from '../scripts/db.js';
 import loadSignalParamsFromLocalStorage from '../scripts/signal-handler.js';
+import { transformSignal } from '../scripts/signal-handler.js';
 
 const Chart = () => {
   // React state and refs
@@ -325,6 +326,26 @@ const Chart = () => {
         while (!inputSignal.length && !outputSignalSliced.length) {
           console.log("No data available yet, waiting 1000ms...");
           await new Promise(resolve => setTimeout(resolve, 1000));
+          try {
+            const response = await fetch('https://srv785333.hstgr.cloud/execute-fft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(signalParams)
+            });
+            
+            if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            // This is where you read the JSON response returned by the server.
+            const fftData = await response.json();
+            console.log("Received FFT JSON:", fftData);
+            await loadJSONToIndexedDB(fftData);            
+        } catch (error) {
+            console.error('Error executing FFT:', error);
+            alert('Error executing FFT');
+        }
+    
           ({ inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit));
         }
         
