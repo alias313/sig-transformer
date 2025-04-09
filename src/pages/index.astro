@@ -43,7 +43,7 @@ import Chart from '../components/Chart.jsx';
 				</div>
 			</div>
 
-			<ul role="list" class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 p-0 my-10 sm:my-16">
+			<ul role="list" class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 p-0 my-10 sm:my-4">
 				<InfoCard
 					href="https://en.wikipedia.org/wiki/Discrete_Fourier_transform"
 					title="DFT"
@@ -55,6 +55,26 @@ import Chart from '../components/Chart.jsx';
 					body="This video visually explains the algorithm that is used to transform the input signals."
 				/>
 			</ul>
+			<p class="text-center text-sm text-neutral-400 mt-8">
+				Charts made with the 
+				<a 
+					href="https://www.tradingview.com/lightweight-charts/" 
+					target="_blank" 
+					rel="noopener noreferrer"
+					class="inline-block text-center font-medium bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+				>
+					lightweight-charts
+				</a> 
+				library and FFT algorithm from 
+				<a 
+					href="https://www.fftw.org/" 
+					target="_blank" 
+					rel="noopener noreferrer"
+					class="inline-block text-center font-medium bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+				>
+					fftw3
+				</a>
+			</p>
 		<script src="../scripts/signal-handler.js"></script>
 	</main>
 </Layout>
