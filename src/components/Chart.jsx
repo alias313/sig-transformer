@@ -38,7 +38,7 @@ const Chart = () => {
   };
 
   const formatLegend = (signalParams = {}) => {
-    const { signalShape, amplitude, frequency, phase } = signalParams;
+    const { b, signalShape, amplitude, frequency, phase } = signalParams;
     
     const inputFormatters = {
       square: `f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
@@ -54,7 +54,8 @@ const Chart = () => {
       triangle: `abs(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
       sinc: `abs(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
       cos: `abs(FFT(f(t))) = A ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${amplitude} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
-      sin: `abs(FFT(f(t))) = 0`,
+      sin: `abs(FFT(f(t))) = A ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${amplitude} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
+      exp: `abs(FFT(f(t))) = exp(${b}) ⋅ ${amplitude} / (f²+1)`
     };
 
     return {
