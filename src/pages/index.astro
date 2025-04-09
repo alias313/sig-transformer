@@ -32,12 +32,12 @@ import Chart from '../components/Chart.jsx';
 			<!-- New flex container for side-by-side layout -->
 			<div class="w-full grid grid-cols-1 md:grid-cols-5 md:gap-x-8 lg:gap-x-12 gap-y-8 items-center">
 				<!-- Left column - Form -->
-				<div class="md:col-span-2 px-4 md:px-0">
+				<div class="md:col-span-2 flex flex-col justify-center px-4 md:px-0">
 					<WaveForm />
 				</div>
 				
 				<!-- Right column - Chart and Cards -->
-				<div class="md:col-span-3 rounded-lg min-h-[680px]">
+				<div class="md:col-span-3 flex flex-col justify-center rounded-lg min-h-[680px]">
 					<Chart client:load client:only="react"/>
 				</div>
 			</div>
