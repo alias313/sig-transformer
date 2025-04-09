@@ -96,9 +96,9 @@ const Chart = () => {
   const setTooltipHtml = (legend, name, time, value) => {
     if (legend) {
       legend.innerHTML = `
-        <div class="text-lg my-0">${name}</div>
-        <div class="text-base my-0">${value}</div>
-        <div class="text-sm my-0">${time}</div>
+        <div class="text-base md:text-lg my-0">${name}</div>
+        <div class="text-sm md:text-base my-0">${value}</div>
+        <div class="test-xs md:text-sm my-0">${time}</div>
       `;
     }
   };
@@ -346,7 +346,7 @@ const Chart = () => {
         <div 
           id="inputLegend" 
           ref={inputLegendRef}
-          className="absolute left-0 transform z-10 text-sm font-sans font-light text-white"
+          className="absolute left-0 top-0 z-10 font-sans font-light text-white p-2 rounded pointer-events-none max-w-xs md:max-w-lg break-words"
         ></div>
       </div>
       
@@ -358,7 +358,7 @@ const Chart = () => {
         <div 
           id="outputLegend" 
           ref={outputLegendRef}
-          className="absolute left-0 transform z-10 text-sm font-sans font-light text-white"
+          className="absolute left-0 top-0 z-10 font-sans font-light text-white p-2 rounded pointer-events-none max-w-xs md:max-w-lg break-words"
         ></div>
       </div>
     </div>
