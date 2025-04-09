@@ -341,24 +341,24 @@ const Chart = () => {
       <div 
         id="container1" 
         ref={container1Ref}
-        className="my-10 w-full aspect-[8/3] relative"
+        className="my-10 h-[300px] min-w-[800px] md:min-w-0 md:w-full relative"
       >
         <div 
           id="inputLegend" 
           ref={inputLegendRef}
-          className="absolute left-0 top-0 z-10 font-sans font-light text-white p-2 rounded pointer-events-none max-w-xs md:max-w-lg break-words"
+          className="absolute left-0 top-0 z-10 font-sans font-light text-white p-2 rounded pointer-events-none max-w-sm md:max-w-xl break-words"
         ></div>
       </div>
       
       <div 
         id="container2" 
         ref={container2Ref}
-        className="mb-10 w-full aspect-[8/3] relative"
+        className="mb-10 h-[300px] min-w-[800px] md:min-w-0 md:w-full relative"
       >
         <div 
           id="outputLegend" 
           ref={outputLegendRef}
-          className="absolute left-0 top-0 z-10 font-sans font-light text-white p-2 rounded pointer-events-none max-w-xs md:max-w-lg break-words"
+          className="absolute left-0 top-0 z-10 font-sans font-light text-white p-2 rounded pointer-events-none max-w-sm md:max-w-xl break-words"
         ></div>
       </div>
     </div>

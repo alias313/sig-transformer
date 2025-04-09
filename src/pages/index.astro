@@ -37,7 +37,7 @@ import Chart from '../components/Chart.jsx';
 				</div>
 				
 				<!-- Right column - Chart and Cards -->
-				<div class="md:col-span-3 flex flex-col justify-center rounded-lg min-h-[680px]">
+				<div class="md:col-span-3 flex flex-col justify-center min-w-0 overflow-x-auto rounded-lg min-h-[800px]">
 					<Chart client:load client:only="react"/>
 				</div>
 			</div>
@@ -51,7 +51,7 @@ import Chart from '../components/Chart.jsx';
 				<InfoCard
 					href="https://www.youtube.com/watch?v=h7apO7q16V0"
 					title="FFT Algorithm"
-					body="This video visually explain the algorithm that is used to transform the input signals."
+					body="This video visually explains the algorithm that is used to transform the input signals."
 				/>
 			</ul>
 		<script src="../scripts/signal-handler.js"></script>

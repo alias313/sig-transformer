@@ -62,7 +62,7 @@ const maxFreq = 50;
         <Input type="number" id="interval" value="0.01" step="0.01" min="0.01" max="0.1" />
       </div>
       <div class="flex w-full flex-col gap-2">
-        <Label for="bandwidth" id="bandwidthLabel">Bandwidth &lt;= {maxFreq}:</Label>
+        <Label for="bandwidth" id="bandwidthLabel">BW (max. {maxFreq} Hz):</Label>
         <Input type="number" id="bandwidth" value="5" step="0.1" min="0.1" max={maxFreq} />
       </div>
     </CardContent>
@@ -97,7 +97,7 @@ function updateDynamicMax() {
 
     // Update the max attribute and current value if needed
     bandwidthInput.setAttribute('max', dynamicMax.toString());
-    bandwidthLabelElement.innerHTML = `Bandwidth <= ${dynamicMax}:`;
+    bandwidthLabelElement.innerHTML = `BW (max. ${dynamicMax} Hz):`;
     if (parseFloat(bandwidthInput.value) > dynamicMax) {
         bandwidthInput.value = dynamicMax.toString();
     }
