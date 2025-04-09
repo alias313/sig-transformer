@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createChart } from 'lightweight-charts';
-import { createDB, loadJSONToIndexedDB } from '@/scripts/db.js';
+import { createDB } from '@/scripts/db.js';
 import { loadSignalParamsFromLocalStorage, fetchSignal } from '@/scripts/signal-handler.js';
 
 const Chart = () => {
@@ -185,10 +185,19 @@ const Chart = () => {
   };
 
   useEffect(() => {
+    let isMounted = true; // Flag for cleanup
+
     showLoading();
 
     window.showChartLoading = showLoading;
     window.updateChartData = updateChartData;
+
+    // Ensure containers exist before proceeding
+    if (!container1Ref.current || !container2Ref.current) {
+        console.error("Chart container refs not ready on mount.");
+        hideLoading();
+        return;
+    }
 
     const initializeCharts = async () => {
       try {
@@ -201,88 +210,69 @@ const Chart = () => {
         outputSymbolNameRef.current = initialOutput;
 
         const chartOptions = {
-          width: 800,
-          height: 300,
           layout: {
             textColor: 'white',
-            background: { color: '#171717' },
+            background: { type: 'solid', color: '#171717' },
             attributionLogo: false,
           },
           localization: {
             timeFormatter: time => time.toString(),
           },
-        };
-        
-        const optionsToApply = {
-          autoScale: true,
           rightPriceScale: {
-            scaleMargins: {
-              top: 0.4,
-              bottom: 0.15,
-            },
+            scaleMargins: { top: 0.4, bottom: 0.15 },
           },
           crosshair: {
-            horzLine: {
-              visible: false,
-              labelVisible: false,
+            horzLine: { 
+                visible: false, 
+                labelVisible: false 
             },
           },
           grid: {
-            vertLines: {
-              visible: false,
-            },
-            horzLines: {
-              visible: false,
-            },
+            vertLines: { visible: false },
+            horzLines: { visible: false },
           },
+          timeScale: {
+            minBarSpacing: 0.1, // Maybe adjust or remove depending on auto behavior
+            fixLeftEdge: true,
+            fixRightEdge: true,
+            timeVisible: true,
+            // borderVisible: false, // Example
+            tickMarkFormatter: time => time.toString(),
+          },
+          handleScroll: true, // Enable zooming/scrolling
+          handleScale: true,
         };
 
-        if (container1Ref.current) {
+        if (container1Ref.current && isMounted) {
           const inputChart = createChart(container1Ref.current, chartOptions);
-          inputChart.applyOptions(optionsToApply);
           const inputAreaSeries = inputChart.addAreaSeries({
             topColor: '#d5b8f9',
             bottomColor: 'rgba(213, 184, 249, 0.5)',
             lineColor: '#d5b8f9',
             lineWidth: 2,
             priceLineVisible: false,
+            lastValueVisible: false,
           });
           
           inputChartRef.current = inputChart;
           inputAreaSeriesRef.current = inputAreaSeries;
-          
-          inputChart.timeScale().applyOptions({
-            minBarSpacing: 0.1,
-            fixLeftEdge: true,
-            fixRightEdge: true,
-            timeVisible: true,
-            tickMarkFormatter: time => time.toString(),
-          });
-          
+                    
           inputChart.subscribeCrosshairMove(inputUpdateLegend);
         }
         
-        if (container2Ref.current) {
+        if (container2Ref.current && isMounted) {
           const outputChart = createChart(container2Ref.current, chartOptions);
-          outputChart.applyOptions(optionsToApply);
           const outputAreaSeries = outputChart.addAreaSeries({
             topColor: '#d5b8f9',
             bottomColor: 'rgba(143, 67, 234, 0.33)',
             lineColor: '#d5b8f9',
             lineWidth: 2,
             priceLineVisible: false,
+            lastValueVisible: false,
           });
           
           outputChartRef.current = outputChart;
           outputAreaSeriesRef.current = outputAreaSeries;
-          
-          outputChart.timeScale().applyOptions({
-            minBarSpacing: 0.1,
-            fixLeftEdge: true,
-            fixRightEdge: true,
-            timeVisible: true,
-            tickMarkFormatter: time => time.toString(),
-          });
           
           outputChart.subscribeCrosshairMove(outputUpdateLegend);
         }
@@ -290,7 +280,7 @@ const Chart = () => {
         const frequencyLimit = parseInt(signalParams.freqrange);
         let { inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit);
         
-        while (!inputSignal.length && !outputSignalSliced.length) {
+        while (!isMounted || !inputSignal.length || !outputSignalSliced.length) {
           console.log("No data available yet, waiting 1000ms...");
           await new Promise(resolve => setTimeout(resolve, 1000));
           await fetchSignal(signalParams);  
@@ -298,6 +288,7 @@ const Chart = () => {
         }
         
         console.log("Data loaded, updating charts");
+        if (!isMounted) return;
         
         if (inputAreaSeriesRef.current) {
           inputAreaSeriesRef.current.setData(inputSignal);
@@ -306,39 +297,36 @@ const Chart = () => {
           outputAreaSeriesRef.current.setData(outputSignalSliced);
         }
         
-        inputUpdateLegend(undefined);
-        outputUpdateLegend(undefined);
-        
-        if (inputChartRef.current) {
-          inputChartRef.current.timeScale().fitContent();
-        }
-        if (outputChartRef.current) {
-          outputChartRef.current.timeScale().fitContent();
-        }
-        
-        hideLoading();
-      } catch (error) {
+        setTimeout(() => {
+            if (!isMounted) return;
+
+            inputUpdateLegend(undefined);
+            outputUpdateLegend(undefined);
+
+            if (inputChartRef.current) inputChartRef.current.timeScale().fitContent();
+            if (outputChartRef.current) outputChartRef.current.timeScale().fitContent();
+
+            hideLoading();
+        }, 0);      
+    } catch (error) {
         console.error("Error initializing charts:", error);
-        hideLoading();
-      }
+        if(isMounted) hideLoading();
+    }
     };
     
     initializeCharts();
     
     return () => {
-      if (inputChartRef.current) {
-        inputChartRef.current.remove();
-      }
-      if (outputChartRef.current) {
-        outputChartRef.current.remove();
-      }
-      window.showChartLoading = undefined;
-      window.updateChartData = undefined;
+        isMounted = false; // Cleanup flag
+        if (inputChartRef.current) inputChartRef.current.remove();
+        if (outputChartRef.current) outputChartRef.current.remove();
+        window.showChartLoading = undefined;
+        window.updateChartData = undefined;
     };
   }, []);
 
   return (
-    <div id="chart-root" className="relative" ref={chartRootRef}>
+    <div id="chart-root" className="relative w-full flex flex-col" ref={chartRootRef}>
       <div 
         id="chart-loading" 
         ref={loadingRef}
@@ -353,7 +341,7 @@ const Chart = () => {
       <div 
         id="container1" 
         ref={container1Ref}
-        className="my-10 flex mx-auto w-[800px] h-[300px] justify-center relative"
+        className="my-10 w-full aspect-[8/3] relative"
       >
         <div 
           id="inputLegend" 
@@ -365,7 +353,7 @@ const Chart = () => {
       <div 
         id="container2" 
         ref={container2Ref}
-        className="flex mx-auto w-[800px] h-[300px] justify-center relative"
+        className="mb-10 w-full aspect-[8/3] relative"
       >
         <div 
           id="outputLegend" 
