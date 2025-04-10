@@ -67,7 +67,7 @@ const maxFreq = 50;
       </div>
     </CardContent>
     <CardFooter class="flex justify-center">
-      <Button type="submit" variant="purple">Generate function</Button>
+      <Button type="submit" id="generate-button" variant="purple">Generate function</Button>
     </CardFooter>
   </form>
 </Card>
@@ -152,6 +152,23 @@ const setupForm = () => {
     await fetchSignal(formData, true);
   });
 };
+
+const generateButton = formElement.querySelector("#generate-button");
+if (generateButton) {
+  generateButton.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      formElement.requestSubmit(generateButton as HTMLElement);
+  });
+  generateButton.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      formElement.requestSubmit(generateButton as HTMLElement);
+    }
+  });
+} else {
+  console.error("Generate button not found");
+}
+
 updateDynamicMax();
 
 setupForm();
