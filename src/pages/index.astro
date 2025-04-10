@@ -95,11 +95,12 @@ import Chart from '../components/Chart.jsx';
 				};
 				
 				document.addEventListener('DOMContentLoaded', () => {
-					const mousedownLinks = document.querySelectorAll('a[target="_blank"]');
+					const mousedownLinks = document.querySelectorAll('a[target="_blank"], .infocard-link');
 					
 					mousedownLinks.forEach(link => {
 					link.addEventListener('mousedown', (e) => {
-						e.preventDefault(); // Prevent default behavior
+						e.preventDefault();
+						console.log('Link clicked:', link);
 						const url = link.getAttribute('href');
 						console.log(url);
 						if (url) {
@@ -107,9 +108,7 @@ import Chart from '../components/Chart.jsx';
 						}
 					});
 					
-					// For accessibility, also handle keyboard navigation
 					link.addEventListener('keydown', (e) => {
-						// Open on Enter key or Space key
 						if (e.key === 'Enter' || e.key === ' ') {
 						e.preventDefault();
 						const url = link.getAttribute('href');
