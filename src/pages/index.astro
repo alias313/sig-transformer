@@ -93,6 +93,34 @@ import Chart from '../components/Chart.jsx';
 				window.hideChartLoading = () => {
 					document.getElementById('chart-loading').classList.add('opacity-0', 'pointer-events-none');
 				};
+				
+				document.addEventListener('DOMContentLoaded', () => {
+					const mousedownLinks = document.querySelectorAll('a[target="_blank"]');
+					
+					mousedownLinks.forEach(link => {
+					link.addEventListener('mousedown', (e) => {
+						e.preventDefault(); // Prevent default behavior
+						const url = link.getAttribute('href');
+						console.log(url);
+						if (url) {
+						window.open(url, '_blank', 'noopener,noreferrer');
+						}
+					});
+					
+					// For accessibility, also handle keyboard navigation
+					link.addEventListener('keydown', (e) => {
+						// Open on Enter key or Space key
+						if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						const url = link.getAttribute('href');
+						if (url) {
+							window.open(url, '_blank', 'noopener,noreferrer');
+						}
+						}
+					});
+					});
+				});
+
 			</script>
 		<script src="../scripts/signal-handler.js"></script>
 	</main>

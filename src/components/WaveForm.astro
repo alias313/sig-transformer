@@ -76,6 +76,8 @@ const maxFreq = 50;
 import { fetchSignal } from "@/scripts/signal-handler.js";
 
 // Get the input elements
+const formElement = document.getElementById("wave-form") as HTMLFormElement;
+
 const startInput = document.getElementById('a') as HTMLInputElement;
 const endInput = document.getElementById('b') as HTMLInputElement;
 const frequencyLabelElement = document.getElementById('frequencyLabel') as HTMLLabelElement;
@@ -129,16 +131,11 @@ startInput.addEventListener('input', updateDynamicMax);
 endInput.addEventListener('input', updateDynamicMax);
 
 const setupForm = () => {
-  const form = document.getElementById("wave-form") as HTMLFormElement;
-  if (!form) return;
+  if (!formElement) return;
 
-  form.addEventListener("submit", async (e) => {
+  formElement.addEventListener("submit", async (e) => {
     e.preventDefault();
-    // Get the select value from the custom event
-    const selectElement = document.querySelector('.starwind-select');
-    const selectValue = selectElement?.getAttribute('data-value') || 'sinc';
 
-    // Collect all form data
     const formData = {
       a: startInput.value,
       b: endInput.value,
