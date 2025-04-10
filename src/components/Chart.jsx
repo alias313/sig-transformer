@@ -50,12 +50,12 @@ const Chart = () => {
     };
 
     const outputFormatters = {
-      square: `abs(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
-      triangle: `abs(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
-      sinc: `abs(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
-      cos: `abs(FFT(f(t))) = A ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${amplitude} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
-      sin: `abs(FFT(f(t))) = A ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${amplitude} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
-      exp: `abs(FFT(f(t))) = exp(${b}) ⋅ ${amplitude} / (f²+1)`
+      square: `abs(FFT(f(t))) = |A| ⋅ T ⋅ |sinc(T ⋅ f)| = ${Math.abs(amplitude)} ⋅ ${frequency} ⋅ |sinc(${frequency} ⋅ f)|`,
+      triangle: `abs(FFT(f(t))) = |A| ⋅ T ⋅ sinc²(T ⋅ f) = ${Math.abs(amplitude)} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
+      sinc: `abs(FFT(f(t))) = |A| ⋅ Π(f / f₀) = ${Math.abs(amplitude)} ⋅ Π(f / ${frequency})`,
+      cos: `abs(FFT(f(t))) = |A| ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${Math.abs(amplitude)} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
+      sin: `abs(FFT(f(t))) = |A| ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${Math.abs(amplitude)} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
+      exp: `abs(FFT(f(t))) = exp(${b}) ⋅ ${Math.abs(amplitude)} / (f²+1)`
     };
 
     return {
@@ -103,7 +103,7 @@ const Chart = () => {
     }
   };
 
-  const formatPrice = (price) => (Math.round(price * 100) / 100).toFixed(2);
+  const formatPrice = (price) => price.toFixed(3);
 
   const getLastBar = (series) => {
     const lastIndex = series.dataByIndex(Infinity, -1);
@@ -254,6 +254,11 @@ const Chart = () => {
             lineWidth: 2,
             priceLineVisible: false,
             lastValueVisible: false,
+            priceFormat: {
+                type: 'price',
+                precision: 3,
+                minMove: 0.001,
+            },
           });
           
           inputChartRef.current = inputChart;
@@ -271,6 +276,11 @@ const Chart = () => {
             lineWidth: 2,
             priceLineVisible: false,
             lastValueVisible: false,
+            priceFormat: {
+                type: 'price',
+                precision: 3,
+                minMove: 0.001,
+            },
           });
           
           outputChartRef.current = outputChart;
