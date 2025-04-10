@@ -21,22 +21,6 @@ const Chart = () => {
   const outputAreaSeriesRef = useRef(null);
   const dbRef = useRef(null);
 
-  const showLoading = () => {
-    console.log("Loading chart data...");
-    if (loadingRef.current) {
-      loadingRef.current.classList.remove('opacity-0');
-      loadingRef.current.classList.remove('pointer-events-none');
-    }
-  };
-
-  const hideLoading = () => {
-    console.log("Hiding loading indicator...");
-    if (loadingRef.current) {
-      loadingRef.current.classList.add('opacity-0');
-      loadingRef.current.classList.add('pointer-events-none');
-    }
-  };
-
   const formatLegend = (signalParams = {}) => {
     const { b, signalShape, amplitude, frequency, phase } = signalParams;
     
@@ -151,9 +135,7 @@ const Chart = () => {
   };
 
   const updateChartData = async (signalParams = {}) => {
-    try {
-      showLoading();
-      
+    try {        
       const { inputSymbolName: newInputName, outputSymbolName: newOutputName } = formatLegend(signalParams);
       inputSymbolNameRef.current = newInputName;
       outputSymbolNameRef.current = newOutputName;
@@ -180,22 +162,19 @@ const Chart = () => {
     } catch (error) {
       console.error("Error updating chart data:", error);
     } finally {
-      hideLoading();
+      window.hideChartLoading();
     }
   };
 
   useEffect(() => {
     let isMounted = true; // Flag for cleanup
 
-    showLoading();
-
-    window.showChartLoading = showLoading;
     window.updateChartData = updateChartData;
 
     // Ensure containers exist before proceeding
     if (!container1Ref.current || !container2Ref.current) {
         console.error("Chart container refs not ready on mount.");
-        hideLoading();
+        window.hideChartLoading();
         return;
     }
 
@@ -299,7 +278,6 @@ const Chart = () => {
           ({ inputSignal, outputSignalSliced } = await getDataFromIndexedDB(frequencyLimit));
         }
         
-        console.log("Data loaded, updating charts");
         if (!isMounted) return;
         
         if (inputAreaSeriesRef.current) {
@@ -318,11 +296,11 @@ const Chart = () => {
             if (inputChartRef.current) inputChartRef.current.timeScale().fitContent();
             if (outputChartRef.current) outputChartRef.current.timeScale().fitContent();
 
-            hideLoading();
+            window.hideChartLoading();
         }, 0);      
     } catch (error) {
         console.error("Error initializing charts:", error);
-        if(isMounted) hideLoading();
+        if(isMounted) window.hideChartLoading();
     }
     };
     
@@ -332,24 +310,12 @@ const Chart = () => {
         isMounted = false; // Cleanup flag
         if (inputChartRef.current) inputChartRef.current.remove();
         if (outputChartRef.current) outputChartRef.current.remove();
-        window.showChartLoading = undefined;
         window.updateChartData = undefined;
     };
   }, []);
 
   return (
-    <div id="chart-root" className="relative w-full flex flex-col" ref={chartRootRef}>
-      <div 
-        id="chart-loading" 
-        ref={loadingRef}
-        className="absolute inset-0 flex items-center justify-center bg-neutral-900 z-20 transition-opacity duration-300"
-      >
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-t-purple-500 border-purple-200/30 rounded-full animate-spin"></div>
-          <p className="text-white font-medium">Loading chart data...</p>
-        </div>
-      </div>
-      
+    <div id="chart-root" className="relative w-full flex flex-col" ref={chartRootRef}>      
       <div 
         id="container1" 
         ref={container1Ref}

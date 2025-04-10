@@ -38,7 +38,17 @@ import Chart from '../components/Chart.jsx';
 				</div>
 				
 				<!-- Right column - Chart and Cards -->
-				<div class="md:col-span-3 flex flex-col justify-center min-w-0 overflow-x-auto rounded-lg min-h-[800px]">
+				<div class="md:col-span-3 flex flex-col justify-center min-w-0 overflow-x-auto rounded-lg min-h-[800px] relative">
+					<!-- Chart loading overlay (positioned relative to this container) -->
+					<div 
+					id="chart-loading" 
+					class="absolute inset-0 flex items-center justify-center bg-neutral-900/95 z-20 transition-opacity duration-300 rounded-lg"
+					>
+						<div class="flex flex-col items-center gap-3">
+							<div class="w-10 h-10 border-4 border-t-purple-500 border-purple-200/30 rounded-full animate-spin"></div>
+							<p class="text-white font-medium">Processing signal data...</p>
+						</div>
+					</div>
 					<Chart client:load client:only="react"/>
 				</div>
 			</div>
@@ -75,6 +85,15 @@ import Chart from '../components/Chart.jsx';
 					fftw3
 				</a>
 			</p>
+			<script>
+				window.showChartLoading = () => {
+					document.getElementById('chart-loading').classList.remove('opacity-0', 'pointer-events-none');
+				};
+				
+				window.hideChartLoading = () => {
+					document.getElementById('chart-loading').classList.add('opacity-0', 'pointer-events-none');
+				};
+			</script>
 		<script src="../scripts/signal-handler.js"></script>
 	</main>
 </Layout>
