@@ -232,14 +232,16 @@ const Chart = () => {
             horzLines: { visible: false },
           },
           timeScale: {
-            minBarSpacing: 0.1, // Maybe adjust or remove depending on auto behavior
+            minBarSpacing: 0.1,
             fixLeftEdge: true,
             fixRightEdge: true,
             timeVisible: true,
             // borderVisible: false, // Example
-            tickMarkFormatter: time => time.toString(),
+            tickMarkFormatter: (time) => {
+                return time.toString();
+            }
           },
-          handleScroll: true, // Enable zooming/scrolling
+          handleScroll: true,
           handleScale: true,
         };
 

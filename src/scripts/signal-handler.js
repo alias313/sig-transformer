@@ -2,14 +2,14 @@ import { loadJSONToIndexedDB } from './db.js';
 
 // Default parameters to use if nothing is found in LocalStorage
 const defaultParams = {
-    a: -30,
-    b: 30,
+    a: -20,
+    b: 20,
     signalShape: 'sinc',
     amplitude: 1,
     frequency: 1,
     phase: 0,
     interval: 0.01,
-    freqrange: 5
+    freqrange: 4
 };
 
 // Function to save signal parameters to LocalStorage
