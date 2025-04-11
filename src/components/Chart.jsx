@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart } from 'lightweight-charts';
+import { createChart, AreaSeries } from 'lightweight-charts';
 import { createDB } from '@/scripts/db.js';
 import { loadSignalParamsFromLocalStorage, fetchSignal } from '@/scripts/signal-handler.js';
 
@@ -226,7 +226,7 @@ const Chart = () => {
 
         if (container1Ref.current && isMounted) {
           const inputChart = createChart(container1Ref.current, chartOptions);
-          const inputAreaSeries = inputChart.addAreaSeries({
+          const inputAreaSeries = inputChart.addSeries(AreaSeries, {
             topColor: '#d5b8f9',
             bottomColor: 'rgba(213, 184, 249, 0.5)',
             lineColor: '#d5b8f9',
@@ -248,7 +248,7 @@ const Chart = () => {
         
         if (container2Ref.current && isMounted) {
           const outputChart = createChart(container2Ref.current, chartOptions);
-          const outputAreaSeries = outputChart.addAreaSeries({
+          const outputAreaSeries = outputChart.addSeries(AreaSeries, {
             topColor: '#d5b8f9',
             bottomColor: 'rgba(143, 67, 234, 0.33)',
             lineColor: '#d5b8f9',
