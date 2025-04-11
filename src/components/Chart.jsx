@@ -1,7 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createChart, AreaSeries } from 'lightweight-charts';
 import { createDB } from '@/scripts/db.js';
 import { loadSignalParamsFromLocalStorage, fetchSignal } from '@/scripts/signal-handler.js';
+
+import {
+    Tabs,
+    TabsList,
+    TabsTrigger,
+  } from '@/components/ui/tabs';
 
 const Chart = () => {
   const chartRootRef = useRef(null);
@@ -13,7 +19,7 @@ const Chart = () => {
   const inputSymbolNameRef = useRef('');
   const outputSymbolNameRef = useRef('');
 
-  const loadingRef = useRef(null);
+  const [outputDataType, setOutputDataType] = useState('modulus');
   
   const inputChartRef = useRef(null);
   const outputChartRef = useRef(null);
@@ -21,10 +27,10 @@ const Chart = () => {
   const outputAreaSeriesRef = useRef(null);
   const dbRef = useRef(null);
 
-  const formatLegend = (signalParams = {}) => {
+  const formatLegend = (signalParams = {}, outputType) => {
     const { b, signalShape, amplitude, frequency, phase } = signalParams;
     
-    const inputFormatters = {
+    let inputFormatters = {
       square: `f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
       triangle: `f(t) = A ⋅ Λ(t / 2T) = ${amplitude} ⋅ Λ(t / ${frequency})`,
       sinc: `f(t) = A ⋅ sinc(f₀ ⋅ t - ϕ) = A ⋅ sin(f₀ ⋅ πt - ϕ) / (f₀ ⋅ πt - ϕ) = ${amplitude} ⋅ sinc(${frequency} ⋅ t - ${phase})`,
@@ -33,31 +39,70 @@ const Chart = () => {
       exp: `f(t) = ${amplitude}⋅exp(t)`
     };
 
-    const outputFormatters = {
+    let outputFormatters = {
       square: `abs(FFT(f(t))) = |A| ⋅ T ⋅ |sinc(T ⋅ f)| = ${Math.abs(amplitude)} ⋅ ${frequency} ⋅ |sinc(${frequency} ⋅ f)|`,
       triangle: `abs(FFT(f(t))) = |A| ⋅ T ⋅ sinc²(T ⋅ f) = ${Math.abs(amplitude)} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
       sinc: `abs(FFT(f(t))) = |A| ⋅ Π(f / f₀) = ${Math.abs(amplitude)} ⋅ Π(f / ${frequency})`,
-      cos: `abs(FFT(f(t))) = |A| ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${Math.abs(amplitude)} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
-      sin: `abs(FFT(f(t))) = |A| ⋅ ½[𝛿(f - f₀) + 𝛿(f + f₀)] = ${Math.abs(amplitude)} ⋅ ½[𝛿(f - ${frequency}) + 𝛿(f + ${frequency})]`,
+      cos: `abs(FFT(f(t))) = |A| ⋅ ½[𝛿(f + f₀) + 𝛿(f - f₀)] = ${Math.abs(amplitude)} ⋅ ½[𝛿(f + ${frequency}) + 𝛿(f - ${frequency})]`,
+      sin: `abs(FFT(f(t))) = |A| ⋅ ½[𝛿(f + f₀) + 𝛿(f - f₀)] = ${Math.abs(amplitude)} ⋅ ½[𝛿(f + ${frequency}) + 𝛿(f - ${frequency})]`,
       exp: `abs(FFT(f(t))) = exp(${b}) ⋅ ${Math.abs(amplitude)} / (f²+1)`
     };
 
+    switch (outputType) {
+        case 'real':
+            outputFormatters = {
+                square: `re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
+                triangle: `re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
+                sinc: `re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
+                cos: `re(FFT(f(t))) = A ⋅ ½[𝛿(f + f₀) + 𝛿(f - f₀)] = ${amplitude} ⋅ ½[𝛿(f + ${frequency}) + 𝛿(f - ${frequency})]`,
+                sin: `re(FFT(f(t))) = 0`,
+                exp: `re(FFT(f(t)))`
+            };
+            break;
+        case 'imaginary':
+            outputFormatters = {
+                square: `im(FFT(f(t))) = 0`,
+                triangle: `im(FFT(f(t))) = 0`,
+                sinc: `im(FFT(f(t))) = 0`,
+                cos: `im(FFT(f(t))) = 0`,
+                sin: `im(FFT(f(t))) = A ⋅ ½[𝛿(f + f₀) - 𝛿(f - f₀)] = ${amplitude} ⋅ ½[𝛿(f + ${frequency}) - 𝛿(f - ${frequency})]`,
+                exp: `im(FFT(f(t)))`
+            };
+            break;
+    }
+    
     return {
       inputSymbolName: inputFormatters[signalShape] || `f(t)`,
       outputSymbolName: outputFormatters[signalShape] || `re(FFT(f(t)))`
     };
   };
 
-  const getDataFromIndexedDB = async (frequencyLimit) => {
+  const getDataFromIndexedDB = async (frequencyLimit, outputType) => {
     const inputSignal = [];
     const outputSignal = [];
+
+    let outputFunction = 'abs'
+
+    switch (outputType) {
+      case 'real':
+        outputFunction = 're';
+        break;
+      case 'imaginary':
+        outputFunction = 'im';
+        break;
+      case 'modulus':
+        outputFunction = 'abs';
+        break;
+      default:
+        outputFunction = 'abs';
+    }
 
     if (dbRef.current) {
       const data = await dbRef.current.signals.toArray();
       data.forEach((row) => {
         outputSignal.push({
           time: parseFloat(row.Freq),
-          value: parseFloat(row["abs(FFT)"]),
+          value: parseFloat(row[`${outputFunction}(FFT)`]),
         });
         inputSignal.push({
           time: parseFloat(row.input),
@@ -163,6 +208,44 @@ const Chart = () => {
       console.error("Error updating chart data:", error);
     } finally {
       window.hideChartLoading();
+    }
+  };
+
+  const updateOutputChartType = async (newOutputType) => {
+    try {
+      const signalParams = loadSignalParamsFromLocalStorage();
+      const frequencyLimit = parseInt(signalParams.freqrange);
+
+      const { outputSymbolName: newOutputName } = formatLegend(
+        signalParams,
+        newOutputType,
+      );
+      outputSymbolNameRef.current = newOutputName;
+
+      const { outputSignalSliced } = await getDataFromIndexedDB(
+        frequencyLimit,
+        newOutputType,
+      );
+
+      if (outputAreaSeriesRef.current) {
+        outputAreaSeriesRef.current.setData(outputSignalSliced);
+        requestAnimationFrame(() => {
+          if (outputChartRef.current) {
+            outputChartRef.current.timeScale().fitContent();
+          }
+          outputUpdateLegend(undefined);
+        });
+      }
+    } catch (error) {
+      console.error('Error updating output chart type:', error);
+    }
+  };
+
+
+  const handleTabChange = (value) => {
+    if (value !== outputDataType) {
+      setOutputDataType(value);
+      updateOutputChartType(value);
     }
   };
 
@@ -328,6 +411,18 @@ const Chart = () => {
         ></div>
       </div>
       
+        <Tabs
+            defaultValue="modulus"
+            onValueChange={handleTabChange}
+            className="w-full"
+        >
+            <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="real">Real</TabsTrigger>
+            <TabsTrigger value="imaginary">Imaginary</TabsTrigger>
+            <TabsTrigger value="modulus">Modulus</TabsTrigger>
+            </TabsList>
+        </Tabs>
+
       <div 
         id="container2" 
         ref={container2Ref}

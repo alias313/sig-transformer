@@ -74,8 +74,6 @@ const maxFreq = 50;
 
 <script>
 import { fetchSignal } from "@/scripts/signal-handler.js";
-
-// Get the input elements
 const formElement = document.getElementById("wave-form") as HTMLFormElement;
 
 const startInput = document.getElementById('a') as HTMLInputElement;
@@ -130,28 +128,36 @@ intervalInput.addEventListener('input', updateDynamicMax);
 startInput.addEventListener('input', updateDynamicMax);
 endInput.addEventListener('input', updateDynamicMax);
 
-const setupForm = () => {
-  if (!formElement) return;
+let submitClickTriggered = 0;
+let submitKeyTriggered = false;
 
-  formElement.addEventListener("submit", async (e) => {
-    e.preventDefault();
+formElement.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  if (submitClickTriggered % 2 === 1 && !submitKeyTriggered) {
+    submitClickTriggered++;
+    return;
+  }
+  if (submitKeyTriggered) {
+    submitKeyTriggered = false;
+  }
+  submitClickTriggered++;
+  const formData = {
+    a: startInput.value,
+    b: endInput.value,
+    signalShape: waveformInput || "sinc",
+    amplitude: (document.getElementById('amplitude') as HTMLInputElement)?.value,
+    frequency: (document.getElementById('frequency') as HTMLInputElement)?.value,
+    phase: (document.getElementById('phase') as HTMLInputElement)?.value,
+    interval: intervalInput.value,
+    freqrange: bandwidthInput.value
+  };
+  
+  console.log("Form submission data:", formData);
+  window.showChartLoading();
+  await fetchSignal(formData, true);
+});
 
-    const formData = {
-      a: startInput.value,
-      b: endInput.value,
-      signalShape: waveformInput || "sinc",
-      amplitude: (document.getElementById('amplitude') as HTMLInputElement)?.value,
-      frequency: (document.getElementById('frequency') as HTMLInputElement)?.value,
-      phase: (document.getElementById('phase') as HTMLInputElement)?.value,
-      interval: intervalInput.value,
-      freqrange: bandwidthInput.value
-    };
-    
-    console.log("Form submission data:", formData);
-    window.showChartLoading();
-    await fetchSignal(formData, true);
-  });
-};
 
 const generateButton = formElement.querySelector("#generate-button");
 if (generateButton) {
@@ -162,6 +168,7 @@ if (generateButton) {
   generateButton.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
+      submitKeyTriggered = true;
       formElement.requestSubmit(generateButton as HTMLElement);
     }
   });
@@ -170,7 +177,4 @@ if (generateButton) {
 }
 
 updateDynamicMax();
-
-setupForm();
-document.addEventListener("astro:after-swap", setupForm);
 </script>
