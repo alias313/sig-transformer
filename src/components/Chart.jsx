@@ -9,6 +9,23 @@ import {
     TabsTrigger,
   } from '@/components/ui/tabs';
 
+  const renderMathJax = (element) => {
+    if (window.MathJax && element) {
+        try {
+            // Use the correct MathJax API method
+            if (window.MathJax.typeset) {
+                window.MathJax.typeset([element]);
+            } else if (window.MathJax.Hub && window.MathJax.Hub.Queue) {
+                window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, element]);
+            } else {
+                console.warn("MathJax typeset method not found");
+            }
+        } catch (error) {
+            console.error('Error triggering MathJax:', error);
+        }
+    }
+};
+
 const Chart = () => {
   const chartRootRef = useRef(null);
   const container1Ref = useRef(null);
@@ -31,42 +48,42 @@ const Chart = () => {
     const { b, signalShape, amplitude, frequency, phase } = signalParams;
     
     let inputFormatters = {
-      square: `f(t) = A ⋅ Π(t / T) = ${amplitude} ⋅ Π(t / ${frequency})`,
-      triangle: `f(t) = A ⋅ Λ(t / 2T) = ${amplitude} ⋅ Λ(t / ${frequency})`,
-      sinc: `f(t) = A ⋅ sinc(f₀ ⋅ t - ϕ) = A ⋅ sin(f₀ ⋅ πt - ϕ) / (f₀ ⋅ πt - ϕ) = ${amplitude} ⋅ sinc(${frequency} ⋅ t - ${phase})`,
-      sin: `f(t) = A ⋅ sin(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ sin(2π ⋅ ${frequency} ⋅ t + ${phase})`,
-      cos: `f(t) = A ⋅ cos(2π ⋅ f₀ ⋅ t + ϕ) = ${amplitude} ⋅ cos(2π ⋅ ${frequency} ⋅ t + ${phase})`,
-      exp: `f(t) = ${amplitude}⋅exp(t)`
+      square: `$f(t) = A \\cdot  \\Pi (t / T) = ${amplitude} \\cdot  \\Pi (t / ${frequency})$`,
+      triangle: `$f(t) = A \\cdot  \\Lambda (t / 2T) = ${amplitude} \\cdot  \\Lambda (t / ${frequency})$`,
+      sinc: `$f(t) = A \\cdot \\text{sinc}(f_0t - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi t - \\varphi )}{f_0 \\pi t - \\varphi } = ${amplitude} \\cdot \\text{sinc}(${frequency}t - ${phase})$`,
+      sin: `$f(t) = A \\cdot  \\sin(2\\pi f_0t + \\varphi ) = ${amplitude} \\cdot  \\sin(2\\pi \\cdot ${frequency}t + ${phase})$`,
+      cos: `$f(t) = A \\cdot  cos(2\\pi f_0t + \\varphi ) = ${amplitude} \\cdot  cos(2\\pi \\cdot ${frequency}t + ${phase})$`,
+      exp: `$f(t) = ${amplitude}\\cdot \\exp(t)$`
     };
 
     let outputFormatters = {
-      square: `abs(FFT(f(t))) = |A| ⋅ T ⋅ |sinc(T ⋅ f)| = ${Math.abs(amplitude)} ⋅ ${frequency} ⋅ |sinc(${frequency} ⋅ f)|`,
-      triangle: `abs(FFT(f(t))) = |A| ⋅ T ⋅ sinc²(T ⋅ f) = ${Math.abs(amplitude)} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
-      sinc: `abs(FFT(f(t))) = |A| ⋅ Π(f / f₀) = ${Math.abs(amplitude)} ⋅ Π(f / ${frequency})`,
-      cos: `abs(FFT(f(t))) = |A| ⋅ ½[𝛿(f + f₀) + 𝛿(f - f₀)] = ${Math.abs(amplitude)} ⋅ ½[𝛿(f + ${frequency}) + 𝛿(f - ${frequency})]`,
-      sin: `abs(FFT(f(t))) = |A| ⋅ ½[𝛿(f + f₀) + 𝛿(f - f₀)] = ${Math.abs(amplitude)} ⋅ ½[𝛿(f + ${frequency}) + 𝛿(f - ${frequency})]`,
-      exp: `abs(FFT(f(t))) = exp(${b}) ⋅ ${Math.abs(amplitude)} / (f²+1)`
+      square: `$|\\mathcal{F}| = |A| \\cdot  T|\\text{sinc}(Tf)| = ${Math.abs(amplitude)} \\cdot ${frequency} \\cdot |\\text{sinc}(${frequency}f)|$`,
+      triangle: `$|\\mathcal{F}| = |A| \\cdot  T\\text{sinc}^2(Tf) = ${Math.abs(amplitude)} \\cdot ${frequency} \\cdot \\text{sinc}^2(${frequency}f)$`,
+      sinc: `$|\\mathcal{F}| = |A| \\cdot  \\Pi (f / f_0) = ${Math.abs(amplitude)} \\cdot  \\Pi (f / ${frequency})$`,
+      cos: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)] = ${Math.abs(amplitude)} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) + \\delta (f - ${frequency})]$`,
+      sin: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)] = ${Math.abs(amplitude)} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) + \\delta (f - ${frequency})]$`,
+      exp: `$|\\mathcal{F}| = \\exp(${b}) \\cdot  \\frac{${Math.abs(amplitude)}}{f^2+1}$`
     };
 
     switch (outputType) {
         case 'real':
             outputFormatters = {
-                square: `re(FFT(f(t))) = A ⋅ T ⋅ sinc(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc(${frequency} ⋅ f)`,
-                triangle: `re(FFT(f(t))) = A ⋅ T ⋅ sinc²(T ⋅ f) = ${amplitude} ⋅ ${frequency} ⋅ sinc²(${frequency} ⋅ f)`,
-                sinc: `re(FFT(f(t))) = A ⋅ Π(f / f₀) = ${amplitude} ⋅ Π(f / ${frequency})`,
-                cos: `re(FFT(f(t))) = A ⋅ ½[𝛿(f + f₀) + 𝛿(f - f₀)] = ${amplitude} ⋅ ½[𝛿(f + ${frequency}) + 𝛿(f - ${frequency})]`,
-                sin: `re(FFT(f(t))) = 0`,
-                exp: `re(FFT(f(t)))`
+                square: `$\\Re(\\mathcal{F}) = A \\cdot  T\\text{sinc}(Tf) = ${amplitude} \\cdot  ${frequency} \\cdot  \\text{sinc}(${frequency}f)$`,
+                triangle: `$\\Re(\\mathcal{F}) = A \\cdot  T\\text{sinc}^2(Tf) = ${amplitude} \\cdot  ${frequency} \\cdot  \\text{sinc}^2(${frequency}f)$`,
+                sinc: `$\\Re(\\mathcal{F}) = A \\cdot  \\Pi(f / f_0) = ${amplitude} \\cdot  \\Pi(f / ${frequency})$`,
+                cos: `$\\Re(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)] = ${amplitude} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) + \\delta (f - ${frequency})]$`,
+                sin: `$\\Re(\\mathcal{F}) = 0$`,
+                exp: `$\\Re(\\mathcal{F})$`
             };
             break;
         case 'imaginary':
             outputFormatters = {
-                square: `im(FFT(f(t))) = 0`,
-                triangle: `im(FFT(f(t))) = 0`,
-                sinc: `im(FFT(f(t))) = 0`,
-                cos: `im(FFT(f(t))) = 0`,
-                sin: `im(FFT(f(t))) = A ⋅ ½[𝛿(f + f₀) - 𝛿(f - f₀)] = ${amplitude} ⋅ ½[𝛿(f + ${frequency}) - 𝛿(f - ${frequency})]`,
-                exp: `im(FFT(f(t)))`
+                square: `$\\Im(\\mathcal{F}) = 0$`,
+                triangle: `$\\Im(\\mathcal{F}) = 0$`,
+                sinc: `$\\Im(\\mathcal{F}) = 0$`,
+                cos: `$\\Im(\\mathcal{F}) = 0$`,
+                sin: `$\\Im(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) - \\delta (f - f_0)] = ${amplitude} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) - \\delta (f - ${frequency})]$`,
+                exp: `$\\Im(\\mathcal{F})$`
             };
             break;
     }
@@ -125,11 +142,14 @@ const Chart = () => {
   const setTooltipHtml = (legend, name, time, value) => {
     if (legend) {
       legend.innerHTML = `
-        <div class="text-base md:text-lg my-0">${name}</div>
+        <div class="mathjax-formula text-base md:text-lg my-0">${name}</div>
         <div class="text-sm md:text-base my-0">${value}</div>
         <div class="test-xs md:text-sm my-0">${time}</div>
-      `;
+        `;
+        setTimeout(() => renderMathJax(legend), 0);
     }
+
+    renderMathJax(legend);
   };
 
   const formatPrice = (price) => price.toFixed(3);

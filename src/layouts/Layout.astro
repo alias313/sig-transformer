@@ -17,6 +17,28 @@ const { title } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+
+        <script is:inline>
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\(', '\\)']],
+                    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                    processEscapes: true
+                },
+                svg: {
+                    fontCache: 'global'
+                },
+                startup: {
+                    typeset: false
+                },
+				chtml: {
+					scale: 1,
+					matchFontHeight: false,
+					mtextFontInherit: true
+        		}
+            };
+        </script>
+        <script is:inline src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 	</head>
 	<body>
 		<slot />
