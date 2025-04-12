@@ -128,20 +128,20 @@ intervalInput.addEventListener('input', updateDynamicMax);
 startInput.addEventListener('input', updateDynamicMax);
 endInput.addEventListener('input', updateDynamicMax);
 
-let submitClickTriggered = 0;
+let submitTriggered = 0;
 let submitKeyTriggered = false;
 
 formElement.addEventListener("submit", async (e) => {
   e.preventDefault();
   
-  if (submitClickTriggered % 2 === 1 && !submitKeyTriggered) {
-    submitClickTriggered++;
+  if (submitTriggered % 2 === 1 && !submitKeyTriggered) {
+    submitTriggered++;
     return;
   }
   if (submitKeyTriggered) {
     submitKeyTriggered = false;
   }
-  submitClickTriggered++;
+  submitTriggered++;
   const formData = {
     a: startInput.value,
     b: endInput.value,

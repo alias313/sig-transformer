@@ -40,7 +40,6 @@ export default function loadSignalParamsFromLocalStorage() {
     }
 }
     
-// Load signal parameters from LocalStorage or use defaults
 let signalParamsOnReload = loadSignalParamsFromLocalStorage();
 console.log("Loaded parameters from LocalStorage:", signalParamsOnReload);
 
@@ -56,9 +55,8 @@ async function fetchSignal(signalParams, update=false) {
         throw new Error(`HTTP error! Status: ${response.status}`);
         }
         
-        // This is where you read the JSON response returned by the server.
         const fftData = await response.json();
-        console.log("Received FFT JSON:", fftData);
+        //console.log("Received FFT JSON:", fftData);
         await loadJSONToIndexedDB(fftData);
         saveSignalParamsToLocalStorage(signalParams);
         if (update) window.updateChartData?.(signalParams);
