@@ -47,30 +47,30 @@ const Chart = () => {
     const { b, signalShape, amplitude, frequency, phase } = signalParams;
     
     let inputFormatters = {
-      square: `$f(t) = A \\cdot  \\Pi (t / T) = ${amplitude} \\cdot  \\Pi (t / ${frequency})$`,
-      triangle: `$f(t) = A \\cdot  \\Lambda (t / 2T) = ${amplitude} \\cdot  \\Lambda (t / ${frequency})$`,
-      sinc: `$f(t) = A \\cdot \\text{sinc}(f_0t - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi t - \\varphi )}{f_0 \\pi t - \\varphi } = ${amplitude} \\cdot \\text{sinc}(${frequency}t - ${phase})$`,
-      sin: `$f(t) = A \\cdot  \\sin(2\\pi f_0t + \\varphi ) = ${amplitude} \\cdot  \\sin(2\\pi \\cdot ${frequency}t + ${phase})$`,
-      cos: `$f(t) = A \\cdot  cos(2\\pi f_0t + \\varphi ) = ${amplitude} \\cdot  cos(2\\pi \\cdot ${frequency}t + ${phase})$`,
+      square: `$f(t) = A \\cdot  \\Pi (t / T)$`,
+      triangle: `$f(t) = A \\cdot  \\Lambda (t / 2T)$`,
+      sinc: `$f(t) = A \\cdot \\text{sinc}(f_0t - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi t - \\varphi )}{f_0 \\pi t - \\varphi }$`,
+      sin: `$f(t) = A \\cdot  \\sin(2\\pi f_0t + \\varphi )$`,
+      cos: `$f(t) = A \\cdot  cos(2\\pi f_0t + \\varphi )$`,
       exp: `$f(t) = ${amplitude}\\cdot \\exp(t)$`
     };
 
     let outputFormatters = {
-      square: `$|\\mathcal{F}| = |A| \\cdot  T|\\text{sinc}(Tf)| = ${Math.abs(amplitude)} \\cdot ${frequency} \\cdot |\\text{sinc}(${frequency}f)|$`,
-      triangle: `$|\\mathcal{F}| = |A| \\cdot  T\\text{sinc}^2(Tf) = ${Math.abs(amplitude)} \\cdot ${frequency} \\cdot \\text{sinc}^2(${frequency}f)$`,
-      sinc: `$|\\mathcal{F}| = |A| \\cdot  \\Pi (f / f_0) = ${Math.abs(amplitude)} \\cdot  \\Pi (f / ${frequency})$`,
-      cos: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)] = ${Math.abs(amplitude)} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) + \\delta (f - ${frequency})]$`,
-      sin: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)] = ${Math.abs(amplitude)} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) + \\delta (f - ${frequency})]$`,
+      square: `$|\\mathcal{F}| = |A| \\cdot  T|\\text{sinc}(Tf)|$`,
+      triangle: `$|\\mathcal{F}| = |A| \\cdot  T\\text{sinc}^2(Tf)$`,
+      sinc: `$|\\mathcal{F}| = |A| \\cdot  \\Pi (f / f_0)$`,
+      cos: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
+      sin: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
       exp: `$|\\mathcal{F}| = \\exp(${b}) \\cdot  \\frac{${Math.abs(amplitude)}}{f^2+1}$`
     };
 
     switch (outputType) {
         case 'real':
             outputFormatters = {
-                square: `$\\Re(\\mathcal{F}) = A \\cdot  T\\text{sinc}(Tf) = ${amplitude} \\cdot  ${frequency} \\cdot  \\text{sinc}(${frequency}f)$`,
-                triangle: `$\\Re(\\mathcal{F}) = A \\cdot  T\\text{sinc}^2(Tf) = ${amplitude} \\cdot  ${frequency} \\cdot  \\text{sinc}^2(${frequency}f)$`,
-                sinc: `$\\Re(\\mathcal{F}) = A \\cdot  \\Pi(f / f_0) = ${amplitude} \\cdot  \\Pi(f / ${frequency})$`,
-                cos: `$\\Re(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)] = ${amplitude} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) + \\delta (f - ${frequency})]$`,
+                square: `$\\Re(\\mathcal{F}) = A \\cdot  T\\text{sinc}(Tf)$`,
+                triangle: `$\\Re(\\mathcal{F}) = A \\cdot  T\\text{sinc}^2(Tf)$`,
+                sinc: `$\\Re(\\mathcal{F}) = A \\cdot  \\Pi(f / f_0)$`,
+                cos: `$\\Re(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
                 sin: `$\\Re(\\mathcal{F}) = 0$`,
                 exp: `$\\Re(\\mathcal{F})$`
             };
