@@ -12,7 +12,6 @@ import {
   const renderMathJax = (element) => {
     if (window.MathJax && element) {
         try {
-            // Use the correct MathJax API method
             if (window.MathJax.typeset) {
                 window.MathJax.typeset([element]);
             } else if (window.MathJax.Hub && window.MathJax.Hub.Queue) {
@@ -302,6 +301,7 @@ const Chart = () => {
           },
           rightPriceScale: {
             scaleMargins: { top: 0.4, bottom: 0.15 },
+            borderVisible: false,
           },
           crosshair: {
             horzLine: { 
@@ -318,7 +318,7 @@ const Chart = () => {
             fixLeftEdge: true,
             fixRightEdge: true,
             timeVisible: true,
-            // borderVisible: false, // Example
+            borderVisible: false,
             tickMarkFormatter: (time) => {
                 return time.toString();
             }
