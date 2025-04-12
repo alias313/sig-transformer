@@ -434,7 +434,7 @@ const Chart = () => {
         <Tabs
             defaultValue="modulus"
             onValueChange={handleTabChange}
-            className="w-full"
+            className="w-fit"
         >
             <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="real">Real</TabsTrigger>
