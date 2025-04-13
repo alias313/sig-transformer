@@ -78,6 +78,23 @@ import loadSignalParamsFromLocalStorage from "@/scripts/signal-handler.js";
 
 const loadedParams = loadSignalParamsFromLocalStorage();
 
+if (loadedParams) {
+  const { a, b, signalShape, amplitude, frequency, phase, interval, freqrange } = loadedParams;
+  document.getElementById('a').value = a;
+  document.getElementById('b').value = b;
+  document.getElementById('amplitude').value = amplitude;
+  document.getElementById('frequency').value = frequency;
+  document.getElementById('phase').value = phase;
+  document.getElementById('interval').value = interval;
+  document.getElementById('bandwidth').value = freqrange;
+
+  const waveformSelect = document.getElementById('waveform');
+  if (waveformSelect) {
+    waveformSelect.value = signalShape;
+    waveformSelect.dispatchEvent(new Event('change'));
+  }
+}
+
 const formElement = document.getElementById("wave-form") as HTMLFormElement;
 
 const startInput = document.getElementById('a') as HTMLInputElement;
