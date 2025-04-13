@@ -128,20 +128,17 @@ intervalInput.addEventListener('input', updateDynamicMax);
 startInput.addEventListener('input', updateDynamicMax);
 endInput.addEventListener('input', updateDynamicMax);
 
-let submitTriggered = 0;
-let submitKeyTriggered = false;
+let submitTriggered = false;
 
 formElement.addEventListener("submit", async (e) => {
   e.preventDefault();
   
-  if (submitTriggered % 2 === 1 && !submitKeyTriggered) {
-    submitTriggered++;
+  if (!submitTriggered) {
     return;
+  } else {
+    submitTriggered = false;
   }
-  if (submitKeyTriggered) {
-    submitKeyTriggered = false;
-  }
-  submitTriggered++;
+
   const formData = {
     a: startInput.value,
     b: endInput.value,
@@ -168,7 +165,7 @@ if (generateButton) {
   generateButton.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      submitKeyTriggered = true;
+      submitTriggered = true;
       formElement.requestSubmit(generateButton as HTMLElement);
     }
   });
