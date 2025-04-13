@@ -20,8 +20,7 @@
     "lucide-react": "0.488.0",
     "mathjax": "3.2.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "typescript": "5.8.3"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.4",
