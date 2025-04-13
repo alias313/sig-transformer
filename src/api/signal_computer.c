@@ -28,9 +28,9 @@ int sinc(fftw_complex in[], double input_array[],
                         int total_samples, double sampling_interval,
                         double a, double b, double amp, double freq_hz, double phase_rad);
 
-int square_centered(fftw_complex in[], double input_array[],
+int rect(fftw_complex in[], double input_array[],
                       int total_samples, double sampling_interval,
-                      double a, double b, double amp, double pulse_length);
+                      double a, double b, double amp, double pulse_length, double phase_rad);
 
 int exponential(fftw_complex in[], double input_array[],
                       int total_samples, double sampling_interval,
@@ -83,8 +83,8 @@ int main(int argc, char *argv[])
   }
   else if (!strcmp(argv[sig_argpos], "square"))
   {
-    rightmost_index = square_centered(in, input_array, total_samples, sampling_interval,
-                                      a, b, amp, pulse_length);
+    rightmost_index = rect(in, input_array, total_samples, sampling_interval,
+                                      a, b, amp, pulse_length, phase_rad);
 
   }
   else if (!strcmp(argv[sig_argpos], "exp"))
@@ -252,48 +252,48 @@ int sinc(fftw_complex in[], double input_array[],
   return rightmost_index;
 }
 
-int square_centered(fftw_complex in[], double input_array[],
+int rect(fftw_complex in[], double input_array[],
                       int total_samples, double sampling_interval,
                       double a, double b, double amp, double pulse_length, double phase_rad)
 {
   int i, rightmost_index;
   double input;
   for (i = 0; i < total_samples; i++)
+  {
+    if (i < ceil(total_samples / 2) + 1)
     {
-      if (i < ceil(total_samples / 2) + 1)
-      {
-        input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
+      input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
 
-        if (i * sampling_interval < pulse_length/2 + sampling_interval)
-        {
-          in[i][0] = amp;
-          in[i][1] = 0;
-        }
-        else
-        {
-          in[i][0] = 0;
-          in[i][1] = 0;
-        }
-        rightmost_index = i;
+      if (fabs(input-phase_rad) - sampling_interval/2 < pulse_length/2)
+      {
+        in[i][0] = amp;
+        in[i][1] = 0;
       }
       else
       {
-        input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
-
-        int i_left_shifted = i - rightmost_index;
-        if (i_left_shifted * sampling_interval > floor(total_samples / 2) * sampling_interval - pulse_length / 2 + sampling_interval / 2)
-        {
-          in[i][0] = amp;
-          in[i][1] = 0;
-        }
-        else
-        {
-          in[i][0] = 0;
-          in[i][1] = 0;
-        }
+        in[i][0] = 0;
+        in[i][1] = 0;
       }
-      input_array[i] = input;
+      rightmost_index = i;
     }
+    else
+    {
+      input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
+
+      int i_left_shifted = i - rightmost_index;
+      if (fabs(input - phase_rad) < pulse_length/2)
+      {
+        in[i][0] = amp;
+        in[i][1] = 0;
+      }
+      else
+      {
+        in[i][0] = 0;
+        in[i][1] = 0;
+      }
+    }
+    input_array[i] = input;
+  }
 
   return rightmost_index;
 }
