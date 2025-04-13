@@ -29,16 +29,16 @@ const maxFreq = 50;
         <Label for="waveform">Waveform:</Label>
         <Select id="waveform">
           <SelectTrigger class="w-full" required>
-            <SelectValue placeholder="Sinc" />
+            <SelectValue id="waveformSelect" placeholder="Sinc" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="square">Square</SelectItem>
-              <SelectItem value="triangle">Triangle</SelectItem>
-              <SelectItem value="sinc">Sinc</SelectItem>
-              <SelectItem value="cos">Cosine</SelectItem>
-              <SelectItem value="sin">Sine</SelectItem>
-              <SelectItem value="exp">exp</SelectItem>
+              <SelectItem id="waveformSquare" value="square">Square</SelectItem>
+              <SelectItem id="waveformTriangle" value="triangle">Triangle</SelectItem>
+              <SelectItem id="waveformSinc" value="sinc">Sinc</SelectItem>
+              <SelectItem id="waveformCosine" value="cos">Cosine</SelectItem>
+              <SelectItem id="waveformSine" value="sin">Sine</SelectItem>
+              <SelectItem id="waveformExp" value="exp">exp</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -88,10 +88,41 @@ if (loadedParams) {
   document.getElementById('interval').value = interval;
   document.getElementById('bandwidth').value = freqrange;
 
-  const waveformSelect = document.getElementById('waveform');
-  if (waveformSelect) {
-    waveformSelect.value = signalShape;
-    waveformSelect.dispatchEvent(new Event('change'));
+  const waveformSelect = document.getElementById('waveformSelect');
+
+  const waveformSquare = document.getElementById('waveformSquare');
+  const waveformTriangle = document.getElementById('waveformTriangle');
+  const waveformSinc = document.getElementById('waveformSinc');
+  const waveformCosine = document.getElementById('waveformCosine');
+  const waveformSine = document.getElementById('waveformSine');
+  const waveformExp = document.getElementById('waveformExp');
+
+  console.log(waveformSquare)
+  switch (signalShape) {
+    case "square":
+      waveformSelect.innerHTML = "Square";
+      waveformSquare.setAttribute("aria-selected", "true");
+      break;
+    case "triangle":
+      waveformSelect.innerHTML = "Triangle";
+      waveformTriangle.setAttribute("aria-selected", "true");
+      break;
+    case "sinc":
+      waveformSelect.innerHTML = "Sinc";
+      waveformSinc.setAttribute("aria-selected", "true");
+      break;
+    case "cos":
+      waveformSelect.innerHTML = "Cosine";
+      waveformCosine.setAttribute("aria-selected", "true");
+      break;
+    case "sin":
+      waveformSelect.innerHTML = "Sine";
+      waveformSine.setAttribute("aria-selected", "true");
+      break;
+    case "exp":
+      waveformSelect.innerHTML = "exp";
+      waveformExp.setAttribute("aria-selected", "true");
+      break;
   }
 }
 
@@ -178,7 +209,6 @@ formElement.addEventListener("submit", async (e) => {
     freqrange: bandwidthInput.value
   };
   
-  console.log("Form submission data:", formData);
   window.showChartLoading();
   await fetchSignal(formData, true);
 });
