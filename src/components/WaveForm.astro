@@ -160,6 +160,7 @@ const generateButton = formElement.querySelector("#generate-button");
 if (generateButton) {
   generateButton.addEventListener('mousedown', (e) => {
       e.preventDefault();
+      submitTriggered = true;
       formElement.requestSubmit(generateButton as HTMLElement);
   });
   generateButton.addEventListener('keydown', (e) => {
