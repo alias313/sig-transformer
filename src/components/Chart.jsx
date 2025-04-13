@@ -47,7 +47,7 @@ const Chart = () => {
     const { a, b, signalShape, amplitude, frequency, phase } = signalParams;
     
     let inputFormatters = {
-      square: `$\\textbf{x}[n] = A \\cdot  \\Pi (nT / P)$`,
+      square: `$\\textbf{x}[n] = A \\cdot  \\Pi (\\frac{nT-X}{P})$`,
       triangle: `$\\textbf{x}[n] = A \\cdot  \\Lambda (nT / 2P)$`,
       sinc: `$\\textbf{x}[n] = A \\cdot \\text{sinc}(f_0nT - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi nT - \\varphi )}{f_0 \\pi nT - \\varphi },\\forall n \\in \\{k\\in \\mathbb{Z} \\mid ${a} \\leq k \\leq ${b}\\}$`,
       sin: `$\\textbf{x}[n] = A \\cdot  \\sin(2\\pi f_0nT + \\varphi )$`,
