@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createChart, AreaSeries } from 'lightweight-charts';
 import { createDB } from '@/scripts/db.js';
 import { loadSignalParamsFromLocalStorage, fetchSignal } from '@/scripts/signal-handler.js';
@@ -44,7 +44,7 @@ const Chart = () => {
   const dbRef = useRef(null);
 
   const formatLegend = (signalParams = {}, outputType) => {
-    const { a, b, signalShape, amplitude, frequency, phase } = signalParams;
+    const { b, signalShape, amplitude, frequency } = signalParams;
     
     let inputFormatters = {
       square: `$\\textbf{x}[n] = A \\cdot  \\Pi (\\frac{nT-X}{P})$`,

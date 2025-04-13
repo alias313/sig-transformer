@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/starwind/button";
 import { Input } from "@/components/starwind/input";
 import { Label } from "@/components/starwind/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup, SelectLabel, SelectSeparator, } from "@/components/starwind/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from "@/components/starwind/select";
 
 const maxFreq = 50;
 ---
@@ -92,7 +92,7 @@ const frequencyLabelElement = document.getElementById('frequencyLabel') as HTMLL
 const phaseLabelElement = document.getElementById('phaseLabel') as HTMLLabelElement;
 const bandwidthLabelElement = document.getElementById('bandwidthLabel') as HTMLLabelElement;
 
-let waveformInput;
+let waveformInput: string | null = null;
 
 
 if (loadedParams) {
