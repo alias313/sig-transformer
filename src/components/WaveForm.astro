@@ -231,8 +231,9 @@ if (generateButton) {
       formElement.requestSubmit(generateButton as HTMLElement);
   });
   generateButton.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
+    const event = e as KeyboardEvent;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
       submitTriggered = true;
       formElement.requestSubmit(generateButton as HTMLElement);
     }
