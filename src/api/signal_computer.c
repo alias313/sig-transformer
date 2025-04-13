@@ -16,6 +16,8 @@
 #define phase_argpos 6
 #define interval_argpos 7
 
+int sign_double(double x);
+
 int cosine(fftw_complex in[], double input_array[],
           int total_samples, double sampling_interval,
           double a, double b, double amp, double freq_hz, double phase_rad);
@@ -161,6 +163,14 @@ int main(int argc, char *argv[])
   return 0;
 }
 
+int sign_double(double x) {
+  if (x >= 0.0) {
+      return 1;
+  } else {
+      return -1;
+  }
+}
+
 int cosine(fftw_complex in[], double input_array[],
           int total_samples, double sampling_interval,
           double a, double b, double amp, double freq_hz, double phase_rad)
@@ -264,7 +274,7 @@ int rect(fftw_complex in[], double input_array[],
     {
       input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
 
-      if (fabs(input-phase_rad) - sampling_interval/2 < pulse_length/2)
+      if (fabs(input-phase_rad) < pulse_length/2 + sampling_interval/2)
       {
         in[i][0] = amp;
         in[i][1] = 0;
@@ -281,7 +291,7 @@ int rect(fftw_complex in[], double input_array[],
       input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
 
       int i_left_shifted = i - rightmost_index;
-      if (fabs(input - phase_rad) < pulse_length/2)
+      if (fabs(input - phase_rad) < pulse_length/2 + sampling_interval/2)
       {
         in[i][0] = amp;
         in[i][1] = 0;
@@ -338,9 +348,9 @@ int triangle(fftw_complex in[], double input_array[],
       {
         input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
 
-        if (i * sampling_interval < pulse_length + sampling_interval)
+        if (fabs(input - phase_rad) < pulse_length + sampling_interval/2)
         {
-          in[i][0] = amp*(pulse_length-input)/(pulse_length);
+          in[i][0] = amp*(pulse_length - fabs(input-phase_rad))/(pulse_length);
           in[i][1] = 0;
         }
         else
@@ -355,9 +365,9 @@ int triangle(fftw_complex in[], double input_array[],
         input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
 
         int i_left_shifted = i - rightmost_index;
-        if (i_left_shifted * sampling_interval > floor(total_samples / 2) * sampling_interval - pulse_length + sampling_interval / 2)
+        if (fabs(input - phase_rad) < pulse_length + sampling_interval/2)
         {
-          in[i][0] = amp*(input+pulse_length)/(pulse_length);
+          in[i][0] = amp*(pulse_length - fabs(input-phase_rad))/(pulse_length);
           in[i][1] = 0;
         }
         else
