@@ -118,10 +118,14 @@ if (loadedParams) {
     case "square":
       waveformSelect.innerHTML = "Square";
       waveformSquare.setAttribute("aria-selected", "true");
+      frequencyLabelElement.innerHTML = "Duration (P):";
+      phaseLabelElement.innerHTML = "Translate (X):";
       break;
     case "triangle":
       waveformSelect.innerHTML = "Triangle";
       waveformTriangle.setAttribute("aria-selected", "true");
+      frequencyLabelElement.innerHTML = "Duration (2P):";
+      phaseLabelElement.innerHTML = "Translate (X):";
       break;
     case "sinc":
       waveformSelect.innerHTML = "Sinc";
