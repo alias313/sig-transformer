@@ -107,22 +107,25 @@ function updateDynamicMax() {
 document.querySelector('.starwind-select')?.addEventListener('starwind-select:change', (event) => {
   waveformInput = (event as CustomEvent).detail.value;
 
-  let newLabel = "Frequency (f₀):";
+  let newFreqLabel = "Frequency (f₀):";
+  let newPhaseLabel = "Phase (ϕ):";
     switch (waveformInput) {
       case "square":
-        newLabel = "Duration (P):";
+        newFreqLabel = "Duration (P):";
+        newPhaseLabel = "Translate (X):";
         break;
       case "triangle":
-        newLabel = "Duration (2P):";
+        newFreqLabel = "Duration (2P):";
+        newPhaseLabel = "Translate (X):";
         break;
     }
     
     if (frequencyLabelElement) {
-      frequencyLabelElement.innerHTML = newLabel;
+      frequencyLabelElement.innerHTML = newFreqLabel;
     }
 
     if (phaseLabelElement) {
-      phaseLabelElement.innerHTML = "Translate (X):";
+      phaseLabelElement.innerHTML = newPhaseLabel;
     }
 
 });
