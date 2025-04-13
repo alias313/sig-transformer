@@ -12,10 +12,8 @@ const defaultParams = {
     freqrange: 4
 };
 
-// Function to save signal parameters to LocalStorage
 function saveSignalParamsToLocalStorage(params) {
     try {
-        // Convert the params object to a JSON string
         localStorage.setItem('signalParams', JSON.stringify(params));
         return true;
     } catch (error) {
@@ -25,7 +23,6 @@ function saveSignalParamsToLocalStorage(params) {
 }
     
   
-// Function to load signal parameters from LocalStorage
 export default function loadSignalParamsFromLocalStorage() {
     try {
       const storedParams = localStorage.getItem('signalParams');
@@ -56,7 +53,6 @@ async function fetchSignal(signalParams, update=false) {
         }
         
         const fftData = await response.json();
-        //console.log("Received FFT JSON:", fftData);
         await loadJSONToIndexedDB(fftData);
         saveSignalParamsToLocalStorage(signalParams);
         if (update) window.updateChartData?.(signalParams);
@@ -70,6 +66,7 @@ async function fetchSignal(signalParams, update=false) {
 const dbName = 'SignalDB';
 const isExisting = (await window.indexedDB.databases()).map(db => db.name).includes(dbName);
 console.log("DB exists:", isExisting);
+
 // Doesn't cover the case when DB exists but there is no table/data
 if (!isExisting){
     console.log("Creating new database");

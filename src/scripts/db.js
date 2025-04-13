@@ -1,7 +1,6 @@
 import Dexie from 'dexie';
 
 async function createDB() {
-  // Create a new database
   const db = new Dexie('SignalDB');
   db.version(1).stores({
     signals: 'Freq'
@@ -18,10 +17,8 @@ async function loadJSONToIndexedDB(jsonData) {
     const data = jsonData;
     console.log('Data loaded from JSON file into IndexedDB:');
     console.log(data);
-    // Clear existing data
     await db.signals.clear();
 
-    // Add new data
     await db.signals.bulkAdd(data);
 
   } catch (error) {
@@ -29,5 +26,4 @@ async function loadJSONToIndexedDB(jsonData) {
   }
 }
 
-// Export the function to be used elsewhere
 export { createDB, loadJSONToIndexedDB };

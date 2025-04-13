@@ -273,7 +273,6 @@ const Chart = () => {
 
     window.updateChartData = updateChartData;
 
-    // Ensure containers exist before proceeding
     if (!container1Ref.current || !container2Ref.current) {
         console.error("Chart container refs not ready on mount.");
         window.hideChartLoading();
@@ -410,7 +409,7 @@ const Chart = () => {
     initializeCharts();
     
     return () => {
-        isMounted = false; // Cleanup flag
+        isMounted = false;
         if (inputChartRef.current) inputChartRef.current.remove();
         if (outputChartRef.current) outputChartRef.current.remove();
         window.updateChartData = undefined;

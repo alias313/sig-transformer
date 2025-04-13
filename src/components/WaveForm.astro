@@ -147,17 +147,14 @@ if (loadedParams) {
 }
 
 function updateDynamicMax() {
-    // Get the current interval value (as a number)
     const currentInterval = parseFloat(intervalInput.value);
-    // Assume you calculate total_samples from other inputs, for example:
+
     const a = parseFloat(startInput.value);
     const b = parseFloat(endInput.value);
     const total_samples = Math.ceil((b - a) / currentInterval);
     
-    // Calculate your dynamic max (use your formula here)
     const dynamicMax = Math.floor(10*(total_samples - Math.round(total_samples/2))/(total_samples * currentInterval)) / 10;
 
-    // Update the max attribute and current value if needed
     bandwidthInput.setAttribute('max', dynamicMax.toString());
     bandwidthLabelElement.innerHTML = `BW (<= ${dynamicMax} Hz):`;
     if (parseFloat(bandwidthInput.value) > dynamicMax) {
@@ -195,7 +192,6 @@ document.querySelector('.starwind-select')?.addEventListener('starwind-select:ch
 
 });
 
-// Attach an event listener to update when the interval value changes
 intervalInput.addEventListener('input', updateDynamicMax);
 startInput.addEventListener('input', updateDynamicMax);
 endInput.addEventListener('input', updateDynamicMax);
