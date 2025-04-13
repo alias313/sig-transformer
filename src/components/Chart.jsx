@@ -47,17 +47,17 @@ const Chart = () => {
     const { b, signalShape, amplitude, frequency, phase } = signalParams;
     
     let inputFormatters = {
-      square: `$f(t) = A \\cdot  \\Pi (t / T)$`,
-      triangle: `$f(t) = A \\cdot  \\Lambda (t / 2T)$`,
-      sinc: `$f(t) = A \\cdot \\text{sinc}(f_0t - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi t - \\varphi )}{f_0 \\pi t - \\varphi }$`,
-      sin: `$f(t) = A \\cdot  \\sin(2\\pi f_0t + \\varphi )$`,
-      cos: `$f(t) = A \\cdot  cos(2\\pi f_0t + \\varphi )$`,
-      exp: `$f(t) = ${amplitude}\\cdot \\exp(t)$`
+      square: `$\\textbf{x}[n] = A \\cdot  \\Pi (n / P)$`,
+      triangle: `$\\textbf{x}[n] = A \\cdot  \\Lambda (n / 2P)$`,
+      sinc: `$\\textbf{x}[n] = A \\cdot \\text{sinc}(f_0n - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi n - \\varphi )}{f_0 \\pi n - \\varphi }$`,
+      sin: `$\\textbf{x}[n] = A \\cdot  \\sin(2\\pi f_0n + \\varphi )$`,
+      cos: `$\\textbf{x}[n] = A \\cdot  cos(2\\pi f_0n + \\varphi )$`,
+      exp: `$\\textbf{x}[n] = ${amplitude}\\cdot \\exp(n)$`
     };
 
     let outputFormatters = {
-      square: `$|\\mathcal{F}| = |A| \\cdot  T|\\text{sinc}(Tf)|$`,
-      triangle: `$|\\mathcal{F}| = |A| \\cdot  T\\text{sinc}^2(Tf)$`,
+      square: `$|\\mathcal{F}| = |A| \\cdot  P|\\text{sinc}(Pf)|$`,
+      triangle: `$|\\mathcal{F}| = |A| \\cdot  P\\text{sinc}^2(Pf)$`,
       sinc: `$|\\mathcal{F}| = |A| \\cdot  \\Pi (f / f_0)$`,
       cos: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
       sin: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
@@ -67,8 +67,8 @@ const Chart = () => {
     switch (outputType) {
         case 'real':
             outputFormatters = {
-                square: `$\\Re(\\mathcal{F}) = A \\cdot  T\\text{sinc}(Tf)$`,
-                triangle: `$\\Re(\\mathcal{F}) = A \\cdot  T\\text{sinc}^2(Tf)$`,
+                square: `$\\Re(\\mathcal{F}) = A \\cdot  P\\text{sinc}(Pf)$`,
+                triangle: `$\\Re(\\mathcal{F}) = A \\cdot  P\\text{sinc}^2(Pf)$`,
                 sinc: `$\\Re(\\mathcal{F}) = A \\cdot  \\Pi(f / f_0)$`,
                 cos: `$\\Re(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
                 sin: `$\\Re(\\mathcal{F}) = 0$`,
@@ -88,8 +88,8 @@ const Chart = () => {
     }
     
     return {
-      inputSymbolName: inputFormatters[signalShape] || `f(t)`,
-      outputSymbolName: outputFormatters[signalShape] || `re(FFT(f(t)))`
+      inputSymbolName: inputFormatters[signalShape] || `\\textbf{x}[n]`,
+      outputSymbolName: outputFormatters[signalShape] || `re(FFT(\\textbf{x}[n]))`
     };
   };
 
