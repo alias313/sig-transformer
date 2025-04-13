@@ -254,7 +254,7 @@ int sinc(fftw_complex in[], double input_array[],
 
 int square_centered(fftw_complex in[], double input_array[],
                       int total_samples, double sampling_interval,
-                      double a, double b, double amp, double pulse_length)
+                      double a, double b, double amp, double pulse_length, double phase_rad)
 {
   int i, rightmost_index;
   double input;
