@@ -44,15 +44,15 @@ const Chart = () => {
   const dbRef = useRef(null);
 
   const formatLegend = (signalParams = {}, outputType) => {
-    const { b, signalShape, amplitude, frequency, phase } = signalParams;
+    const { a, b, signalShape, amplitude, frequency, phase } = signalParams;
     
     let inputFormatters = {
-      square: `$\\textbf{x}[n] = A \\cdot  \\Pi (n / P)$`,
-      triangle: `$\\textbf{x}[n] = A \\cdot  \\Lambda (n / 2P)$`,
-      sinc: `$\\textbf{x}[n] = A \\cdot \\text{sinc}(f_0n - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi n - \\varphi )}{f_0 \\pi n - \\varphi }$`,
-      sin: `$\\textbf{x}[n] = A \\cdot  \\sin(2\\pi f_0n + \\varphi )$`,
-      cos: `$\\textbf{x}[n] = A \\cdot  cos(2\\pi f_0n + \\varphi )$`,
-      exp: `$\\textbf{x}[n] = ${amplitude}\\cdot \\exp(n)$`
+      square: `$\\textbf{x}[n] = A \\cdot  \\Pi (nT / P)$`,
+      triangle: `$\\textbf{x}[n] = A \\cdot  \\Lambda (nT / 2P)$`,
+      sinc: `$\\textbf{x}[n] = A \\cdot \\text{sinc}(f_0nT - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi nT - \\varphi )}{f_0 \\pi nT - \\varphi },\\forall n \\in \\{k\\in \\mathbb{Z} \\mid ${a} \\leq k \\leq ${b}\\}$`,
+      sin: `$\\textbf{x}[n] = A \\cdot  \\sin(2\\pi f_0nT + \\varphi )$`,
+      cos: `$\\textbf{x}[n] = A \\cdot  cos(2\\pi f_0nT + \\varphi )$`,
+      exp: `$\\textbf{x}[n] = ${amplitude}\\cdot \\exp(nT)$`
     };
 
     let outputFormatters = {
