@@ -109,7 +109,8 @@ import Chart from '@/components/Chart.jsx';
 					});
 					
 					link.addEventListener('keydown', (e) => {
-						if (e.key === 'Enter' || e.key === ' ') {
+						const event = e as KeyboardEvent;
+						if (event.key === 'Enter' || event.key === ' ') {
 						e.preventDefault();
 						const url = link.getAttribute('href');
 						if (url) {
