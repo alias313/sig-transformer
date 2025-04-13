@@ -207,11 +207,11 @@ formElement.addEventListener("submit", async (e) => {
     a: startInput.value,
     b: endInput.value,
     signalShape: waveformInput || loadedParams.signalShape || "sinc",
-    amplitude: (document.getElementById('amplitude') as HTMLInputElement)?.value,
-    frequency: (document.getElementById('frequency') as HTMLInputElement)?.value,
-    phase: (document.getElementById('phase') as HTMLInputElement)?.value,
-    interval: intervalInput.value,
-    freqrange: bandwidthInput.value
+    amplitude: amplitudeInput?.value,
+    frequency: frequencyInput?.value,
+    phase: phaseInput?.value,
+    interval: intervalInput?.value,
+    freqrange: bandwidthInput?.value
   };
   
   window.showChartLoading();
