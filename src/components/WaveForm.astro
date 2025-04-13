@@ -78,15 +78,32 @@ import loadSignalParamsFromLocalStorage from "@/scripts/signal-handler.js";
 
 const loadedParams = loadSignalParamsFromLocalStorage();
 
+const formElement = document.getElementById("wave-form") as HTMLFormElement;
+
+const startInput = document.getElementById('a') as HTMLInputElement;
+const endInput = document.getElementById('b') as HTMLInputElement;
+const amplitudeInput = document.getElementById('amplitude') as HTMLInputElement;
+const frequencyInput = document.getElementById('frequency') as HTMLInputElement;
+const phaseInput = document.getElementById('phase') as HTMLInputElement;
+const intervalInput = document.getElementById('interval') as HTMLInputElement;
+const bandwidthInput = document.getElementById('bandwidth') as HTMLInputElement;
+
+const frequencyLabelElement = document.getElementById('frequencyLabel') as HTMLLabelElement;
+const phaseLabelElement = document.getElementById('phaseLabel') as HTMLLabelElement;
+const bandwidthLabelElement = document.getElementById('bandwidthLabel') as HTMLLabelElement;
+
+let waveformInput;
+
+
 if (loadedParams) {
   const { a, b, signalShape, amplitude, frequency, phase, interval, freqrange } = loadedParams;
-  document.getElementById('a').value = a;
-  document.getElementById('b').value = b;
-  document.getElementById('amplitude').value = amplitude;
-  document.getElementById('frequency').value = frequency;
-  document.getElementById('phase').value = phase;
-  document.getElementById('interval').value = interval;
-  document.getElementById('bandwidth').value = freqrange;
+  startInput.value = a;
+  endInput.value = b;
+  amplitudeInput.value = amplitude;
+  frequencyInput.value = frequency;
+  phaseInput.value = phase;
+  intervalInput.value = interval;
+  bandwidthInput.value = freqrange;
 
   const waveformSelect = document.getElementById('waveformSelect');
 
@@ -124,17 +141,6 @@ if (loadedParams) {
       break;
   }
 }
-
-const formElement = document.getElementById("wave-form") as HTMLFormElement;
-
-const startInput = document.getElementById('a') as HTMLInputElement;
-const endInput = document.getElementById('b') as HTMLInputElement;
-const frequencyLabelElement = document.getElementById('frequencyLabel') as HTMLLabelElement;
-const phaseLabelElement = document.getElementById('phaseLabel') as HTMLInputElement;
-const intervalInput = document.getElementById('interval') as HTMLInputElement;
-const bandwidthInput = document.getElementById('bandwidth') as HTMLInputElement;
-const bandwidthLabelElement = document.getElementById('bandwidthLabel') as HTMLLabelElement;
-let waveformInput;
 
 function updateDynamicMax() {
     // Get the current interval value (as a number)
