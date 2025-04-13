@@ -36,9 +36,9 @@ int exponential(fftw_complex in[], double input_array[],
                       int total_samples, double sampling_interval,
                       double a, double b, double amp);
 
-int triangle_centered(fftw_complex in[], double input_array[],
+int triangle(fftw_complex in[], double input_array[],
   int total_samples, double sampling_interval,
-  double a, double b, double amp, double pulse_length);
+  double a, double b, double amp, double pulse_length, double phase_rad);
   
 
 int main(int argc, char *argv[])
@@ -94,8 +94,8 @@ int main(int argc, char *argv[])
   }
   else if (!strcmp(argv[sig_argpos], "triangle"))
   {
-    rightmost_index = triangle_centered(in, input_array, total_samples, sampling_interval,
-                                      a, b, amp, pulse_length);
+    rightmost_index = triangle(in, input_array, total_samples, sampling_interval,
+                                      a, b, amp, pulse_length, phase_rad);
 
   }
   else
@@ -326,9 +326,9 @@ int exponential(fftw_complex in[], double input_array[],
   return rightmost_index;
 }
 
-int triangle_centered(fftw_complex in[], double input_array[],
+int triangle(fftw_complex in[], double input_array[],
   int total_samples, double sampling_interval,
-  double a, double b, double amp, double pulse_length)
+  double a, double b, double amp, double pulse_length, double phase_rad)
 {
   int i, rightmost_index;
   double input;
