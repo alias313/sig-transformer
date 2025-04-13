@@ -74,6 +74,10 @@ const maxFreq = 50;
 
 <script>
 import { fetchSignal } from "@/scripts/signal-handler.js";
+import loadSignalParamsFromLocalStorage from "@/scripts/signal-handler.js";
+
+const loadedParams = loadSignalParamsFromLocalStorage();
+
 const formElement = document.getElementById("wave-form") as HTMLFormElement;
 
 const startInput = document.getElementById('a') as HTMLInputElement;
