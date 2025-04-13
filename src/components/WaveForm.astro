@@ -36,8 +36,8 @@ const maxFreq = 50;
               <SelectItem id="waveformSquare" value="square">Square</SelectItem>
               <SelectItem id="waveformTriangle" value="triangle">Triangle</SelectItem>
               <SelectItem id="waveformSinc" value="sinc">Sinc</SelectItem>
-              <SelectItem id="waveformCosine" value="cos">Cosine</SelectItem>
-              <SelectItem id="waveformSine" value="sin">Sine</SelectItem>
+              <SelectItem id="waveformCos" value="cos">Cosine</SelectItem>
+              <SelectItem id="waveformSin" value="sin">Sine</SelectItem>
               <SelectItem id="waveformExp" value="exp">exp</SelectItem>
             </SelectGroup>
           </SelectContent>
@@ -110,8 +110,8 @@ if (loadedParams) {
   const waveformSquare = document.getElementById('waveformSquare');
   const waveformTriangle = document.getElementById('waveformTriangle');
   const waveformSinc = document.getElementById('waveformSinc');
-  const waveformCosine = document.getElementById('waveformCosine');
-  const waveformSine = document.getElementById('waveformSine');
+  const waveformCosine = document.getElementById('waveformCos');
+  const waveformSine = document.getElementById('waveformSin');
   const waveformExp = document.getElementById('waveformExp');
 
   switch (signalShape) {
@@ -168,6 +168,10 @@ function updateDynamicMax() {
 document.querySelector('.starwind-select')?.addEventListener('starwind-select:change', (event) => {
   waveformInput = (event as CustomEvent).detail.value;
 
+  if (waveformInput !== loadedParams) {
+    document.getElementById(`waveform${loadedParams.signalShape.charAt(0).toUpperCase() + loadedParams.signalShape.slice(1)}`)?.
+    setAttribute("aria-selected", "false");
+  }
   let newFreqLabel = "Frequency (f₀):";
   let newPhaseLabel = "Phase (ϕ):";
     switch (waveformInput) {
