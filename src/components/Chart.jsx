@@ -67,8 +67,8 @@ const Chart = () => {
     switch (outputType) {
         case 'real':
             outputFormatters = {
-                square: `$\\Re(\\mathcal{F}) = A \\cdot  P\\text{sinc}(Pf)$`,
-                triangle: `$\\Re(\\mathcal{F}) = A \\cdot  P\\text{sinc}^2(Pf)$`,
+                square: `$\\Re(\\mathcal{F}) = A \\cdot  P\\text{sinc}(Pf)\\cos(2\\pi f X)$`,
+                triangle: `$\\Re(\\mathcal{F}) = A \\cdot  P\\text{sinc}^2(Pf)\\cos(2\\pi f X)$`,
                 sinc: `$\\Re(\\mathcal{F}) = A \\cdot  \\Pi(f / f_0)$`,
                 cos: `$\\Re(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
                 sin: `$\\Re(\\mathcal{F}) = 0$`,
@@ -77,8 +77,8 @@ const Chart = () => {
             break;
         case 'imaginary':
             outputFormatters = {
-                square: `$\\Im(\\mathcal{F}) = 0$`,
-                triangle: `$\\Im(\\mathcal{F}) = 0$`,
+                square: `$\\Im(\\mathcal{F}) = -A \\cdot  P\\text{sinc}(Pf)\\sin(2\\pi f X)$`,
+                triangle: `$\\Im(\\mathcal{F}) = -A \\cdot  P\\text{sinc}^2(Pf)\\sin(2\\pi f X)$`,
                 sinc: `$\\Im(\\mathcal{F}) = 0$`,
                 cos: `$\\Im(\\mathcal{F}) = 0$`,
                 sin: `$\\Im(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) - \\delta (f - f_0)] = ${amplitude} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) - \\delta (f - ${frequency})]$`,
