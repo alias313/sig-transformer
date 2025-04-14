@@ -63,7 +63,7 @@ const Chart = () => {
       cos: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
       sin: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
       exp: `$|\\mathcal{F}| = \\exp(${b}) \\cdot  \\frac{${Math.abs(amplitude)}}{f^2+1}$`,
-      sign: `$|\\mathcal{F}| = \\frac{2}{jk}$`
+      sign: `$|\\mathcal{F}| = \\left| \\frac{2}{f}\\right|$`
     };
 
     switch (outputType) {
@@ -74,7 +74,8 @@ const Chart = () => {
                 sinc: `$\\Re(\\mathcal{F}) = A \\cdot  \\Pi(f / f_0)$`,
                 cos: `$\\Re(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
                 sin: `$\\Re(\\mathcal{F}) = 0$`,
-                exp: `$\\Re(\\mathcal{F})$`
+                exp: `$\\Re(\\mathcal{F})$`,
+                sign: `$\\Re(\\mathcal{F}) = 0$`
             };
             break;
         case 'imaginary':
@@ -84,14 +85,15 @@ const Chart = () => {
                 sinc: `$\\Im(\\mathcal{F}) = 0$`,
                 cos: `$\\Im(\\mathcal{F}) = 0$`,
                 sin: `$\\Im(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) - \\delta (f - f_0)] = ${amplitude} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) - \\delta (f - ${frequency})]$`,
-                exp: `$\\Im(\\mathcal{F})$`
+                exp: `$\\Im(\\mathcal{F})$`,
+                sign: `$\\Im(\\mathcal{F}) = -\\frac{2}{f}$`
             };
             break;
     }
     
     return {
-      inputSymbolName: inputFormatters[signalShape] || `\\textbf{x}[n]`,
-      outputSymbolName: outputFormatters[signalShape] || `\\mathcal{F}`
+      inputSymbolName: inputFormatters[signalShape] || `$\\textbf{x}[n]$`,
+      outputSymbolName: outputFormatters[signalShape] || `$\\mathcal{F}$`
     };
   };
 
