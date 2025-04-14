@@ -437,7 +437,7 @@ const Chart = () => {
       </div>
       
         <Tabs
-            defaultValue="modulus"
+            value={outputDataType}
             onValueChange={handleTabChange}
             className="w-fit"
         >
