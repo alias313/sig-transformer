@@ -38,6 +38,10 @@ int exponential(fftw_complex in[], double input_array[],
                       int total_samples, double sampling_interval,
                       double a, double b, double amp);
 
+int sign(fftw_complex in[], double input_array[],
+                      int total_samples, double sampling_interval,
+                      double a, double b);  
+
 int triangle(fftw_complex in[], double input_array[],
   int total_samples, double sampling_interval,
   double a, double b, double amp, double pulse_length, double phase_rad);
@@ -87,7 +91,6 @@ int main(int argc, char *argv[])
   {
     rightmost_index = rect(in, input_array, total_samples, sampling_interval,
                                       a, b, amp, pulse_length, phase_rad);
-
   }
   else if (!strcmp(argv[sig_argpos], "exp"))
   {
@@ -98,7 +101,11 @@ int main(int argc, char *argv[])
   {
     rightmost_index = triangle(in, input_array, total_samples, sampling_interval,
                                       a, b, amp, pulse_length, phase_rad);
-
+  }
+  else if (!strcmp(argv[sig_argpos], "sign"))
+  {
+    rightmost_index = sign(in, input_array, total_samples, sampling_interval,
+                                      a, b);
   }
   else
   {
@@ -334,6 +341,41 @@ int exponential(fftw_complex in[], double input_array[],
   }
 
   return rightmost_index;
+}
+
+int sign(fftw_complex in[], double input_array[],
+  int total_samples, double sampling_interval,
+  double a, double b) 
+{
+int i, rightmost_index;
+double input;
+for (i = 0; i < total_samples; i++)
+{
+  if (i < ceil(total_samples / 2) + 1)
+  {
+    input = a + i * sampling_interval + ceil(total_samples / 2) * sampling_interval;
+    if (i == 0) {
+      in[i][0] = 0;
+      in[i][1] = 0;
+    } else {
+      in[i][0] = 1;
+      in[i][1] = 0;
+    }
+    rightmost_index = i;
+  }
+  else
+  {
+    input = a + i * sampling_interval - ceil(total_samples / 2) * sampling_interval - sampling_interval;
+    in[i][0] = -1;
+    in[i][1] = 0;
+
+  }
+
+  input_array[i] = input;
+  // printf("%d input %8.5f\n", i, input);
+}
+
+return rightmost_index;
 }
 
 int triangle(fftw_complex in[], double input_array[],
