@@ -39,6 +39,7 @@ const maxFreq = 50;
               <SelectItem id="waveformCos" value="cos">Cosine</SelectItem>
               <SelectItem id="waveformSin" value="sin">Sine</SelectItem>
               <SelectItem id="waveformExp" value="exp">exp</SelectItem>
+              <SelectItem id="waveformSign" value="sign">sign</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -113,6 +114,7 @@ if (loadedParams) {
   const waveformCosine = document.getElementById('waveformCos');
   const waveformSine = document.getElementById('waveformSin');
   const waveformExp = document.getElementById('waveformExp');
+  const waveformSign = document.getElementById('waveformSign');
 
   switch (signalShape) {
     case "square":
@@ -142,6 +144,10 @@ if (loadedParams) {
     case "exp":
       waveformSelect.innerHTML = "exp";
       waveformExp.setAttribute("aria-selected", "true");
+      break;
+    case "sign":
+      waveformSelect.innerHTML = "sign";
+      waveformSign.setAttribute("aria-selected", "true");
       break;
   }
 }

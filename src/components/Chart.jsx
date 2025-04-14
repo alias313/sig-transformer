@@ -52,7 +52,8 @@ const Chart = () => {
       sinc: `$\\textbf{x}[n] = A \\cdot \\text{sinc}(f_0nT - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi nT - \\varphi )}{f_0 \\pi nT - \\varphi }$`,
       sin: `$\\textbf{x}[n] = A \\cdot  \\sin(2\\pi f_0nT + \\varphi )$`,
       cos: `$\\textbf{x}[n] = A \\cdot  cos(2\\pi f_0nT + \\varphi )$`,
-      exp: `$\\textbf{x}[n] = ${amplitude}\\cdot \\exp(nT)$`
+      exp: `$\\textbf{x}[n] = ${amplitude}\\cdot \\exp(nT)$`,
+      sign: `$\\textbf{x}[n] = \\frac{nT}{\\mid nT \\mid}\\forall n \\neq 0$`
     };
 
     let outputFormatters = {
@@ -61,7 +62,8 @@ const Chart = () => {
       sinc: `$|\\mathcal{F}| = |A| \\cdot  \\Pi (f / f_0)$`,
       cos: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
       sin: `$|\\mathcal{F}| = |A| \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
-      exp: `$|\\mathcal{F}| = \\exp(${b}) \\cdot  \\frac{${Math.abs(amplitude)}}{f^2+1}$`
+      exp: `$|\\mathcal{F}| = \\exp(${b}) \\cdot  \\frac{${Math.abs(amplitude)}}{f^2+1}$`,
+      sign: `$|\\mathcal{F}| = \\frac{2}{jk}$`
     };
 
     switch (outputType) {
@@ -89,7 +91,7 @@ const Chart = () => {
     
     return {
       inputSymbolName: inputFormatters[signalShape] || `\\textbf{x}[n]`,
-      outputSymbolName: outputFormatters[signalShape] || `re(FFT(\\textbf{x}[n]))`
+      outputSymbolName: outputFormatters[signalShape] || `\\mathcal{F}`
     };
   };
 
