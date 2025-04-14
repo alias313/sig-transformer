@@ -205,18 +205,6 @@ const Chart = () => {
   const updateChartData = async (signalParams = {}) => {
     try {        
       setOutputDataType('modulus');
-
-      const tabsRoot = document.querySelector('[data-slot="tabs"]');
-      if (tabsRoot) {
-        tabsRoot.setAttribute('data-value', 'modulus');
-        document.querySelectorAll('[data-slot="tabs-trigger"]').forEach(trigger => {
-          if (trigger.getAttribute('id') === 'radix-«r0»-trigger-modulus') {
-            trigger.setAttribute('data-state', 'active');
-          } else {
-            trigger.setAttribute('data-state', 'inactive');
-          }
-        });
-      }
       
       const { inputSymbolName: newInputName, outputSymbolName: newOutputName } = formatLegend(signalParams);
       inputSymbolNameRef.current = newInputName;
