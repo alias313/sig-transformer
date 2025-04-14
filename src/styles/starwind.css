@@ -117,7 +117,7 @@
 		--error-foreground: var(--color-neutral-50);
 		--border: var(--color-neutral-800);
 		--input: var(--color-neutral-800);
-		--outline: var(--color-purple-600);
+		--outline: var(--color-purple-300);
 		--radius: 0.5rem;
 	}
 
