@@ -71,7 +71,7 @@ const Chart = () => {
             outputFormatters = {
                 square: `$\\Re(\\mathcal{F}) = A \\cdot  P\\text{sinc}(Pf)\\cos(2\\pi f X)$`,
                 triangle: `$\\Re(\\mathcal{F}) = A \\cdot  P\\text{sinc}^2(Pf)\\cos(2\\pi f X)$`,
-                sinc: `$\\Re(\\mathcal{F}) = A \\cdot  \\Pi(f / f_0)$`,
+                sinc: `$\\Re(\\mathcal{F}) = A \\cdot  \\Pi(f / f_0)\\cos(2\\pi f X)$`,
                 cos: `$\\Re(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) + \\delta (f - f_0)]$`,
                 sin: `$\\Re(\\mathcal{F}) = 0$`,
                 exp: `$\\Re(\\mathcal{F})$`,
@@ -82,9 +82,9 @@ const Chart = () => {
             outputFormatters = {
                 square: `$\\Im(\\mathcal{F}) = -A \\cdot  P\\text{sinc}(Pf)\\sin(2\\pi f X)$`,
                 triangle: `$\\Im(\\mathcal{F}) = -A \\cdot  P\\text{sinc}^2(Pf)\\sin(2\\pi f X)$`,
-                sinc: `$\\Im(\\mathcal{F}) = 0$`,
+                sinc: `$\\Im(\\mathcal{F}) = -A \\cdot  \\Pi(f / f_0)\\sin(2\\pi f X)$`,
                 cos: `$\\Im(\\mathcal{F}) = 0$`,
-                sin: `$\\Im(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) - \\delta (f - f_0)] = ${amplitude} \\cdot  \\frac{1}{2}[\\delta (f + ${frequency}) - \\delta (f - ${frequency})]$`,
+                sin: `$\\Im(\\mathcal{F}) = A \\cdot  \\frac{1}{2}[\\delta (f + f_0) - \\delta (f - f_0)]$`,
                 exp: `$\\Im(\\mathcal{F})$`,
                 sign: `$\\Im(\\mathcal{F}) = -\\frac{2}{f}$`
             };
