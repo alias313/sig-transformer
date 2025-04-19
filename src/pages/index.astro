@@ -38,7 +38,7 @@ import Chart from '@/components/Chart.jsx';
 				</div>
 				
 				<!-- Right column - Chart and Cards -->
-				<div class="md:col-span-3 flex flex-col justify-center min-w-0 overflow-x-auto rounded-lg min-h-[800px] relative">
+				<div id='chart-container' class="md:col-span-3 flex flex-col justify-center min-w-0 overflow-x-auto rounded-lg min-h-[400px] relative">
 					<!-- Chart loading overlay (positioned relative to this container) -->
 					<div 
 					id="chart-loading" 
@@ -92,7 +92,33 @@ import Chart from '@/components/Chart.jsx';
 				
 				window.hideChartLoading = () => {
 					document.getElementById('chart-loading').classList.add('opacity-0', 'pointer-events-none');
+				
+					setTimeout(centerChartView, 100);
 				};
+
+				function centerChartView() {
+					const chartContainer = document.getElementById('chart-container');
+					console.log('this logs?', chartContainer);
+					if (!chartContainer) return;
+					
+					const chartContent = chartContainer.querySelector('.tv-lightweight-charts') || 
+										chartContainer.firstElementChild;
+					if (chartContent) {
+						const containerWidth = chartContainer.clientWidth;
+						const contentWidth = chartContent.scrollWidth || chartContent.clientWidth;
+						
+						if (contentWidth > containerWidth) {
+							console.log('Content is wider than container - centering needed');
+							const scrollPosition = Math.max(0, (contentWidth - containerWidth) * 0.45);
+							chartContainer.scrollLeft = scrollPosition;
+							console.log('Chart centered at position:', scrollPosition, 
+										'Container:', containerWidth, 'Content:', contentWidth);
+						} else {
+							console.log('No centering needed - content fits in viewport');
+						}
+					}
+				}
+  
 				
 				document.addEventListener('DOMContentLoaded', () => {
 					const mousedownLinks = document.querySelectorAll('a[target="_blank"], .infocard-link');
