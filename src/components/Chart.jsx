@@ -294,6 +294,8 @@ const Chart = () => {
         const { inputSymbolName: initialInput, outputSymbolName: initialOutput } = formatLegend(signalParams);
         inputSymbolNameRef.current = initialInput;
         outputSymbolNameRef.current = initialOutput;
+        
+        const isSmallScreen = window.innerWidth < 640; // sm breakpoint in Tailwind is 640px
 
         const chartOptions = {
           layout: {
@@ -327,6 +329,9 @@ const Chart = () => {
             tickMarkFormatter: (time) => {
                 return time.toString();
             }
+          },
+          rightPriceScale: {
+            visible: !isSmallScreen,
           },
           handleScroll: true,
           handleScale: true,
