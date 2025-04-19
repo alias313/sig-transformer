@@ -427,7 +427,7 @@ const Chart = () => {
       <div 
         id="container1" 
         ref={container1Ref}
-        className="my-10 h-[300px] min-w-[800px] md:min-w-0 md:w-full relative"
+        className="my-10 h-[300px] md:min-w-0 md:w-full relative"
       >
         <div 
           id="inputLegend" 
@@ -451,7 +451,7 @@ const Chart = () => {
       <div 
         id="container2" 
         ref={container2Ref}
-        className="mb-10 h-[300px] min-w-[800px] md:min-w-0 md:w-full relative"
+        className="mb-10 h-[300px] md:min-w-0 md:w-full relative"
       >
         <div 
           id="outputLegend" 
