@@ -306,10 +306,6 @@ const Chart = () => {
           localization: {
             timeFormatter: time => time.toString(),
           },
-          rightPriceScale: {
-            scaleMargins: { top: 0.4, bottom: 0.15 },
-            borderVisible: false,
-          },
           crosshair: {
             horzLine: { 
                 visible: false, 
@@ -332,6 +328,8 @@ const Chart = () => {
           },
           rightPriceScale: {
             visible: !isSmallScreen,
+            scaleMargins: { top: 0.4, bottom: 0.15 },
+            borderVisible: false,
           },
           handleScroll: true,
           handleScale: true,
