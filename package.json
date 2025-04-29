@@ -26,14 +26,14 @@
     "@astrojs/check": "0.9.4",
     "@tailwindcss/forms": "0.5.10",
     "@tailwindcss/vite": "4.1.4",
-    "@types/node": "22.14.1",
+    "@types/node": "22.15.3",
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
     "clsx": "2.1.1",
     "tailwind-merge": "3.2.0",
     "tailwind-variants": "1.0.0",
     "tailwindcss": "4.1.4",
-    "tsx": "4.19.3",
+    "tsx": "4.19.4",
     "tw-animate-css": "1.2.8"
   }
 }
