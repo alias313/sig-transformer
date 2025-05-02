@@ -6,7 +6,7 @@ import { useLightweightChart } from '@/hooks/useLightweightChart';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const formatLegend = (signalParams = {}, outputType = 'modulus') => {
-  const { b, signalShape, amplitude, frequency } = signalParams;
+  const { b, signalShape, amplitude, phase } = signalParams;
 
   let inputFormatters = {
     square: `\\( \\textbf{x}[n] = A \\cdot \\Pi \\left(\\frac{nT-X}{P}\\right) \\)`,
@@ -29,8 +29,12 @@ const formatLegend = (signalParams = {}, outputType = 'modulus') => {
       sign: `\\( |\\mathcal{F}| = \\left| \\frac{2}{f} \\right| \\)`,
     },
     real: {
-      square: `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}(Pf)\\cos(2\\pi f X) \\)`,
-      triangle: `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}^2(Pf)\\cos(2\\pi f X) \\)`,
+      square: phase == 0
+        ? `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}(Pf) \\)`
+        : `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}(Pf)\\cos(2\\pi f X) \\)`,
+      triangle: phase == 0
+        ? `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}^2(Pf) \\)`
+        : `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}^2(Pf)\\cos(2\\pi f X) \\)`,
       sinc: `\\( \\Re(\\mathcal{F}) = A \\cdot \\Pi\\left(\\frac{f}{f_0}\\right)\\cos(2\\pi f \\varphi) \\)`,
       cos: `\\( \\Re(\\mathcal{F}) = \\frac{A}{2}[\\delta (f + f_0) + \\delta (f - f_0)] \\)`,
       sin: `\\( \\Re(\\mathcal{F}) = 0 \\)`,
@@ -38,8 +42,12 @@ const formatLegend = (signalParams = {}, outputType = 'modulus') => {
       sign: `\\( \\Re(\\mathcal{F}) = 0 \\)`,
     },
     imaginary: {
-      square: `\\( \\Im(\\mathcal{F}) = -A \\cdot P\\text{sinc}(Pf)\\sin(2\\pi f X) \\)`,
-      triangle: `\\( \\Im(\\mathcal{F}) = -A \\cdot P\\text{sinc}^2(Pf)\\sin(2\\pi f X) \\)`,
+      square: phase == 0
+        ? `\\( \\Im(\\mathcal{F}) = 0 \\)`
+        : `\\( \\Im(\\mathcal{F}) = -A \\cdot P\\text{sinc}(Pf)\\sin(2\\pi f X) \\)`,
+      triangle: phase == 0
+        ? `\\( \\Im(\\mathcal{F}) = 0 \\)`
+        : `\\( \\Im(\\mathcal{F}) = -A \\cdot P\\text{sinc}^2(Pf)\\sin(2\\pi f X) \\)`,
       sinc: `\\( \\Im(\\mathcal{F}) = -A \\cdot \\Pi\\left(\\frac{f}{f_0}\\right)\\sin(2\\pi f \\varphi) \\)`,
       cos: `\\( \\Im(\\mathcal{F}) = 0 \\)`,
       sin: `\\( \\Im(\\mathcal{F}) = - \\frac{A}{2}[\\delta (f - f_0) - \\delta (f + f_0)] \\)`,
