@@ -28,17 +28,25 @@ const renderMathJax = (element,callback) => {
 const setTooltipHtml = (legend, name, time, value) => {
   if (legend) {
     let formulaDiv = legend.querySelector('.mathjax-formula');
+    let valueDiv = legend.querySelector('.value-display');
+    let timeDiv = legend.querySelector('.time-display');
 
     if (!formulaDiv) {
         legend.innerHTML = `
         <div class="mathjax-formula text-base md:text-lg my-0">${name}</div>
-        <div class="text-sm md:text-base my-0">${value}</div>
-        <div class="test-xs md:text-sm my-0">${time}</div>
+        <div class="value-display text-sm md:text-base my-0">${value}</div>
+        <div class="time-display test-xs md:text-sm my-0">${time}</div>
         `;
+
+        formulaDiv = legend.querySelector('.mathjax-formula');
+        valueDiv = legend.querySelector('.value-display');
+        timeDiv = legend.querySelector('.time-display');
     }
 
-    formulaDiv.style.visibility = 'hidden';
+    valueDiv.innerHTML = value;
+    timeDiv.innerHTML = time;
 
+    formulaDiv.style.visibility = 'hidden';
     formulaDiv.innerHTML = name;
 
     renderMathJax(formulaDiv, () => {
