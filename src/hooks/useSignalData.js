@@ -1,10 +1,11 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { createDB } from '@/scripts/db.js';
 import { fetchSignal } from '@/scripts/signal-handler.js';
 import { loadSignalParamsFromLocalStorage } from '@/scripts/signal-handler.js';
 
 export function useSignalData() {
   const dbRef = useRef(null);
+  const [isDbReady, setIsDbReady] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -13,6 +14,7 @@ export function useSignalData() {
         const db = await createDB();
         if (isMounted) {
           dbRef.current = db;
+          setIsDbReady(true);
         }
       } catch (error) {
         console.error('Failed to initialize IndexedDB:', error);
@@ -26,7 +28,7 @@ export function useSignalData() {
 
   const getData = useCallback(
     async (frequencyLimit, outputType = 'modulus') => {
-      if (!dbRef.current) {
+      if (!isDbReady | !dbRef.current) {
         console.warn('IndexedDB not initialized yet.');
         return { inputSignal: [], outputSignal: [], outputSignalSliced: [] };
       }
@@ -73,22 +75,13 @@ export function useSignalData() {
             point.time >= -frequencyLimit && point.time <= frequencyLimit,
         );
 
-        if (inputSignal.length === 0) {
-           console.warn("No data found in DB, attempting fetch...");
-           const params = loadSignalParamsFromLocalStorage();
-           if (params) {
-             await fetchSignal(params);
-             return getData(frequencyLimit, outputType);
-           }
-        }
-
         return { inputSignal, outputSignal, outputSignalSliced };
       } catch (error) {
         console.error('Error fetching data from IndexedDB:', error);
         return { inputSignal: [], outputSignal: [], outputSignalSliced: [] };
       }
     },
-    [],
+    [isDbReady],
   );
 
   return { getData };
