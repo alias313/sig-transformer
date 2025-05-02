@@ -13,7 +13,7 @@
     "@astrojs/react": "4.2.6",
     "@radix-ui/react-tabs": "1.1.9",
     "@tabler/icons": "3.31.0",
-    "astro": "5.7.9",
+    "astro": "5.7.10",
     "dexie": "4.0.11",
     "express": "5.1.0",
     "lightweight-charts": "5.0.6",
