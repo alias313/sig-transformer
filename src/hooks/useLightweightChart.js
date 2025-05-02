@@ -1,13 +1,21 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { createChart, AreaSeries } from 'lightweight-charts';
 
-const renderMathJax = (element) => {
+const renderMathJax = (element,callback) => {
     if (window.MathJax && element) {
         try {
-            if (window.MathJax.typeset) {
-                window.MathJax.typeset([element]);
+            if (window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([element])
+                    .then(() => {
+                        if (callback) callback();
+                    })
+                    .catch((error) => {
+                        console.error('MathJax typesetPromise error:', error);
+                    });
             } else if (window.MathJax.Hub && window.MathJax.Hub.Queue) {
-                window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, element]);
+                window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, element],
+                    [() => { if (callback) callback(); }]
+                );
             } else {
                 console.warn("MathJax typeset method not found");
             }
@@ -19,12 +27,23 @@ const renderMathJax = (element) => {
 
 const setTooltipHtml = (legend, name, time, value) => {
   if (legend) {
-    legend.innerHTML = `
-      <div class="mathjax-formula text-base md:text-lg my-0">${name}</div>
-      <div class="text-sm md:text-base my-0">${value}</div>
-      <div class="test-xs md:text-sm my-0">${time}</div>
-      `;
-      requestAnimationFrame(() => renderMathJax(legend));
+    let formulaDiv = legend.querySelector('.mathjax-formula');
+
+    if (!formulaDiv) {
+        legend.innerHTML = `
+        <div class="mathjax-formula text-base md:text-lg my-0">${name}</div>
+        <div class="text-sm md:text-base my-0">${value}</div>
+        <div class="test-xs md:text-sm my-0">${time}</div>
+        `;
+    }
+
+    formulaDiv.style.visibility = 'hidden';
+
+    formulaDiv.innerHTML = name;
+
+    renderMathJax(formulaDiv, () => {
+        formulaDiv.style.visibility = 'visible';
+    });
   }
 };
 
