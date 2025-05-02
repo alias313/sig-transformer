@@ -10,7 +10,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/react": "4.2.6",
+    "@astrojs/react": "4.2.7",
     "@radix-ui/react-tabs": "1.1.9",
     "@tabler/icons": "3.31.0",
     "astro": "5.7.10",
