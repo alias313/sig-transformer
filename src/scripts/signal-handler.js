@@ -81,6 +81,16 @@ async function fetchSignal(signalParams, update=false) {
 const dbName = 'SignalDB';
 const isExisting = (await window.indexedDB.databases()).map(db => db.name).includes(dbName);
 console.log("DB exists:", isExisting);
-// Disable initial fetch since server is down; user will generate locally via JSquare
+
+// If no saved params, generate default Sinc locally and populate DB
+try {
+    const hasSavedParams = !!localStorage.getItem('signalParams');
+    if (!hasSavedParams) {
+        if (typeof window.showChartLoading === 'function') window.showChartLoading();
+        await fetchSignal(defaultParams, true);
+    }
+} catch (e) {
+    console.warn('Unable to initialize default data:', e);
+}
 
 export { loadSignalParamsFromLocalStorage, fetchSignal };
