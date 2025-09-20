@@ -56,6 +56,11 @@ const setTooltipHtml = (legend, name, time, value) => {
 };
 
 const formatPrice = (price) => price.toFixed(3);
+const formatTime = (t) => {
+  const n = typeof t === 'number' ? t : parseFloat(t);
+  if (!Number.isFinite(n)) return String(t);
+  return (Math.round(n * 100) / 100).toFixed(2);
+};
 
 const getLastBar = (series) => {
   if (!series) return null;
@@ -107,7 +112,7 @@ export function useLightweightChart(
       setTooltipHtml(
         legendRef.current,
         symbolName,
-        time.toString(),
+        formatTime(time),
         formattedPrice,
       );
     },

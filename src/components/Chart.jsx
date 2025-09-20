@@ -10,6 +10,7 @@ const formatLegend = (signalParams = {}, outputType = 'modulus') => {
 
   let inputFormatters = {
     square: `\\( \\textbf{x}[n] = A \\cdot \\Pi \\left(\\frac{nT-X}{P}\\right) \\)`,
+    JSquare: `\\( \\textbf{x}[n] = A \\cdot \\Pi \\left(\\frac{nT-X}{P}\\right) \\)`,
     triangle: `\\( \\textbf{x}[n] = A \\cdot \\Lambda \\left(\\frac{nT-X}{2P}\\right) \\)`,
     sinc: `\\( \\textbf{x}[n] = A \\cdot \\text{sinc}(f_0nT - \\varphi ) = A \\cdot \\frac{\\sin(f_0 \\pi nT - \\varphi )}{f_0 \\pi nT - \\varphi } \\)`,
     sin: `\\( \\textbf{x}[n] = A \\cdot \\sin(2\\pi f_0nT + \\varphi ) \\)`,
@@ -21,6 +22,7 @@ const formatLegend = (signalParams = {}, outputType = 'modulus') => {
   let outputFormatters = {
     modulus: {
       square: `\\( |\\mathcal{F}| = |A| \\cdot P|\\text{sinc}(Pf)| \\)`,
+      JSquare: `\\( |\\mathcal{F}| = |A| \\cdot P|\\text{sinc}(Pf)| \\)`,
       triangle: `\\( |\\mathcal{F}| = |A| \\cdot P\\text{sinc}^2(Pf) \\)`,
       sinc: `\\( |\\mathcal{F}| = |A| \\cdot \\Pi \\left(\\frac{f}{f_0}\\right) \\)`,
       cos: `\\( |\\mathcal{F}| = \\frac{|A|}{2}[\\delta (f + f_0) + \\delta (f - f_0)] \\)`,
@@ -30,6 +32,9 @@ const formatLegend = (signalParams = {}, outputType = 'modulus') => {
     },
     real: {
       square: phase == 0
+        ? `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}(Pf) \\)`
+        : `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}(Pf)\\cos(2\\pi f X) \\)`,
+      JSquare: phase == 0
         ? `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}(Pf) \\)`
         : `\\( \\Re(\\mathcal{F}) = A \\cdot P\\text{sinc}(Pf)\\cos(2\\pi f X) \\)`,
       triangle: phase == 0
@@ -49,6 +54,9 @@ const formatLegend = (signalParams = {}, outputType = 'modulus') => {
     },
     imaginary: {
       square: phase == 0
+        ? `\\( \\Im(\\mathcal{F}) = 0 \\)`
+        : `\\( \\Im(\\mathcal{F}) = -A \\cdot P\\text{sinc}(Pf)\\sin(2\\pi f X) \\)`,
+      JSquare: phase == 0
         ? `\\( \\Im(\\mathcal{F}) = 0 \\)`
         : `\\( \\Im(\\mathcal{F}) = -A \\cdot P\\text{sinc}(Pf)\\sin(2\\pi f X) \\)`,
       triangle: phase == 0
@@ -90,6 +98,11 @@ const Chart = () => {
 
   const commonChartOptions = useMemo(() => {
     const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 640;
+    const formatTick = (v) => {
+      const n = typeof v === 'number' ? v : parseFloat(v);
+      if (!Number.isFinite(n)) return String(v);
+      return (Math.round(n * 100) / 100).toFixed(2);
+    };
     return {
       layout: {
         textColor: 'white',
@@ -97,7 +110,7 @@ const Chart = () => {
         attributionLogo: false,
       },
       localization: {
-        timeFormatter: (time) => time.toString(),
+        timeFormatter: (time) => formatTick(time),
       },
       crosshair: {
         horzLine: { visible: false, labelVisible: false },
@@ -112,7 +125,7 @@ const Chart = () => {
         fixRightEdge: true,
         timeVisible: true,
         borderVisible: false,
-        tickMarkFormatter: (time) => time.toString(),
+        tickMarkFormatter: (time) => formatTick(time),
       },
       rightPriceScale: {
         visible: !isSmallScreen,

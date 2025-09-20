@@ -34,6 +34,7 @@ const maxFreq = 50;
           <SelectContent>
             <SelectGroup>
               <SelectItem id="waveformSquare" value="square">Square</SelectItem>
+              <SelectItem id="waveformJSquare" value="JSquare">JSquare</SelectItem>
               <SelectItem id="waveformTriangle" value="triangle">Triangle</SelectItem>
               <SelectItem id="waveformSinc" value="sinc">Sinc</SelectItem>
               <SelectItem id="waveformCos" value="cos">Cosine</SelectItem>
@@ -115,11 +116,18 @@ if (loadedParams) {
   const waveformSine = document.getElementById('waveformSin');
   const waveformExp = document.getElementById('waveformExp');
   const waveformSign = document.getElementById('waveformSign');
+  const waveformJSquare = document.getElementById('waveformJSquare');
 
   switch (signalShape) {
     case "square":
       waveformSelect.innerHTML = "Square";
       waveformSquare.setAttribute("aria-selected", "true");
+      frequencyLabelElement.innerHTML = "Duration (P):";
+      phaseLabelElement.innerHTML = "Translate (X):";
+      break;
+    case "JSquare":
+      waveformSelect.innerHTML = "JSquare";
+      waveformJSquare.setAttribute("aria-selected", "true");
       frequencyLabelElement.innerHTML = "Duration (P):";
       phaseLabelElement.innerHTML = "Translate (X):";
       break;
@@ -179,6 +187,10 @@ document.querySelector('.starwind-select')?.addEventListener('starwind-select:ch
   let newPhaseLabel = "Phase (ϕ):";
     switch (waveformInput) {
       case "square":
+        newFreqLabel = "Duration (P):";
+        newPhaseLabel = "Translate (X):";
+        break;
+      case "JSquare":
         newFreqLabel = "Duration (P):";
         newPhaseLabel = "Translate (X):";
         break;

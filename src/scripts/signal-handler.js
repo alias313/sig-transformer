@@ -1,4 +1,5 @@
 import { loadJSONToIndexedDB } from './db.js';
+import { computeFFTJSquare } from './fft-client.js';
 
 // Default parameters to use if nothing is found in LocalStorage
 const defaultParams = {
@@ -42,21 +43,18 @@ console.log("Loaded parameters from LocalStorage:", signalParamsOnReload);
 
 async function fetchSignal(signalParams, update=false) {
     try {
-        const response = await fetch('https://srv785333.hstgr.cloud/execute-fft', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(signalParams)
-        });
-        
-        if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        let fftData = [];
+        if (signalParams?.signalShape === 'JSquare') {
+            fftData = await computeFFTJSquare(signalParams);
+        } else {
+            console.warn('Only JSquare is currently supported client-side. Skipping fetch.');
+            return;
         }
-        
-        const fftData = await response.json();
+
         await loadJSONToIndexedDB(fftData);
         saveSignalParamsToLocalStorage(signalParams);
         if (update) window.updateChartData?.(signalParams);
-  
+
     } catch (error) {
         console.error('Error executing FFT:', error);
         alert('Error executing FFT');
@@ -66,14 +64,6 @@ async function fetchSignal(signalParams, update=false) {
 const dbName = 'SignalDB';
 const isExisting = (await window.indexedDB.databases()).map(db => db.name).includes(dbName);
 console.log("DB exists:", isExisting);
-
-// Doesn't cover the case when DB exists but there is no table/data
-if (!isExisting){
-    console.log("Creating new database");
-    if (typeof window.showChartLoading === 'function') {
-        window.showChartLoading();
-    }
-    await fetchSignal(signalParamsOnReload, true);
-}
+// Disable initial fetch since server is down; user will generate locally via JSquare
 
 export { loadSignalParamsFromLocalStorage, fetchSignal };

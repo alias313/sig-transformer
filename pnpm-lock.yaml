@@ -26,6 +26,9 @@ importers:
       express:
         specifier: 5.1.0
         version: 5.1.0
+      fft.js:
+        specifier: 4.0.4
+        version: 4.0.4
       lightweight-charts:
         specifier: 5.0.6
         version: 5.0.6
@@ -1359,6 +1362,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fft.js@4.0.4:
+    resolution: {integrity: sha512-f9c00hphOgeQTlDyavwTtu6RiK8AIFjD6+jvXkNkpeQ7rirK3uFWVpalkoS4LAwbdX7mfZ8aoBfFVQX1Re/8aw==}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -3978,6 +3984,8 @@ snapshots:
   fdir@6.4.4(picomatch@4.0.2):
     optionalDependencies:
       picomatch: 4.0.2
+
+  fft.js@4.0.4: {}
 
   fill-range@7.1.1:
     dependencies:
