@@ -1,5 +1,5 @@
 import { loadJSONToIndexedDB } from './db.js';
-import { computeFFTSquare, computeFFTSinc, computeFFTCos, computeFFTTriangle, computeFFTSin } from './fft-client.js';
+import { computeFFTSquare, computeFFTSinc, computeFFTCos, computeFFTTriangle, computeFFTSin, computeFFTExp } from './fft-client.js';
 
 // Default parameters to use if nothing is found in LocalStorage
 const defaultParams = {
@@ -62,8 +62,10 @@ async function fetchSignal(signalParams, update=false) {
             fftData = await computeFFTTriangle(normalizedParams);
         } else if (normalizedParams?.signalShape === 'sin') {
             fftData = await computeFFTSin(normalizedParams);
+        } else if (normalizedParams?.signalShape === 'exp') {
+            fftData = await computeFFTExp(normalizedParams);
         } else {
-            console.warn('Only Square, Sinc, Cos, Triangle, and Sin are currently supported client-side. Skipping fetch.');
+            console.warn('Only Square, Sinc, Cos, Triangle, Sin, and Exp are currently supported client-side. Skipping fetch.');
             return;
         }
 
