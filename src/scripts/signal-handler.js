@@ -48,9 +48,6 @@ async function fetchSignal(signalParams, update=false) {
     try {
         let fftData = [];
         const normalizedParams = { ...signalParams };
-        if (normalizedParams.signalShape === 'JSquare') {
-            normalizedParams.signalShape = 'square';
-        }
 
         if (normalizedParams?.signalShape === 'square') {
             fftData = await computeFFTSquare(normalizedParams);
