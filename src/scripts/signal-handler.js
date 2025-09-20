@@ -1,5 +1,5 @@
 import { loadJSONToIndexedDB } from './db.js';
-import { computeFFTJSquare } from './fft-client.js';
+import { computeFFTSquare } from './fft-client.js';
 
 // Default parameters to use if nothing is found in LocalStorage
 const defaultParams = {
@@ -44,16 +44,21 @@ console.log("Loaded parameters from LocalStorage:", signalParamsOnReload);
 async function fetchSignal(signalParams, update=false) {
     try {
         let fftData = [];
-        if (signalParams?.signalShape === 'JSquare') {
-            fftData = await computeFFTJSquare(signalParams);
+        const normalizedParams = { ...signalParams };
+        if (normalizedParams.signalShape === 'JSquare') {
+            normalizedParams.signalShape = 'square';
+        }
+
+        if (normalizedParams?.signalShape === 'square') {
+            fftData = await computeFFTSquare(normalizedParams);
         } else {
-            console.warn('Only JSquare is currently supported client-side. Skipping fetch.');
+            console.warn('Only Square is currently supported client-side. Skipping fetch.');
             return;
         }
 
         await loadJSONToIndexedDB(fftData);
-        saveSignalParamsToLocalStorage(signalParams);
-        if (update) window.updateChartData?.(signalParams);
+        saveSignalParamsToLocalStorage(normalizedParams);
+        if (update) window.updateChartData?.(normalizedParams);
 
     } catch (error) {
         console.error('Error executing FFT:', error);

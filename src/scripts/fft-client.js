@@ -18,7 +18,7 @@ function roundTo(value, decimals) {
   return Math.round(value * factor) / factor;
 }
 
-export async function computeFFTJSquare(params) {
+export async function computeFFTSquare(params) {
   const a = parseFloat(params.a);
   const b = parseFloat(params.b);
   const amp = parseFloat(params.amplitude);
