@@ -228,3 +228,73 @@ export async function computeFFTCos(params) {
   return rows;
 }
 
+export async function computeFFTTriangle(params) {
+  const a = parseFloat(params.a);
+  const b = parseFloat(params.b);
+  const amp = parseFloat(params.amplitude);
+  const pulseLength = parseFloat(params.frequency); // UI label: Duration (2P); here pulseLength is P
+  const phase = parseFloat(params.phase); // Translate (X)
+  const interval = parseFloat(params.interval);
+
+  if (!(b - a > 0)) {
+    throw new Error('Invalid interval: b - a must be > 0');
+  }
+
+  const totalSamples = Math.ceil((b - a) / interval) + 1;
+  const paddedSize = nextPowerOfTwo(totalSamples);
+
+  const realInput = new Float64Array(paddedSize);
+  const timeValues = new Float64Array(totalSamples);
+  const signalValues = new Float64Array(totalSamples);
+
+  for (let i = 0; i < totalSamples; i++) {
+    const t = a + i * interval;
+    timeValues[i] = t;
+    if (Math.abs(t - phase) < pulseLength + interval / 2) {
+      signalValues[i] = amp * (pulseLength - Math.abs(t - phase)) / pulseLength;
+    } else {
+      signalValues[i] = 0;
+    }
+    realInput[i] = signalValues[i];
+  }
+
+  const fft = new FFT(paddedSize);
+  const out = fft.createComplexArray();
+  fft.realTransform(out, realInput);
+  fft.completeSpectrum(out);
+
+  const center = Math.floor(paddedSize / 2);
+  const rows = [];
+
+  for (let k = 0; k < paddedSize; k++) {
+    const srcIdx = fftShiftIndex(k, paddedSize);
+    const reRaw = out[2 * srcIdx];
+    const imRaw = out[2 * srcIdx + 1];
+    const reScaled = reRaw * interval;
+    const imScaled = imRaw * interval;
+    const absScaled = Math.hypot(reScaled, imScaled);
+    const freq = (k - center) / (paddedSize * interval);
+
+    const inputTime = k < totalSamples ? timeValues[k] : NaN;
+    const inputVal = k < totalSamples ? signalValues[k] : NaN;
+
+    const freqRounded = roundTo(freq, 2);
+    const reRounded = roundTo(reScaled, 5);
+    const imRounded = roundTo(imScaled, 5);
+    const absRounded = roundTo(absScaled, 5);
+    const inputTimeRounded = Number.isFinite(inputTime) ? roundTo(inputTime, 5) : inputTime;
+    const inputValRounded = Number.isFinite(inputVal) ? roundTo(inputVal, 5) : inputVal;
+
+    rows.push({
+      Freq: freqRounded,
+      're(FFT)': reRounded,
+      'im(FFT)': imRounded,
+      'abs(FFT)': absRounded,
+      input: inputTimeRounded,
+      're(signal)': inputValRounded,
+    });
+  }
+
+  return rows;
+}
+
