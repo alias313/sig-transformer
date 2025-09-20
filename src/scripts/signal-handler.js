@@ -1,5 +1,5 @@
 import { loadJSONToIndexedDB } from './db.js';
-import { computeFFTSquare } from './fft-client.js';
+import { computeFFTSquare, computeFFTSinc } from './fft-client.js';
 
 // Default parameters to use if nothing is found in LocalStorage
 const defaultParams = {
@@ -39,6 +39,9 @@ export default function loadSignalParamsFromLocalStorage() {
 }
     
 let signalParamsOnReload = loadSignalParamsFromLocalStorage();
+if (!signalParamsOnReload || !signalParamsOnReload.signalShape) {
+    signalParamsOnReload = { ...signalParamsOnReload, signalShape: 'sinc' };
+}
 console.log("Loaded parameters from LocalStorage:", signalParamsOnReload);
 
 async function fetchSignal(signalParams, update=false) {
@@ -51,8 +54,10 @@ async function fetchSignal(signalParams, update=false) {
 
         if (normalizedParams?.signalShape === 'square') {
             fftData = await computeFFTSquare(normalizedParams);
+        } else if (normalizedParams?.signalShape === 'sinc') {
+            fftData = await computeFFTSinc(normalizedParams);
         } else {
-            console.warn('Only Square is currently supported client-side. Skipping fetch.');
+            console.warn('Only Square and Sinc are currently supported client-side. Skipping fetch.');
             return;
         }
 
